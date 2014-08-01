@@ -1,3 +1,15 @@
+*2014.08.01 07:45:40
+board size should respond to window size (via javascript)
+
+*2014.08.01 07:45:58
+responsive 2 column layout with space for controls
+
+*2014.08.01 07:47:14
+settings for options
+
+*2014.08.01 07:21:27
+update README.txt
+
 *2013.02.05 09:54:23 
 sgf integration
 

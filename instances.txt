@@ -1,3 +1,20 @@
+*2014.08.01 07:23:53 code
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/.jshintrc
+/c/go_ginkgo/gulpfile.js
+/c/go_ginkgo/package.json
+/c/go_ginkgo/app/styles/main.less
+/c/go_ginkgo/app/scripts/board.js
+/c/go_ginkgo/app/board.html
+
+*2014.08.01 07:21:56 todo
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/journal.txt
+/c/go_ginkgo/README.txt
+/c/go_ginkgo/todo.txt
+
 *2014.08.01 06:49:51 code
 /c/go_ginkgo/instances.txt
 /c/go_ginkgo/launch.sh
