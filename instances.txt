@@ -1,0 +1,15 @@
+*2014.08.01 06:49:51 code
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/templates/main.tpl
+/c/go_ginkgo/application.py
+/c/go_ginkgo/js/board.js
+/c/go_ginkgo/board.html
+
+*2014.08.01 06:49:51 todo
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/journal.txt
+/c/go_ginkgo/todo.txt
+
+

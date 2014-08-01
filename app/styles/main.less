@@ -1,0 +1,134 @@
+html {
+    height: 100%;
+}
+
+body {
+    background: black;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+    height: 100%;
+}
+
+.page {
+    width: 100%;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  
+  display: block;
+  background: transparent url("/images/background.png") no-repeat right 20px center;
+  background-size: 40%;  
+
+  -webkit-filter: blur(1px);
+  -moz-filter: blur(1px);
+  -o-filter: blur(1px);
+  -ms-filter: blur(1px);
+  filter: blur(1px);
+
+}
+
+.space {
+    position: absolute;
+    z-index: 10;
+}
+
+div.stone {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+img.stone {
+    margin: auto;
+    display: table-cell;
+}
+
+div.hover {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+img.hover {
+    margin: auto;
+    display: table-cell;
+    opacity: 0.4;
+}
+
+.marker {
+    position: absolute;
+    vertical-align: text-bottom;
+    z-index: 15;
+}
+
+.board {
+    background: transparent url("/images/board.jpg") no-repeat left top; 
+    position: absolute;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.grid {
+    background: transparent url("/images/grid-19x19.png") no-repeat left top; 
+    position: absolute;
+    margin: 0 auto;
+    text-align: center;
+}
+
+
+.container {
+    position: absolute;
+    padding: 0px;
+    margin: 0 auto;
+    text-align: center;
+    vertical-align: text-bottom;
+}
+
+.label_h {
+    position: absolute;
+    color: #777777;
+}
+
+.label_v {
+    position: absolute;
+    color: #777777;
+}
+
+.labels {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.view { 
+    position: relative;
+    margin: 0 auto;
+}
+
+.main {
+    position: relative;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.browsehappy {
+    margin: 0.2em 0;
+    background: #ccc;
+    color: #000;
+    padding: 0.2em 0;
+}
+
+/*
+.shadow {
+    position: absolute;
+    vertical-align: text-bottom;
+    background: transparent url("/images/shadow.png") no-repeat left center; 
+    display: none;
+    z-index: 5;
+}
+*/

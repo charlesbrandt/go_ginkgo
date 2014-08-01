@@ -1,0 +1,23 @@
+# use glob syntax.
+syntax: glob
+
+*.elc
+*.pyc
+*~
+*\#
+.*.swp
+._*
+*.tar.gz
+.DS_Store
+.Trashes*
+.Spotlight-V100*
+.fseventsd*
+index*
+
+# switch to regexp syntax.
+syntax: regexp
+jgo
+gnugo
+node_modules
+.tmp
+dist

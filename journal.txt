@@ -1,0 +1,108 @@
+*2014.08.01 07:00:50 complete
+/c/go_ginko is almost ready...
+just moving in the rest of the notes that are relevant from old copy...
+good chance to clean out the extra items
+requested [2014.07.18 12:25:22]
+make separate repository for GoGinko project / app
+
+*2014.08.01 06:59:18 complete
+a good start on these...
+can add more as needed (re-request)
+requested [2013.02.05 09:52:38] 
+svg versions of markers
+
+*2013.02.08 12:36:47 complete labels
+labels look great!
+the whole project is really coming together
+requested [2013.02.06 08:48:08] 
+show labels for spaces
+
+*2013.02.08 09:25:02 complete
+these are looking pretty nice I think
+requested [2013.02.05 09:38:53] 
+higher resolution stones (take pictures)
+
+*2013.02.07 06:59:52
+captures seem to be working correctly...
+nice!
+
+ 	    //TODO: go through and check for captured pieces here
+	    //      remove any captured pieces we find
+
+requested [2013.02.05 09:54:27] 
+capture stone groups without liberties
+
+also [2013.02.06 16:10:39] 
+check for suicide moves at the end.
+
+*2013.02.06 18:29:14 
+first attempt at has_liberties function:
+
+this function works,
+and may be the most optimal way of finding liberties (don't have to scan for whole group)
+but it makes the code difficult to read...
+might utilize get group instead.
+
+    //check if a space's group has any liberties
+    //can stop looking as soon as a liberty is found
+    //if this is a recursive call:
+    //checked keeps track of all previously checked spaces
+    //hoping this prevents looping
+    self.has_liberties = function(space, checked) {
+	var neighbors = self.get_neighbors(space);
+	var connections = [];
+	//false until we prove otherwise:
+	var liberties = false;
+
+	_.each(neighbors, function(neighbor) {
+	    if (neighbor.contains() == '') {
+		//alert("found empty neighbor at: " + neighbor.name + " for: " + space.name);
+		//return true;
+		liberties = true;
+	    }
+	    else if (neighbor.contains() && (neighbor.contains() == space.contains()) && (_.indexOf(checked, neighbor) == -1)) {
+		connections.push(neighbor);
+	    }
+	});
+	
+	//alert(space.name + " connections: " + connections.length + " liberties: " + liberties);
+	
+	if (liberties) {
+	    return liberties;
+	}
+	else {
+	    checked.push(space);
+	    _.each(connections, function(connection) {
+		//add the current space to the list of checked items...
+		var result = self.has_liberties(connection, checked);
+		//alert("checking: " + connection.name + " has libs?: " + result);
+		liberties = (result || liberties); 
+		// must not have found any yet
+	    });
+	    return liberties;
+	}
+	
+    }
+
+
+*2013.02.06 16:10:05 
+have the start of a capturing function in place
+
+*2013.02.06 08:25:33 
+hover fixed
+
+    //TODO: hover with transparent stone before play
+
+
+*2013.02.05 23:18:26 
+almost have hovering working...
+just need to clean up div
+
+*2013.02.02 18:15:07 complete
+think this is done...
+requested [2013.01.24 12:08:19] 
+simple go board outline (just a table is fine) using knockout to update DOM
+toggle a stone 
+
+*2013.01.30 05:39:08 
+

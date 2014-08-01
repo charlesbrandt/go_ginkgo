@@ -1,0 +1,115 @@
+
+
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8" />
+    <title>Go Ginkgo</title>
+    
+    <meta name="description" content="">
+    <meta name="keywords" content="" />
+    <meta name="author" content="" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />  
+
+    <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="icon" href="/favicon.png" />
+      
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    
+    <!-- apple splash screens. check http://susy.oddbird.net/demos/magic/ -->
+    <link href="img/splash-iphone.png" media="screen and (max-device-width: 480px) and not (-webkit-min-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <link href="img/splash-iphone4.png" media="screen and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2)" rel="apple-touch-startup-image">
+    <link href="img/splash-portrait.png" media="screen and (min-device-width: 768px) and (orientation: portrait)" rel="apple-touch-startup-image">
+    <link href="img/splash-landscape.png" media="screen and (min-device-width: 768px) and (orientation: landscape)" rel="apple-touch-startup-image">
+        
+    <!-- build:css styles/vendor.css -->
+    <!-- endbuild -->
+    
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
+    
+    <!--<script src="js/libs/modernizr-2.5.2.min.js"></script>-->
+    <!--include other javascript at the end of the page to improve loading-->
+    
+  </head>
+
+  <body>
+    <!--[if lt IE 10]>
+    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+    <![endif]-->
+
+    <div class="background-image"></div>
+
+    <div class="page">
+
+      <div id="result"> </div>
+
+      <!-- rendered board ends up here: -->
+      <div class="main" data-bind="template: 'boardTemplate'"></div>
+      
+      <script id="boardTemplate" type="text/html">
+        <div class="view">
+          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_top}"></div>
+          <div data-bind="template: {name: 'labelVTemplate', foreach: labels_left}"></div>
+          <div data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
+          <div data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
+          
+          <div class="board" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{label_pixels}}px; top: {{label_pixels}}px;">
+          </div>
+          <div class="grid" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{label_pixels}}px; top: {{label_pixels}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          </div>
+        </div>
+      </script>
+      
+      <script id="labelHTemplate" type="text/html">
+        <div class="label_h" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
+      </script>
+      
+      <script id="labelVTemplate" type="text/html">
+        <div class="label_v" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
+      </script>
+      
+      <script id="spaceTemplate" type="text/html">
+        
+        <div class="space" style="left: {{left}}px; top: {{top}}px;">
+          <div class="stone" data-bind="html: stone()"></div>
+        </div>
+        
+        <div class="space" style="left: {{left}}px; top: {{top}}px;">
+          <div class="hover" data-bind="html: hover()"></div>
+        </div>
+        
+        <div class="marker" style="left: {{left}}px; top: {{top}}px;" data-bind="style: { background : marker() }, click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }"></div>
+      </script>
+      
+    </div><!-- END .page -->    
+    
+    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
+    <script>
+      (function(b,o,i,l,e,r){b.GoogleAnalyticsObject=l;b[l]||(b[l]=
+      function(){(b[l].q=b[l].q||[]).push(arguments)});b[l].l=+new Date;
+      e=o.createElement(i);r=o.getElementsByTagName(i)[0];
+      e.src='//www.google-analytics.com/analytics.js';
+      r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
+      ga('create','UA-XXXXX-X');ga('send','pageview');
+    </script>
+    
+
+      <!-- build:js scripts/vendor.js -->
+      <!-- endbuild -->
+      <!-- <script src="bower_components/jquery/dist/jquery.js"></script> -->
+      
+      <!-- build:js scripts/main.js -->
+      <script src="scripts/bundle.js"></script>
+      <!-- endbuild -->
+      
+
+      
+  </body>
+</html>
+
