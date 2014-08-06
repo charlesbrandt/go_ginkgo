@@ -1,3 +1,19 @@
+*2014.08.06 15:39:53 complete
+woo hoo!
+spent a long time getting tests and live reload working via gulp
+(along with a major refactor and cleanup of repository)
+that was helpful for making board and spaces more observable and more responsive
+requested [2014.08.01 07:45:40]
+board size should respond to window size (via javascript)
+
+*2014.08.05 18:55:26
+npm uninstall --save-dev lodash && npm install --save-dev lodash-node
+
+npm uninstall --save-dev lodash-node && npm install --save-dev lodash
+
+*2014.08.05 18:32:37
+    "jquery": "^1.11.1",
+
 *2014.08.01 07:00:50 complete
 /c/go_ginko is almost ready...
 just moving in the rest of the notes that are relevant from old copy...

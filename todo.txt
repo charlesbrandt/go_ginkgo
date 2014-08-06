@@ -1,6 +1,3 @@
-*2014.08.01 07:45:40
-board size should respond to window size (via javascript)
-
 *2014.08.01 07:45:58
 responsive 2 column layout with space for controls
 

@@ -1,53 +1,164 @@
 'use strict';
-// generated on 2014-07-30 using generator-gulp-webapp 0.1.0
+//http://www.smashingmagazine.com/2014/06/11/building-with-gulp/
 
 var gulp = require('gulp');
 
-// load plugins
+// load all gulp plugins to $
 var $ = require('gulp-load-plugins')();
+//these get loaded as part of the plugins:
+//var mocha = require('gulp-mocha');
+//var sourcemaps = require('gulp-sourcemaps');
+//var plumber = require('gulp-plumber');
 
 var browserify = require('browserify');
+var watchify = require('watchify');
 var source = require('vinyl-source-stream');
-var sourcemaps = require('gulp-sourcemaps');
 
-var plumber = require('gulp-plumber');
+//TODO:
+//split external libraries out to a separate browserify function
+//they don't change as often... no need to rebuild them every time
 
 gulp.task('browserify', function() {
   //https://github.com/gulpjs/gulp/issues/369
   //return browserify('./app/scripts/board.js')
   //return browserify({entries:'./app/scripts/board.js', debug:true})
   return browserify({debug:true})
-    .add('./app/scripts/board.js')
+    .add('./app/scripts/init.js')
+
+    //bundle() no longer accepts option arguments.
+    //Move all option arguments to the browserify() constructor.
+    //.bundle({debug:true})
     .bundle()
       .on('error', function (err) {
         console.log(err.toString());
         this.emit("end");
       })
 
-    //bundle() no longer accepts option arguments.
-    //Move all option arguments to the browserify() constructor.
-    //.bundle({debug:true})
-
-    //.pipe(plumber())
+    //.pipe($.plumber())
   
     //Pass desired output filename to vinyl-source-stream
     .pipe(source('bundle.js'))
     //.pipe(process.stdout)
 
+    //seems like sourcemaps are included already by browserify when debug:true
     //Error: gulp-sourcemap-init: Streaming not supported
-    //.pipe(sourcemaps.init({loadMaps: true}))
+    //.pipe($.sourcemaps.init({loadMaps: true}))
 
     //Start piping stream to tasks!
     //.pipe($.jshint())
     //.pipe($.jshint.reporter(require('jshint-stylish')))
 
-    //.pipe(sourcemaps.write())
+    //.pipe($.sourcemaps.write())
 
     .pipe(gulp.dest('.tmp/scripts/'))
     //.pipe(gulp.dest('./dist/scripts/'));
     //.pipe($.size());
 });
 
+
+/*
+//this one reports errors:
+//Cannot read property 'cache' of undefined
+
+gulp.task('watchify', function() {
+  //https://github.com/gulpjs/gulp/blob/master/docs/recipes/fast-browserify-builds-with-watchify.md
+  
+  var bundler = watchify(browserify('./app/scripts/init.js', watchify.args));
+  //var bundler = watchify(browserify('./app/scripts/init.js', {debug:true}));
+
+  // Optionally, you can apply transforms
+  // and other configuration options on the
+  // bundler just as you would with browserify
+  //bundler.transform('brfs')
+
+  bundler.on('update', rebundle)
+
+  function rebundle () {
+    return bundler.bundle()
+      // log errors if they happen
+      .on('error', function(e) {
+        gutil.log('Browserify Error', e);
+      })
+      .pipe(source('bundle.js'))
+      .pipe(gulp.dest('./tmp/scripts/'))
+  }
+
+  return rebundle()
+})
+*/
+
+/*
+// this is mostly working, but hangs the rest of the watch commands...
+
+var browserify_task = function(src, dest, watch, cb) {
+
+  //return function() {
+
+  //if you get:
+  //node_modules/watchify/index.js:100
+  //      delete cache[id];
+  //TypeError: Cannot convert null to object
+  // be sure that args are set for watchify correctly
+  //https://github.com/substack/watchify/blob/master/readme.markdown#var-w--watchifyb-opts
+  var w = browserify({ cache: {}, packageCache: {}, fullPaths: true, debug:true});
+  w.add(src);
+  var rebundle = function(ids) {
+    return w.bundle()
+      .on("error", function(error) {
+        //util.log(util.colors.red("Error: "), error);
+        console.log("Error: ", error);
+      })
+      .on("end", function() {
+        //util.log("Created:", util.colors.cyan(dest), (ids||[]).join(", "));
+        console.log("Created:", dest, (ids||[]).join(", "));
+      })
+      .pipe(source(dest))
+    //.pipe(gulp.dest("./src/"));
+      .pipe(gulp.dest('.tmp/scripts/'));
+      cb();
+  };
+
+  //console.log(w);
+  // Wrap browserify in watchify, which will do an incremental
+  // recompile when one of the files used to create the bundle is
+  // changed.
+  if (watch) {
+    //console.log('prewatchify');
+    w = watchify(w);
+    //console.log('postwatchify');
+    w.on("update", rebundle)
+      .on("log", function(message) {
+        //https://github.com/gulpjs/gulp-util
+        //util.log("Browserify:", message);
+        console.log("Browserify:", message);
+      })
+      .on("error", function(message) {
+        //https://github.com/gulpjs/gulp-util
+        //util.log("Browserify:", message);
+        console.log("Browserify Error:", message);
+      })
+      .on("end", function() {
+        cb();
+      });
+  }
+  return rebundle();
+  //};
+};
+
+gulp.task('watchify', function(cb) {
+  var src = './app/scripts/init.js';
+  var dest = 'bundle.js';
+  return browserify_task(src, dest, true, cb);
+});
+
+gulp.task('browserify', function(cb) {
+  var src = './app/scripts/init.js';
+  var dest = 'bundle.js';
+  browserify_task(src, dest, false, cb);
+});
+
+*/
+  
 gulp.task('styles', function () {
   return gulp.src('app/styles/main.less')
     .pipe($.less())
@@ -66,9 +177,9 @@ gulp.task('scripts', function () {
 gulp.task('html', ['styles', 'browserify'], function () {
   var jsFilter = $.filter('**/*.js');
   var cssFilter = $.filter('**/*.css');
-  
+
   return gulp.src('app/*.html')
-    .pipe(plumber())
+    .pipe($.plumber())
     .pipe($.useref.assets({searchPath: '{.tmp,app}'}))
     .pipe(jsFilter)
     .pipe($.uglify())
@@ -132,10 +243,22 @@ gulp.task('connect', function () {
     });
 });
 
-gulp.task('serve', ['connect', 'styles', 'browserify'], function () {
+gulp.task('serve', ['connect', 'styles'], function () {
   require('opn')('http://localhost:9000');
 });
 
+gulp.task('test', function() {
+  return gulp.src('test/spec/test.js', {read: false})
+    .pipe($.mocha({reporter: 'nyan'}));
+});
+
+gulp.task('test2', function() {
+  return gulp.src('test/spec/*.js')
+    .pipe($.size());
+});
+
+
+//gulp.task('watch', ['watchify', 'connect', 'serve'], function () {
 gulp.task('watch', ['connect', 'serve'], function () {
   var server = $.livereload();
   
@@ -144,13 +267,18 @@ gulp.task('watch', ['connect', 'serve'], function () {
   gulp.watch([
     'app/*.html',
     '.tmp/styles/**/*.css',
-    'app/scripts/**/*.js',
+    //'app/scripts/**/*.js',
+    '.tmp/scripts/**/*.js',
     'app/images/**/*'
   ]).on('change', function (file) {
     server.changed(file.path);
   });
-  
+
   gulp.watch('app/styles/**/*.less', ['styles']);
-  gulp.watch('app/scripts/**/*.js', ['browserify']);
   gulp.watch('app/images/**/*', ['images']);
+
+  gulp.watch('test/spec/**/*.js', ['test']);
+  //gulp.watch('app/scripts/**/*.js', ['watchify', 'test']);
+  gulp.watch('app/scripts/**/*.js', ['browserify', 'test']);
+  
 });

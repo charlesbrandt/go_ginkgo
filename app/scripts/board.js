@@ -1,9 +1,10 @@
 /*global $: true */
 'use strict';
 
-
 var $ = require('jquery');
-var _ = require('lodash');
+var lodash = require('lodash-node/underscore');
+//I had trouble getting this to work with broserify + node + mocha:
+//var lodash = require('lodash');
 var ko = require('knockout');
 var mustache = require('mustache');
 
@@ -92,14 +93,36 @@ function SGF(board) {
   
 }
 
-function Space(board, name, contains, pixels, left, top) {
+function Space(board, name, contains, pixels, row, col) {
   var self = this;
   
   self.board = board;
-  self.left = left;
-  self.top = top;
-  self.pixels = pixels;
+
+  //should all be observable / computed values now
+  //self.left = left;
+  //self.top = top;
+  self.row = row;
+  self.col = col;
+  
+  if (ko.isObservable(pixels)) {
+    self.pixels = pixels;
+  }
+  else {
+    self.pixels = ko.observable(pixels);
+  }
+    
+  //console.log(self.pixels);
   self.image_px = self.pixels;
+
+  self.top = ko.computed(function() {
+    return self.row * self.pixels();
+  });
+
+  self.left = ko.computed(function() {
+    return self.col * self.pixels();
+  });
+
+  
   //alert(self.image_px);
   self.name = name;
   self.contains = ko.observable(contains);
@@ -124,7 +147,7 @@ function Space(board, name, contains, pixels, left, top) {
   
   self.stone = ko.computed(function() {
     if (self.contains() === 'B') {
-      return '<img class="stone" width="' + self.image_px + 'px" height="' + self.image_px + 'px" src="images/stone-black.png">';
+      return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
       
       //return 'url("images/black.png") no-repeat center center' ;
       //return 'url("images/black.png")' ;
@@ -132,7 +155,7 @@ function Space(board, name, contains, pixels, left, top) {
       
     }
     else if (self.contains() === 'W') {
-      return '<img class="stone" width="' + self.image_px + 'px" height="' + self.image_px + 'px" src="images/stone-white.png">';
+      return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-white.png">';
       
       //return 'url("images/white.png") no-repeat center center' ;
       //return 'url("images/white.png")' ;
@@ -148,11 +171,11 @@ function Space(board, name, contains, pixels, left, top) {
   self.hover = ko.computed(function() {
     if (self.hovering()) {
       if (self.board.next_move === 'B') {
-	return '<img class="hover" width="' + self.image_px + 'px" height="' + self.image_px + 'px" src="images/stone-black.png">';
+	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
 	//return 'url("images/black.png") no-repeat center center' ;
       }
       else {
-	return '<img class="hover" width="' + self.image_px + 'px" height="' + self.image_px + 'px" src="images/stone-white.png">';
+	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-white.png">';
 	//return 'url("images/white.png") no-repeat center center' ;
       }
       
@@ -232,14 +255,30 @@ function Space(board, name, contains, pixels, left, top) {
 }
 
 //Only represent board data here (no labels)
+//module.exports.Board = function (size, pixels) {
 function Board(size, pixels) {
   var self = this;
-  
-  self.size = size;
-  self.pixels = pixels;
-  
-  self.space_pixels = pixels / size; 
+
+  if (ko.isObservable(size)) {
+    self.size = size;
+  }
+  else {
+    self.size = ko.observable(size);
+  }
+    
+  if (ko.isObservable(pixels)) {
+    self.pixels = pixels;
+  }
+  else {
+    self.pixels = ko.observable(pixels);
+  }
+    
+  //self.space_pixels = pixels / size; 
   ///just resetting forward slash for syntax highlighting to work in 902 editor
+
+  self.space_pixels = ko.computed(function() {
+    return self.pixels() / self.size();
+  });
   
   self.next_move = 'B';
 
@@ -254,43 +293,50 @@ function Board(size, pixels) {
   
   self.label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
   //aka labels_x
-  self.labels_h = _.first(self.label_options, size);
+  self.labels_h = lodash.first(self.label_options, self.size());
   //console.log(self.labels_h);
   
   //aka labels_y
   self.labels_v = [ ];
-  for (var i = 1; i <= size; i++) { 
+  for (var i = 1; i <= self.size(); i++) { 
     self.labels_v.push(i.toString());
   }
   //this is the way they're shown when rendering them:
   self.labels_v.reverse();
   //console.log(self.labels_v);
   
-  
-  
   self.rows = [ ];
   self.spaces = [ ];
   
   var space_name = '';
-  var left = 0;
+  //var left;
+  //var top;
   var current;
   
-  for (i = 0; i < size; i++) {
+  for (i = 0; i < self.size(); i++) {
     //aka position
-    var top = i * self.space_pixels;
-    
+    //var top = i * self.space_pixels();
+
+    /*
+    var top = ko.computed(function() {
+      return i * self.space_pixels();
+    });
+    */
+      
     //going to generate space_name in following loop:
     var row_spaces = [ ];
-    for (var j = 0; j < size; j++) {
+    for (var j = 0; j < self.size(); j++) {
       space_name = i + ',' + j;
-      left = j * self.space_pixels;
-      current = new Space(self, space_name, '', self.space_pixels, left, top);
+      //left = j * self.space_pixels();
+
+      //console.log('pixels: ', self.space_pixels(), ' left: ', left(), ' top: ', top());
+      current = new Space(self, space_name, '', self.space_pixels, i, j);
       //this might be all we actually need:
       self.spaces.push(current);
       row_spaces.push(current);
     }
     
-    //self.rows.push(new Row(size, row_name, self.space_pixels));
+    //self.rows.push(new Row(self.size(), row_name, self.space_pixels()));
     self.rows.push(row_spaces);
   }
   
@@ -342,12 +388,12 @@ function Board(size, pixels) {
 	space.neighbors.push(self.rows[row_i][column]);
       }
       //east
-      if (column !== self.size-1) {
+      if (column !== self.size()-1) {
 	column_i = column + 1;
 	space.neighbors.push(self.rows[row][column_i]);
       }
       //south
-      if (row !== self.size-1) {
+      if (row !== self.size()-1) {
 	row_i = row + 1;
 	space.neighbors.push(self.rows[row_i][column]);
       }
@@ -373,11 +419,11 @@ function Board(size, pixels) {
     
     //console.log('group contains: ' + group.length + ' items');
     
-    _.each(neighbors, function(neighbor) {
+    lodash.each(neighbors, function(neighbor) {
       //make sure there is something in neighbor, 
       //and that is the same as what is in this space (it's connected)
       //and we don't already have it as part of the group:
-      if (neighbor.contains() && (neighbor.contains() === space.contains()) && (_.indexOf(group, neighbor) === -1)) {
+      if (neighbor.contains() && (neighbor.contains() === space.contains()) && (lodash.indexOf(group, neighbor) === -1)) {
 	group = self.get_group(neighbor, group);
       }
     });
@@ -391,7 +437,7 @@ function Board(size, pixels) {
     var current;
     
     //var message = 'Checking group of: ';
-    //_.each(group, function(space) { 
+    //lodash.each(group, function(space) { 
     //    message += space.name + ', ';
     //});
     //console.log(message)
@@ -419,7 +465,7 @@ function Board(size, pixels) {
       self.captures.W += group.length;
     }
     
-    _.each(group, function(space) {
+    lodash.each(group, function(space) {
       space.contains('');
     });
     
@@ -431,7 +477,7 @@ function Board(size, pixels) {
     var group = [];
     
     //see if our move captures any of our neighboring groups:
-    _.each(neighbors, function(neighbor) {
+    lodash.each(neighbors, function(neighbor) {
       if (neighbor.contains() && (neighbor.contains() !== space.contains())) {
 	//want to reset group every time:
 	group = [];
@@ -455,46 +501,50 @@ function Board(size, pixels) {
     }
     
   };
-  
-  
-  
-  self.update_dimensions = function() { 
-    $('.shadow').css({'width':self.space_pixels+'px'});
-    $('.shadow').css({'height':self.space_pixels+'px'});
-    $('.space').css({'width':self.space_pixels+'px'});
-    $('.space').css({'height':self.space_pixels+'px'});
-    $('div.stone').css({'width':self.space_pixels+'px'});
-    $('div.stone').css({'height':self.space_pixels+'px'});
-    $('div.hover').css({'width':self.space_pixels+'px'});
-    $('div.hover').css({'height':self.space_pixels+'px'});
-    $('.marker').css({'width':self.space_pixels+'px'});
-    $('.marker').css({'height':self.space_pixels+'px'});
+
+  self.update_dimensions = function() {
+    //console.log('starting dimension update');
+    $('.shadow').css({'width':self.space_pixels()+'px'});
+    $('.shadow').css({'height':self.space_pixels()+'px'});
+    $('.space').css({'width':self.space_pixels()+'px'});
+    $('.space').css({'height':self.space_pixels()+'px'});
+    $('div.stone').css({'width':self.space_pixels()+'px'});
+    $('div.stone').css({'height':self.space_pixels()+'px'});
+    $('div.hover').css({'width':self.space_pixels()+'px'});
+    $('div.hover').css({'height':self.space_pixels()+'px'});
+    $('.marker').css({'width':self.space_pixels()+'px'});
+    $('.marker').css({'height':self.space_pixels()+'px'});
   };
   
 }
 
-
+//module.exports.BoardViewModel = function (size, pixels) {
 function BoardViewModel(size, pixels) {
   // size is in spaces, e.g. 9(x9), 13(x13), 19(x19)
   var self = this;
   
   //self.size = size;
   self.size = ko.observable(size);
+  console.log("initial size: ", self.size());
+
   //self.pixels = pixels;
   self.pixels = ko.observable(pixels);
   
-  self.board = new Board(self.size(), self.pixels());
+  self.board = new Board(self.size, self.pixels);
 
   self.sgf = new SGF();
 
   self.show_labels = ko.observable(true);
   
   //the size of the label border around the board
-  self.label_pixels = 24;
+  //self.label_pixels = 24;
+  self.label_pixels = ko.computed(function() {
+    return self.board.space_pixels() / 2;
+  });
   
   self.make_labels = ko.computed(function() {
     var cur_pos, l;
-    var sp = self.board.space_pixels;
+    var sp = self.board.space_pixels();
     
     self.labels_top = [];
     self.labels_left = [];
@@ -502,8 +552,8 @@ function BoardViewModel(size, pixels) {
     self.labels_bottom = [];
     
     if (self.show_labels()) {
-      cur_pos = self.label_pixels;
-      _.each(self.board.labels_h, function(label) {
+      cur_pos = self.label_pixels();
+      lodash.each(self.board.labels_h, function(label) {
 	l = {
 	  'label': label,
 	  'left': cur_pos,
@@ -512,8 +562,8 @@ function BoardViewModel(size, pixels) {
 	cur_pos += sp;
       });
       
-      cur_pos = self.label_pixels;
-      _.each(self.board.labels_v, function(label) {
+      cur_pos = self.label_pixels();
+      lodash.each(self.board.labels_v, function(label) {
 	l = {
 	  'label': label,
 	  'left': 0,
@@ -522,22 +572,22 @@ function BoardViewModel(size, pixels) {
 	cur_pos += sp;
       });
       
-      cur_pos = self.label_pixels;
-      _.each(self.board.labels_v, function(label) {
+      cur_pos = self.label_pixels();
+      lodash.each(self.board.labels_v, function(label) {
 	l = {
 	  'label': label,
-	  'left': self.label_pixels + self.pixels(),
+	  'left': self.label_pixels() + self.pixels(),
 	  'top': cur_pos };
 	self.labels_right.push(l);
 	cur_pos += sp;
       });
       
-      cur_pos = self.label_pixels;
-      _.each(self.board.labels_h, function(label) {
+      cur_pos = self.label_pixels();
+      lodash.each(self.board.labels_h, function(label) {
 	l = {
 	  'label': label,
 	  'left': cur_pos,
-	  'top': self.label_pixels + self.pixels() };
+	  'top': self.label_pixels() + self.pixels() };
 	self.labels_bottom.push(l);
 	cur_pos += sp;
       });
@@ -546,38 +596,69 @@ function BoardViewModel(size, pixels) {
   }, this);
   
   
-  self.update_dimensions = function() { 
-    $('.label_h').css({'width':self.board.space_pixels+'px'});
-    $('.label_h').css({'height':self.label_pixels+'px'});
-    $('.label_h').css({'line-height':self.label_pixels+'px'});
+  self.update_labels = function() { 
+    $('.label_h').css({'width':self.board.space_pixels()+'px'});
+    $('.label_h').css({'height':self.label_pixels()+'px'});
+    $('.label_h').css({'line-height':self.label_pixels()+'px'});
     
-    $('.label_v').css({'width':self.label_pixels+'px'});
-    $('.label_v').css({'height':self.board.space_pixels+'px'});
-    $('.label_v').css({'line-height':self.board.space_pixels+'px'});
-    
-    var labels_width = ((self.board.space_pixels * self.size()) + (self.label_pixels * 2));
+    $('.label_v').css({'width':self.label_pixels()+'px'});
+    $('.label_v').css({'height':self.board.space_pixels()+'px'});
+    $('.label_v').css({'line-height':self.board.space_pixels()+'px'});
+     
+    var labels_width = ((self.board.space_pixels() * self.size()) + (self.label_pixels() * 2));
     //console.log(labels_width);
     $('.labels').css({'width':labels_width+'px'});
-    $('.labels').css({'height':self.label_pixels+'px'});
+    $('.labels').css({'height':self.label_pixels()+'px'});
     $('.view').css({'width':labels_width+'px'});
     $('.view').css({'height':labels_width+'px'});
   };
-  
-  $(document).ready(function() {
+
+  self.find_board_dimension = function() {
+    // Not sure how to unit test this one with Node / Mocha...
+    // no document or window there.
+    console.log("document: ", $(document).width(), $(document).height());
+    console.log("window: ", $(window).width(), $(window).height()); 
+
+    var min_dimension;
+    if ($(window).width() <= $(window).height()) {
+      min_dimension = $(window).width();
+    }
+    else {
+      min_dimension = $(window).height();
+    }
+
+    
+    //min_dimension = min_dimension - (2 * self.label_pixels());
+    min_dimension = min_dimension - (2 * 24);
+    
+    console.log('min dimension: ', min_dimension);
+    console.log('self.size: ', self.size()); 
+    var nearest_f = min_dimension / self.size();
+    console.log('nearest_f: ', nearest_f);
+    var nearest = Math.floor(min_dimension/self.size());
+    console.log('nearest: ', nearest);
+    return nearest * self.size();
+  };
+
+  self.update_all = function() {
+    //console.log('pixels pre: ', self.pixels());
+    self.pixels(self.find_board_dimension());
+    //console.log('pixels post: ', self.pixels());
+    //console.log('starting updating dimensions');
     self.board.update_dimensions();
-	self.update_dimensions();
-  });
+    //console.log('finished updating dimensions');
+    self.update_labels();
+    //console.log('finished updating labels');
+  };
+
   
+  /*
+  */
+    
 }
 
-//ko.applyBindings(new BoardViewModel(19, 850, 850));
-//ko.applyBindings(new BoardViewModel(19, 400, 400));
+module.exports.SGF = SGF;
+module.exports.Space = Space;
+module.exports.Board = Board;
+module.exports.BoardViewModel = BoardViewModel;
 
-//TODO:
-//determine screen width in JavaScript, then pass in size during initialization
-//catch window resize event and resize board accordingly
-//
-
-//choosing a pixel size that is evenly divisible by board size 
-//makes everything line up more accurately
-ko.applyBindings(new BoardViewModel(19, 762));
