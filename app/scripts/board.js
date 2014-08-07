@@ -6,27 +6,6 @@ var lodash = require('lodash-node/underscore');
 //I had trouble getting this to work with broserify + node + mocha:
 //var lodash = require('lodash');
 var ko = require('knockout');
-var mustache = require('mustache');
-
-//https://github.com/WTK/ko.mustache.js/blob/master/ko.mustache.js
-ko.mustacheTemplateEngine = function () { }
-
-ko.mustacheTemplateEngine.prototype = ko.utils.extend(new ko.templateEngine(), {
-  
-  renderTemplateSource: function (templateSource, bindingContext, options) {
-    var data = bindingContext.$data;
-    var templateText = templateSource.text();		
-    var htmlResult = mustache.to_html(templateText, data);
-    
-    return ko.utils.parseHtmlFragment(htmlResult);
-  },
-  
-  allowTemplateRewriting: false,
-  
-  version: '0.9.0'
-});
-
-ko.setTemplateEngine(new ko.mustacheTemplateEngine());
 
 function SGF(board) {
   
@@ -525,7 +504,7 @@ function BoardViewModel(size, pixels) {
   
   //self.size = size;
   self.size = ko.observable(size);
-  console.log("initial size: ", self.size());
+  //console.log("initial size: ", self.size());
 
   //self.pixels = pixels;
   self.pixels = ko.observable(pixels);
@@ -534,12 +513,32 @@ function BoardViewModel(size, pixels) {
 
   self.sgf = new SGF();
 
-  self.show_labels = ko.observable(true);
+  //self.show_labels = ko.observable(true);
+  self.show_labels = ko.observable(false);
   
   //the size of the label border around the board
   //self.label_pixels = 24;
   self.label_pixels = ko.computed(function() {
     return self.board.space_pixels() / 2;
+  });
+
+  self.board_top = ko.computed(function() {
+    if (self.show_labels()) {
+      return self.label_pixels();
+    }
+    else {
+      return 0;
+    }
+
+  });
+
+  self.board_left = ko.computed(function() {
+    if (self.show_labels()) {
+      return board.space_pixels();
+    }
+    else {
+      return 0;
+    }
   });
   
   self.make_labels = ko.computed(function() {
@@ -552,7 +551,8 @@ function BoardViewModel(size, pixels) {
     self.labels_bottom = [];
     
     if (self.show_labels()) {
-      cur_pos = self.label_pixels();
+      //cur_pos = self.label_pixels();
+      cur_pos = self.board.space_pixels();
       lodash.each(self.board.labels_h, function(label) {
 	l = {
 	  'label': label,
@@ -563,6 +563,7 @@ function BoardViewModel(size, pixels) {
       });
       
       cur_pos = self.label_pixels();
+      //cur_pos = self.board.space_pixels();
       lodash.each(self.board.labels_v, function(label) {
 	l = {
 	  'label': label,
@@ -573,42 +574,48 @@ function BoardViewModel(size, pixels) {
       });
       
       cur_pos = self.label_pixels();
+      //cur_pos = self.board.space_pixels();
       lodash.each(self.board.labels_v, function(label) {
 	l = {
 	  'label': label,
-	  'left': self.label_pixels() + self.pixels(),
+	  //'left': self.label_pixels() + self.pixels(),
+	  'left': self.board.space_pixels() + self.pixels(),
 	  'top': cur_pos };
 	self.labels_right.push(l);
 	cur_pos += sp;
       });
       
-      cur_pos = self.label_pixels();
+      //cur_pos = self.label_pixels();
+      cur_pos = self.board.space_pixels();
       lodash.each(self.board.labels_h, function(label) {
 	l = {
 	  'label': label,
 	  'left': cur_pos,
 	  'top': self.label_pixels() + self.pixels() };
+	  //'top': self.board.space_pixels() + self.pixels() };
 	self.labels_bottom.push(l);
 	cur_pos += sp;
       });
     }
     
   }, this);
-  
-  
+    
   self.update_labels = function() { 
     $('.label_h').css({'width':self.board.space_pixels()+'px'});
     $('.label_h').css({'height':self.label_pixels()+'px'});
     $('.label_h').css({'line-height':self.label_pixels()+'px'});
     
-    $('.label_v').css({'width':self.label_pixels()+'px'});
+    //$('.label_v').css({'width':self.label_pixels()+'px'});
+    $('.label_v').css({'width':self.board.space_pixels()+'px'});
     $('.label_v').css({'height':self.board.space_pixels()+'px'});
     $('.label_v').css({'line-height':self.board.space_pixels()+'px'});
      
     var labels_width = ((self.board.space_pixels() * self.size()) + (self.label_pixels() * 2));
+    var label_font = self.label_pixels() * .8;
     //console.log(labels_width);
     $('.labels').css({'width':labels_width+'px'});
-    $('.labels').css({'height':self.label_pixels()+'px'});
+    //$('.labels').css({'height':self.label_pixels()+'px'});
+    $('.labels').css({'font-size':label_font+'px'});
     $('.view').css({'width':labels_width+'px'});
     $('.view').css({'height':labels_width+'px'});
   };
@@ -616,8 +623,8 @@ function BoardViewModel(size, pixels) {
   self.find_board_dimension = function() {
     // Not sure how to unit test this one with Node / Mocha...
     // no document or window there.
-    console.log("document: ", $(document).width(), $(document).height());
-    console.log("window: ", $(window).width(), $(window).height()); 
+    //console.log("document: ", $(document).width(), $(document).height());
+    //console.log("window: ", $(window).width(), $(window).height()); 
 
     var min_dimension;
     if ($(window).width() <= $(window).height()) {
@@ -627,17 +634,34 @@ function BoardViewModel(size, pixels) {
       min_dimension = $(window).height();
     }
 
-    
-    //min_dimension = min_dimension - (2 * self.label_pixels());
-    min_dimension = min_dimension - (2 * 24);
-    
-    console.log('min dimension: ', min_dimension);
-    console.log('self.size: ', self.size()); 
-    var nearest_f = min_dimension / self.size();
-    console.log('nearest_f: ', nearest_f);
-    var nearest = Math.floor(min_dimension/self.size());
-    console.log('nearest: ', nearest);
-    return nearest * self.size();
+    if (self.show_labels()) {
+      console.log('min_dimension (first): ', min_dimension);
+      //min_dimension = min_dimension - (2 * self.label_pixels());
+      //min_dimension = min_dimension - (2 * 24);
+      //find what a space_pixels would be if using the max:
+      var temp_pixels = min_dimension / (self.size() + 2);
+      console.log('temp_pixels: ', temp_pixels);
+      
+      min_dimension = min_dimension - (2 * temp_pixels);
+      console.log('min_dimension (second): ', min_dimension);
+      
+      //At some point I thought spaces would line up better if
+      //integer pixel values were used
+      //this doesn't seem to be necessary any more...
+      //fixed something layout related along the line
+      
+      //console.log('self.size: ', self.size()); 
+      var nearest_f = min_dimension / self.size();
+      //console.log('nearest_f: ', nearest_f);
+      //var nearest = Math.floor(min_dimension/self.size());
+      var nearest = nearest_f;
+      console.log('nearest: ', nearest);
+      return nearest * self.size();
+    }
+    else {
+      //add in a little padding
+      return min_dimension - 20;
+    }
   };
 
   self.update_all = function() {
@@ -650,10 +674,6 @@ function BoardViewModel(size, pixels) {
     self.update_labels();
     //console.log('finished updating labels');
   };
-
-  
-  /*
-  */
     
 }
 

@@ -252,12 +252,6 @@ gulp.task('test', function() {
     .pipe($.mocha({reporter: 'nyan'}));
 });
 
-gulp.task('test2', function() {
-  return gulp.src('test/spec/*.js')
-    .pipe($.size());
-});
-
-
 //gulp.task('watch', ['watchify', 'connect', 'serve'], function () {
 gulp.task('watch', ['connect', 'serve'], function () {
   var server = $.livereload();

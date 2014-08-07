@@ -4,16 +4,34 @@ or requiring access to the DOM
 here
 */
 
-//ko.applyBindings(new BoardViewModel(19, 850, 850));
-//ko.applyBindings(new BoardViewModel(19, 400, 400));
-
-//TODO:
-//determine screen width in JavaScript, then pass in size during initialization
-//catch window resize event and resize board accordingly
-//
 var ko = require('knockout');
 var $ = require('jquery');
+var mustache = require('mustache');
+
 var go_ginko = require('./board');
+
+//https://github.com/WTK/ko.mustache.js/blob/master/ko.mustache.js
+ko.mustacheTemplateEngine = function () { }
+
+ko.mustacheTemplateEngine.prototype = ko.utils.extend(new ko.templateEngine(), {
+  
+  renderTemplateSource: function (templateSource, bindingContext, options) {
+    var data = bindingContext.$data;
+    var templateText = templateSource.text();		
+    var htmlResult = mustache.to_html(templateText, data);
+    
+    return ko.utils.parseHtmlFragment(htmlResult);
+  },
+  
+  allowTemplateRewriting: false,
+  
+  version: '0.9.0'
+});
+
+ko.setTemplateEngine(new ko.mustacheTemplateEngine());
+
+//ko.applyBindings(new BoardViewModel(19, 850, 850));
+//ko.applyBindings(new BoardViewModel(19, 400, 400));
 
 var bv = new go_ginko.BoardViewModel(19, 762);
 //choosing a pixel size that is evenly divisible by board size 
@@ -28,7 +46,6 @@ $(window).resize(function() {
   //$('body').prepend('<div>Window: ' + $(window).width() + ' x ' + $(window).height() + '</div>');
   //$('body').prepend('<div>Document: ' + $(document).width() + ' x ' + $(document).height() + '</div>');
   bv.update_all()
-  
 });
 
 //console.log("made it here");

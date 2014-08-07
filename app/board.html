@@ -55,13 +55,13 @@
       <script id="boardTemplate" type="text/html">
         <div class="view">
           <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_top}"></div>
-          <div data-bind="template: {name: 'labelVTemplate', foreach: labels_left}"></div>
-          <div data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
-          <div data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
+          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_left}"></div>
+          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
+          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
           
-          <div class="board" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{label_pixels}}px; top: {{label_pixels}}px;">
+          <div class="board" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{board_left}}px; top: {{board_top}}px;">
           </div>
-          <div class="grid" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{label_pixels}}px; top: {{label_pixels}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          <div class="grid" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
           </div>
         </div>
       </script>
@@ -84,7 +84,7 @@
           <div class="hover" data-bind="html: hover()"></div>
         </div>
         
-        <div class="marker" style="left: {{left}}px; top: {{top}}px;" data-bind="style: { background : marker() }, click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }"></div>
+        <div class="marker" style="left: {{left}}px; top: {{top}}px;" data-bind="style: { background: marker(), backgroundSize: 'contain' }, click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }"></div>
       </script>
       
     </div><!-- END .page -->    

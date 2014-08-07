@@ -1,8 +1,15 @@
 *2014.08.01 07:45:58
 responsive 2 column layout with space for controls
+also [2014.08.06 17:05:26]
+might be best just to use javascript to update the styles...
+not truly responsive, but this application relies on that for everything else...
+a necessity in this case. 
 
 *2014.08.01 07:47:14
-settings for options
+open settings for options
+
+*2014.08.06 17:06:24
+toggle for show labels (in options)
 
 *2014.08.01 07:21:27
 update README.txt
@@ -129,22 +136,9 @@ Note: "I" is not used, historically to avoid confusion with "J"
 
 [edit]
 
-*2014.08.01 07:04:07
-re-requesting....
-this stopped working at some point:
-
-#2013.02.05 22:40:19 complete
-circle is being applied automatically to last move now
-requested [2013.02.05 10:00:49] 
-have marker for last move
-
-also [2013.02.05 22:20:51] complete
-this happens now
-needed to move click bind to marker though since it is on top of the stack...
-it was masking the event for the stone behind it.
-as long as it goes to the right Space object in javascript... no problem
-requested [2013.02.05 09:55:54] 
-set css width of space, stone, marker, shadow from javascript
+*2014.08.07 05:18:50
+consider getting size from a container element rather than the whole document during a resize...
+that would allow it to be embedded on other sites more easily.
 
 *2014.08.01 07:10:36
 svg (+png) versions of other common markers:

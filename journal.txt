@@ -1,3 +1,23 @@
+*2014.08.07 05:12:21 complete
+due to the larger marker image size, it didn't look like it was showing since the visible part was empty...
+set the css for the background-size: contain
+requested [2014.08.01 07:04:07] markers
+re-requesting....
+this stopped working at some point:
+
+#2013.02.05 22:40:19 complete
+circle is being applied automatically to last move now
+requested [2013.02.05 10:00:49] 
+have marker for last move
+
+also [2013.02.05 22:20:51] complete
+this happens now
+needed to move click bind to marker though since it is on top of the stack...
+it was masking the event for the stone behind it.
+as long as it goes to the right Space object in javascript... no problem
+requested [2013.02.05 09:55:54] 
+set css width of space, stone, marker, shadow from javascript
+
 *2014.08.06 15:39:53 complete
 woo hoo!
 spent a long time getting tests and live reload working via gulp
