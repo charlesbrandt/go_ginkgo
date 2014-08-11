@@ -45,12 +45,65 @@
 
     <div class="background-image"></div>
 
-    <div class="page">
-
-      <div id="result"> </div>
+    <div class="page section group">
 
       <!-- rendered board ends up here: -->
-      <div class="main" data-bind="template: 'boardTemplate'"></div>
+      <div class="main col left" data-bind="template: 'boardTemplate'"></div>
+
+      <div class="all-controls col right" data-bind="">
+        <div class="icon" style="float: left" data-bind="click: toggle_settings, event: { mouseenter: gear_active, mouseleave: gear_inactive }, mouseoverBubble: false">
+          <img id="gear_image" class="icon_image" width="100%" src="/images/icon-settings.png">
+        </div>
+
+        <div class="icon" style="float: left" data-bind="click: toggle_menu, event: { mouseenter: menu_active, mouseleave: menu_inactive }, mouseoverBubble: false">
+          <img id="menu_image" class="icon_image" width="100%" src="/images/icon-menu.png">
+        </div>
+
+        <div class="icon" style="float: left" data-bind="click: toggle_controls, event: { mouseenter: controls_active, mouseleave: controls_inactive }, mouseoverBubble: false">
+          <img id="controls_image" class="icon_image" width="100%" src="/images/icon-controls.png">
+        </div>
+
+
+          <ul class="menu-options" data-bind="visible: show_configs">
+            <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
+            <li class="action">Show move numbers</li>
+            <li class="action">Show Hover</li>
+            <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
+            <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
+            <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>
+            <li class="action">Black: <input></li>
+            <li class="action">White: <input></li>
+            <li class="action">Komi: <input></li>
+            <li class="action">Date: <input></li>
+            <li class="action">Location: <input></li>
+            <li class="action">Clear</li>            
+            
+          </ul>
+
+        <div id="menu" class="menu-block" data-bind="visible: show_menu">
+          <ul class="menu-options">
+            <li class="action">Save SGF</li>
+            <li class="action">Copy Text representation (name?)</li>
+            <li class="action">Open Local SGF...</li>
+            <li class="action">Open Remote SGF...</li>
+            <li class="action">About...</li>
+          </ul>
+        </div>
+        
+        <div id="controls" class="menu-block" data-bind="visible: show_controls">
+          <ul class="menu-options">
+            <li class="action">Add Marker...</li>
+            <li class="action">Delete Branch...</li>
+            <li class="action">Current Comment (click for edit box)</li>
+            <li class="action">Backward</li>
+            <li class="action">Current Position: <input> / (out of)</li>
+            <li class="action">Forward</li>
+            
+          </ul>
+        </div>
+
+
+      </div>      
       
       <script id="boardTemplate" type="text/html">
         <div class="view">
@@ -59,9 +112,9 @@
           <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
           <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
           
-          <div class="board" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{board_left}}px; top: {{board_top}}px;">
+          <div class="board" style="background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;">
           </div>
-          <div class="grid" style="background-size: {{pixels}}px; width: {{pixels}}px; height: {{pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          <div class="grid" style="background: {{board_grid}}; background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
           </div>
         </div>
       </script>

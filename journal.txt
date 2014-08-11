@@ -1,3 +1,55 @@
+*2014.08.11 10:58:52 complete
+mostly working... pretty cool!
+requested [2014.08.08 19:17:13]
+select for board size
+
+*2014.08.11 10:38:53
+style="background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" 
+
+*2014.08.11 08:11:54 complete
+these 2 were completed over the weekend some time
+requested [2014.08.06 17:06:24]
+toggle button for show labels (in options)
+
+requested [2014.08.08 19:17:29]
+toggle button for show controls
+
+*2014.08.11 08:11:40
+        <div id="configs" class="menu-block" data-bind="visible: show_configs">
+          <ul class="menu-options">
+            <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
+            <li class="action">Show move numbers</li>
+            <li class="action">Show Hover</li>
+            <li class="action">9x9</li>
+            <li class="action">13x13</li>
+            <li class="action">19x19</li>
+            <li class="action">Black: <input></li>
+            <li class="action">White: <input></li>
+            <li class="action">Komi: <input></li>
+            <li class="action">Date: <input></li>
+            <li class="action">Location: <input></li>
+            <li class="action">Clear</li>            
+            
+          </ul>
+        </div>
+
+
+
+*2014.08.08 19:16:29 complete
+finished these 2 requests today
+
+the layout changes based on window size... works pretty well!
+
+requested [2014.08.01 07:45:58]
+responsive 2 column layout with space for controls
+also [2014.08.06 17:05:26]
+might be best just to use javascript to update the styles...
+not truly responsive, but this application relies on that for everything else...
+a necessity in this case. 
+
+requested [2014.08.01 07:47:14]
+open settings for options
+
 *2014.08.07 05:12:21 complete
 due to the larger marker image size, it didn't look like it was showing since the visible part was empty...
 set the css for the background-size: contain

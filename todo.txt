@@ -1,15 +1,7 @@
-*2014.08.01 07:45:58
-responsive 2 column layout with space for controls
-also [2014.08.06 17:05:26]
-might be best just to use javascript to update the styles...
-not truly responsive, but this application relies on that for everything else...
-a necessity in this case. 
+*2014.08.11 10:58:59
+create 13x13 grid
 
-*2014.08.01 07:47:14
-open settings for options
 
-*2014.08.06 17:06:24
-toggle for show labels (in options)
 
 *2014.08.01 07:21:27
 update README.txt
