@@ -84,8 +84,10 @@
           <ul class="menu-options">
             <li class="action">Save SGF</li>
             <li class="action">Copy Text representation (name?)</li>
-            <li class="action">Open Local SGF...</li>
-            <li class="action">Open Remote SGF...</li>
+            <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
+
+            <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
+            <li class="action">Email SGF...</li>
             <li class="action">About...</li>
           </ul>
         </div>

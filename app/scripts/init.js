@@ -48,4 +48,6 @@ $(window).resize(function() {
   bv.update_all()
 });
 
+document.getElementById('source').addEventListener('change', bv.load_local, false);
+
 //console.log("made it here");

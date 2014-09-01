@@ -1,3 +1,26 @@
+*2014.08.21 17:52:27
+getting bogged down at SGF integration
+
+revisiting alternative solutions:
+
+
+
+iOS client:
+https://github.com/herzbube/littlego
+http://fuego.sourceforge.net/
+http://gogui.sourceforge.net/
+http://sourceforge.net/p/fuego/code/HEAD/tree/trunk/
+https://github.com/herzbube/littlego/issues/112
+
+
+
+*2014.08.20 22:42:01 chai
+https://www.google.com/search?q=mocha+chai&oq=mocha+chai+&aqs=chrome..69i57.6150j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://chaijs.com/guide/styles/#expect
+https://www.google.com/search?q=chai+expect+error&oq=chai+expect+error&aqs=chrome..69i57.5678j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://chaijs.com/api/bdd/
+
+
 *2014.08.11 10:58:52 complete
 mostly working... pretty cool!
 requested [2014.08.08 19:17:13]
