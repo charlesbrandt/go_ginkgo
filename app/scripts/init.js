@@ -8,7 +8,7 @@ var ko = require('knockout');
 var $ = require('jquery');
 var mustache = require('mustache');
 
-var go_ginko = require('./board');
+var go_ginko = require('./view');
 
 //https://github.com/WTK/ko.mustache.js/blob/master/ko.mustache.js
 ko.mustacheTemplateEngine = function () { }

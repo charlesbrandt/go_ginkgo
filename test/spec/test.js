@@ -4,6 +4,12 @@
 var expect = require('chai').expect;
 
 var go_ginkgo = require("../../app/scripts/board.js");
+var BoardViewModel = require("../../app/scripts/view.js").BoardViewModel;
+var Marker = require("../../app/scripts/marker.js").Marker;
+var Node = require("../../app/scripts/node.js").Node;
+var SGF = require("../../app/scripts/sgf.js").SGF;
+var Space = require("../../app/scripts/space.js").Space;
+
 var ko = require('knockout');
 var lodash = require('lodash-node/underscore');
 
@@ -25,7 +31,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
     describe('marker', function () {
       var marker;
       beforeEach( function() {
-        marker = new go_ginkgo.Marker();
+        marker = new Marker();
       });
       
       it('should create an instance', function () {
@@ -47,7 +53,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
     describe('node', function () {
       var node;
       beforeEach( function() {
-        node = new go_ginkgo.Node();
+        node = new Node();
       });
       
       it('should create an instance', function () {
@@ -115,7 +121,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
     describe('sgf', function () {
       var sgf;
       beforeEach( function() {
-        sgf = new go_ginkgo.SGF();
+        sgf = new SGF();
       });
       
       it('should create an instance', function () {
@@ -234,7 +240,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
         var board = null;
         var contains = '';
         var pixels = 40;
-        space = new go_ginkgo.Space(board, "AA", contains, pixels, 0, 0);
+        space = new Space(board, "AA", contains, pixels, 0, 0);
       });
       
       it('should create an instance', function () {
@@ -350,7 +356,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
       var board;
       var view;
       beforeEach( function() {
-        view = new go_ginkgo.BoardViewModel();
+        view = new BoardViewModel();
 
         //board = new go_ginkgo.Board();
 
