@@ -9,6 +9,8 @@ It is currently (2014.08.21) lacking SGF integration for playback of existing ga
 
 While working on this codebase, I've come across other promising web based go clients.
 
+http://www.lifein19x19.com/forum/viewtopic.php?f=18&t=7236&sid=1771766182385033adc5f821f80e967b
+
 EidoGo
 ----------
 EidoGo is one of the originals in this space. It is a robust and fully featured client. The layout is a fixed size though, so it won't adapt well to different display configurations:

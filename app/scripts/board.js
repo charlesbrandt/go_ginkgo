@@ -7,72 +7,69 @@ var lodash = require('lodash-node/underscore');
 //var lodash = require('lodash');
 var ko = require('knockout');
 
-// might just stick with _.isEqual(a, b)
+//since we have lodash, just stick with _.isEqual(a, b)
 //http://stackoverflow.com/questions/7837456/comparing-two-arrays-in-javascript
-function compare_arrays(array1, array2) {
-  // if the other array is a falsy value, return
-  if ((!array1) && (!array2))
-    return true;
-  else if (!array1)
-    return false;
-  else if (!array2)
-    return false;
+//function compare_arrays(array1, array2) {
 
-  // compare lengths - can save a lot of time 
-  if (array1.length != array2.length)
-    return false;
+var label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
 
-  for (var i = 0, l=array1.length; i < l; i++) {
-    // Check if we have nested arrays
-    if (array1[i] instanceof Array && array2[i] instanceof Array) {
-      // recurse into the nested arrays
-      //if (!array1[i].equals(array2[i]))
-      if ( !compare_arrays(array1[i],array2[i]) )
-        return false;       
-    }           
-    else if (array1[i] != array2[i]) { 
-      // Warning - two different object instances will never be equal: {x:20} != {x:20}
-      return false;   
-    }           
-  }       
-  return true;
-}
+//this includes 'i'!!
+var sgf_points = [ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z' ];
 
 function Marker(space, type) {
+  //very similar to a board space
+  //holds one type of item
+  //stones are a valid item type
+  //should use the SGF property id for the type
+  
   var self = this;
 
   self.space = space;
   self.type = type;
+
+  self.indexes = function() {
+    // return the corresponding number representation of the space
+    // useful for looking up the space within the board object
+    var numbers = [];
+    if (self.space && (self.space.length === 2)) { 
+      numbers = [ sgf_points.indexOf(self.space[1]),
+                  sgf_points.indexOf(self.space[0]) ];
+    }
+    else {
+      console.log("WARNING: No space available!", self.space, self.type);
+    }
+    
+    return numbers;
+  }
+
+  self.euro_coordinates = function() {
+    //http://senseis.xmp.net/?Coordinates
+    //Style A1
+    //In Europe it is usual to give coordinates in the form of A1 to T19. Where A1 is in the lower left corner and T19 in the upper right corner (from black's view).
+    //Note: "I" is not used, historically to avoid confusion with "J"
+  }    
+
+  self.sgf_coordinates = function() {
+    //http://www.red-bean.com/sgf/go.html
+    //this is what should be stored in space
+    //column first, then row
+    return self.space
+  }    
+  
+  
 }
   
-//aka Node
-//function Move(space, color) {
-//going back to Node.. this will help accomodate setup / add stones
-//in addition to handling multiple markers
-function Node(space, action, content) {
+function Node(space, type) {
+  //if space and type are supplied, they get applied to the move
+  //all other attributes should be applied after initialization
   
   var self = this;
   
-  //should this be position represented as a string?
-  //is it necessary?
-  //corresponds well to 'N' in SGF... Nodename
-  self.name = '';
-
-  //current space... only applies for one move
-  //TODO:
-  //migrate this to a marker?
-  self.space = space;
-  self.contains = content;
-
-  // rather than worry about action,
-  // can just keep stone markers in separate list
-  //move, add, mark
-  //http://www.red-bean.com/sgf/ff5/m_vs_ax.htm
-  //self.action = action;
+  self.move = new Marker(space, type);
 
   //these only apply for add stones
   self.stones = [];
-    
+
   //may have more than one marker for current description
   self.markers = [];
 
@@ -80,19 +77,68 @@ function Node(space, action, content) {
   //would be nice to be able to have a marker and a label on the same space
   self.labels = [];
   
-  //as they stand, after the current move
-  self.captures = { 'B': 0, 'W': 0 };
+  //will not be provided by SGF,
+  //but will help when returning to previous board states (undoing)
+  //only hold captures after *this* move
+  self.captures = [];
   
+  //as they stand, cumulatively, after the current move
+  self.total_captures = { 'B': 0, 'W': 0 };
+  
+  //should this be position represented as a string?
+  //is it necessary?
+  //corresponds well to 'N' in SGF... Nodename
+  self.name = '';
+
   self.comment = '';
-  
-  //a flat representation of the position (only valid for current branch)
-  self.number = 1;
   
   self.children = [];
 
+  //not sure that this will ever be needed within a Node
+  //a flat representation of the position (only valid for current branch)
+  //should just be able to use sgf.postion.length for equivalent value
+  //self.number = 1;
+  
+  //this should be set after initialization by caller
+  self.parent = null;
 
+  self.set_move = function(space, color) {
+    //rather than creating a new node and adding it to children
+    //this simply sets the properties on the current node (self)
+    //this is more useful when loading an SGF
+
+    if ( (self.move.space) && (self.move.space !== space) ) {
+      var err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + " cannot change space to: " + space);
+      throw err;
+    }
+
+    else if ( (self.move.type) && (self.move.type !== color) ) {
+      var err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + " cannot change content to: " + color);
+      throw err;
+    }
+    else {
+      self.move.space = space;
+      self.move.type = color;
+    }
+  }
+
+  self.make_node = function() {
+    //no error checking here
+    //just create a new node and return the index of the new node in children
+
+    var node = new Node();
+    //node.number = self.number + 1;
+    node.parent = self;
+    node.total_captures.B = self.total_captures.B;
+    node.total_captures.W = self.total_captures.W;
+    self.children.push(node);
+    return self.children.indexOf(node);
+  }
   
   self.add_move = function(space, color) {
+    //this is more useful when playing a game and recording the action
+    //for SGF loading, see set move instead
+    
     //if there is already an existing move at this space with same color
     //return the index of that space
     //if the color is different
@@ -102,35 +148,48 @@ function Node(space, action, content) {
     var index;
     
     lodash.each(self.children, function(option, i) {
-      //if ( (option.spaces === [space]) && (option.contains === color) ) {
-      //if ( lodash.isEqual(option.spaces,[space]) && (option.contains === color) ) {
-      if ( (option.space === space) && (option.contains === color) ) {
+      if ( (option.move.space === space) && (option.move.type === color) ) {
         //console.log("MATCHED EXISTING");
         matched = true;
         index = i;
       }
-      //else if ( lodash.isEqual(option.spaces,[space]) && (option.contains !== color) ) {
-      else if ( (option.space === space) && (option.contains !== color) ) {
-        var err = new ReferenceError('Invalid move. Space: ' + option.space + ' already contains: ' + option.contains);
+      else if ( (option.move.space === space) && (option.move.type !== color) ) {
+        var err = new ReferenceError('Invalid move. Space: ' + option.move.space + ' already contains: ' + option.move.type);
         throw err;
       }
     });
 
     if (! matched) {
-      //trying to decide of self.space should be singular (for a move)
-      //or a list (for adding stones)...
-      //if adding stones for setup purposes, could use marker list
-      //var move = new Node([space], 'move', color);
-      var move = new Node(space, 'move', color);
-      move.number = self.number + 1;
-      self.children.push(move);
-      return self.children.indexOf(move);
+      var index = self.make_node();
+      var child = self.children[index];
+      child.move.space = space;
+      child.move.type = color;
+      return index;      
     }
     else {
       return index;
     }
-  };
+  }
 
+  self.check_for_conflict = function(options, space, type, attribute) {
+    //var matched = false;
+    //var index;
+    var result = { 'matched': false, 'index': null };
+    
+    lodash.each(options, function(option, i) {
+      if ( (option.space === space) && (option.type === type) ) {
+        result.matched = true;
+        result.index = i;
+      }
+      else if ( (option.space === space) && (option.type !== type) ) {
+        var err = new ReferenceError('Invalid ' + attribute + ' Space: ' + option.space + ' already contains: ' + option.type + " cannot add: " + type);
+        throw err;
+      }
+    });
+
+    return result;
+  }
+  
   self.add_marker = function(space, type) {
     //similar to add_move, but not adding a new move to children
     //only adding a marker to this current Node
@@ -140,227 +199,193 @@ function Node(space, action, content) {
     //if the type is different
     //log a warning, but not as dire... 
 
-    var matched = false;
-    var index;
-    
-    lodash.each(self.markers, function(option, i) {
-      //if ( lodash.isEqual(option.spaces,spaces) && (option.contains === color) ) {
-      if ( (option.space === space) && (option.type === type) ) {
-        matched = true;
-        index = i;
-      }
-      //else if ( lodash.isEqual(option.spaces,spaces) && (option.contains !== color) ) {
-      else if ( (option.space === space) && (option.type !== type) ) {
-        var err = new ReferenceError('Invalid marker. Space: ' + option.space + ' already contains: ' + option.type);
-        throw err;
-      }
-    });
+    var result = self.check_for_conflict(self.markers, space, type, 'marker');
 
-    if (! matched) {
-      console.log("Adding: ->", type, "<- to: ", space);
+    if (! result.matched) {
+      //console.log("Adding: ->", type, "<- to: ", space);
       var marker = new Marker(space, type);
       self.markers.push(marker);
       return self.markers.indexOf(marker);
     }
     else {
-      return index;
+      return result.index;
     }
-  };  
+  }
 
   self.add_stone = function(space, type) {
     //not the same as a move... these are setup configurations
     //similar to add_marker, but not a marker...
     //want to be able to add a stone and a marker in the same node
     
-    var matched = false;
-    var index;
-    
-    lodash.each(self.stones, function(option, i) {
-      //if ( lodash.isEqual(option.spaces,spaces) && (option.contains === color) ) {
-      if ( (option.space === space) && (option.type === type) ) {
-        matched = true;
-        index = i;
-      }
-      //else if ( lodash.isEqual(option.spaces,spaces) && (option.contains !== color) ) {
-      else if ( (option.space === space) && (option.type !== type) ) {
-        var err = new ReferenceError('Invalid stone. Space: ' + option.space + ' already contains: ' + option.type + " cannot add: " + type);
-        throw err;
-      }
-    });
+    var result = self.check_for_conflict(self.stones, space, type, 'stone');
 
-    if (! matched) {
-      console.log("Adding: ->", type, "<- to: ", space);
+    if (! result.matched) {
+      //console.log("Adding: ->", type, "<- to: ", space);
       var stone = new Marker(space, type);
       self.stones.push(stone);
       return self.stones.indexOf(stone);
     }
     else {
-      return index;
+      return result.index;
     }
-  };  
+  }  
 
+  self.add_label = function(space, type) {
+    //similar to add_marker, but not a marker...
+    //using type to store the actual label text
+    
+    var result = self.check_for_conflict(self.labels, space, type, 'label');
 
+    if (! result.matched) {
+      //console.log("Adding: ->", type, "<- to: ", space);
+      var label = new Marker(space, type);
+      self.labels.push(label);
+      return self.labels.indexOf(label);
+    }
+    else {
+      return result.index;
+    }
+  }  
 }
 
-//function SGF(board) {
-function SGF() {
-  
+function SGF() {  
   var self = this;
-  
-  //self.board = board;
-  
-  //position needs to be an array of indexes 
-  //multiple points required to get to correct branch
-  self.position = [ 0 ];
-  
-  //now that Move object exists, we can track everything there
-  //start with a blank object
-  self.root = new Node();
-  
-  self.cur_move = self.root;
 
-  self.last_token_id = '';
-
-
-  // root level properties
-  // not currently making the distinction of different games in one SGF
-  self.format = '4'; //FF
-  self.size = '19'; //SZ
-  self.game = '1'; //GM
-  self.application = 'Go Ginkgo 0.1'; //AP
-
-  // game-info properties
-  self.annotation = ''; //AN
-  self.black_rank = ''; //BR
-  self.black_team = ''; //BT
-  self.black_player = '';//PB
+  //whether or not to show some console messages
+  self.debug = false;
   
-  self.copyright = '';//CP
-  self.date = '';//DT
-  self.event = '';//EV
-  self.comment = '';//GC
-  self.name = '';//GN
-  self.opening = '';//ON
-  self.overtime = '';//*OT
-  self.place = '';//PC 
-  self.result = '';//!RE
-  self.round = '';//RO
-  self.rules = '';//!RU 
-  self.source = '';//SO
-  self.timelimit = '';//TM 
-  self.user = '';//US
-
-  self.white_player = '';//PW
-  self.white_rank = '';//WR
-  self.white_team = '';//WT 
-
-  
-  //these can all be attributes of the SGF object. Set as needed. 
-  /*
-  self.setup = function() {
-    //take any setup parameters from the board
-    //this could also be part of initialization call to SGF 
-    //(rather than a separate function
+  self.init = function(size) {
+    //position needs to be an array of indexes 
+    //multiple points required to get to correct branch
+    self.position = [ ];
     
-  };
-  */
+    //now that Node object exists, we can track everything there
+    //start with a blank object
+    self.root = new Node();  
+    self.root.name = 'root';
+    self.cur_node = self.root;
+    self.empty = true;
+    
+    // root level properties
+    // not currently making the distinction of different games in one SGF
+    self.format = '4'; //FF
+
+    if (size) { 
+      self.size = size; //SZ
+    }
+    else self.size = '19'; //SZ
+      
+    self.game = '1'; //GM
+    self.application = 'Go Ginkgo 0.1'; //AP
+    
+    // game-info properties
+    self.annotation = ''; //AN
+    self.black_rank = ''; //BR
+    self.black_team = ''; //BT
+    self.black_player = '';//PB
+    
+    self.copyright = '';//CP
+    self.date = '';//DT
+    self.event = '';//EV
+    self.comment = '';//GC
+    self.name = '';//GN
+    self.opening = '';//ON
+    self.overtime = '';//*OT
+    self.place = '';//PC 
+    self.result = '';//!RE
+    self.round = '';//RO
+    self.rules = '';//!RU 
+    self.source = '';//SO
+    self.timelimit = '';//TM 
+    self.user = '';//US
+
+    self.white_player = '';//PW
+    self.white_rank = '';//WR
+    self.white_team = '';//WT 
+  }
+
+  self.init(19);
   
-  /*
-  self.add_marker = function(position, color) {
-    //just call add_marker on the Node directly    
-  };
-  */
-  
-  self.go_to = function(index) {
+  self.go = function(index) {
     //go to the given index file.
-    console.log(index);
+    //generate a list of nodes in the order they should be applied
+    var nodes = [];
+    var cur_node;
+    var at_end = false;
+    var at_beginning = false;
+    //console.log(self.position);    
+
+    //handle if we're moving forward
+    while ((index > self.position.length) && (! at_end)) {
+      cur_node = self.next();
+      if (cur_node) {
+        nodes.push(cur_node);
+      }
+      else {
+        at_end = true;
+      }
+    }
+    
+    //handle if we're moving backward
+    //if going backwards, we want to include the current node in the list
+    if (index < self.position.length) {
+      nodes.push(self.cur_node);
+      while ((index < self.position.length) && (! at_beginning)) {
+        cur_node = self.previous();
+        if (cur_node) {
+          nodes.push(cur_node);
+        }
+        else {
+          at_beginning = true;
+        }
+      }
+    }
+
+    return nodes;    
   };
   
-  self.next = function() {
+  self.next = function(branch) {
     //change position
-    //and change board state too
+    //retun node
+    //board state will be updated by the board object
+    if (self.cur_node.children.length) {
+      if (branch) {
+        if (branch < self.cur_node.children.length) {
+          self.cur_node = self.cur_node.children[branch];
+          self.position.push(branch);
+        }
+        else {
+          var err = new ReferenceError('Invalid branch: ' + branch + ' cur_node only has: ' + self.cur_node.children.length + " children." + self.cur_node);
+          throw err;
+        }
+      }
+      else {
+        self.cur_node = self.cur_node.children[0];
+        self.position.push(0);
+      }
+      return self.cur_node;
+    }
+    else {
+      //console.log("No more moves!");
+      return null;
+    }
   };
   
   self.previous = function() {
-    
-  };
-
-
-  
-  /*
-  self.parse_token = function(token) {
-    var close_branches = 0;
-    var open_branches = 0;
-    var token_id = '';
-    var token_value = '';
-    var in_id = true;
-    var in_value = false;
-
-    //console.log('->');
-    lodash.each(token, function(character, i) {
-      if ( (character === ';') && (! in_value) ) {
-      } else if ( (character === ')') && (! in_value) ) {
-        close_branches += 1;
-      } else if ( (character === '(') && (! in_value) ) {
-        close_branches += 1;
-      } else if (character === '[') {
-        in_id = false;
-        in_value = true;
-      } else {
-        if (in_id) {
-          token_id += character;
-        }
-        else if (in_value) { 
-          token_value += character;
-        }
-        else {
-          console.log('Unknown condition!!');
-          console.log('->' + character + '<-');
-        }
-        
-        //console.log('->' + character + '<-');
-        //console.log('id: ' + token_id + ' value: ' + token_value);
-      }
-    });
-    token_id = token_id.trim();
-    token_value = token_value.trim();
-    //console.log('<-');
-    //console.log('id: ' + token_id + ' value: ' + token_value);
-    //console.log('');
-    return [ token_id, token_value, close_branches, open_branches ]
-  }
-                
-  self.handle_token = function(result, cur_move) {
-    var token_id;
-    if (! result[0]) {
-      token_id = self.last_token_id;
+    //change position
+    //retun node
+    //board state will be updated by the board object
+    if (self.cur_node.parent) {
+      self.cur_node = self.cur_node.parent;
+      self.position.pop();
+      return self.cur_node;
     }
-    else token_id = result[0];
-
-    var token_value = result[1];
-    
-    //TODO:
-    //handle open and close branches
-    var close_branches = result[2];
-    var open_branches = result[3];
-    
-    
-    //start checking for options, and handle accordingly
-    if (token_id === 'C') {
-      //have a comment
-      self.cur_move.comment = token_value;
-    } else if (token_id === 'B') {
-      self.add_move(token_value, 'B');
-    } else if (token_id === 'W') {
-      self.add_move(token_value, 'W');
-    } else {
-      console.log('->' + result + '<-');
-    }      
-    
-    
-  }
-  */
-
+    else {
+      //console.log("No more moves!");
+      return null;
+    }    
+  };
+  
   self.make_point_list = function(value) {
     var point_list = [];
     var parts = value.split(':');
@@ -389,6 +414,33 @@ function SGF() {
     //console.log(point_list);
     return point_list
   }
+
+  self.add_move = function(position, color) {
+    //use the current position to add the move
+    //if there is already an existing move at this position
+    //add a new branch
+    //keep adding on current branch, unless previous branch is restored
+    //will need to use position to find current branch
+    //and should also update position accordingly
+
+    var index = self.cur_node.add_move(position, color);
+    self.position.push(index);
+    self.cur_node = self.cur_node.children[index];
+    return self.cur_node;
+  };
+
+  self.add_node = function() {
+    if (self.empty) {
+      self.empty = false;
+      return self.cur_node
+    }
+    else {
+      var index = self.cur_node.make_node();
+      self.position.push(index);
+      self.cur_node = self.cur_node.children[index];
+      return self.cur_node;
+    }
+  };
   
   self.add_markers = function(node, id, value) {
     var point_list = self.make_point_list(value);
@@ -398,10 +450,11 @@ function SGF() {
   }
 
   self.add_labels = function(node, id, value) {
-    var point_list = self.make_point_list(value);
-    lodash.each(point_list, function(point, i) {
-      node.add_label(point, id);
-    });
+    //we know id == "LB" in this case... don't need to use that in Marker object
+    var parts = value.split(':');
+    var point = parts[0];
+    var label = parts[1];
+    node.add_label(point, label);
   }
 
   self.add_stones = function(node, id, value) {
@@ -411,41 +464,24 @@ function SGF() {
     });
   }
   
-  self.add_move = function(position, color) {
-    //use the current position to add the move
-    //if there is already an existing move at this position
-    //add a new branch
-    //keep adding on current branch, unless previous branch is restored
-    //will need to use position to find current branch
-    //and should also update position accordingly
-
-    var index = self.cur_move.add_move(position, color);
-    self.position.push(index);
-    self.cur_move = self.cur_move.children[index];
-    return self.cur_move;
-  };
-
-
-  
   self.handle_substring = function(data, start, index, cur_sequences) {
     /*helper to push the current substring on to the list
       but only if it has data
 
-      may want to consider keeping the trimmed version here.
+      keeping the trimmed version here, but could keep original if needed
     */
     
     var cur_string = data.substring(start, index);
     //strip whitespace:
     cur_string = cur_string.trim();
     if (cur_string) {
-      //for keeping origingal
+      //for keeping original
       //cur_sequences.push(data.substring(start, index));
       //for keeping trimmed version:
       cur_sequences.push(cur_string);
     }
   }
   
-
   self.parse_property_value = function(data) {
     /* helper to scan to the end of a property value, designated with ']'
        this avoids handling parenthesis within a property value
@@ -453,17 +489,20 @@ function SGF() {
     */
 
     var next_char = '';
+    var previous_char = '';
     var result = {};    
     var index = 0;
     var start = index;
     
     while (index < data.length) {
       next_char = data[index];
-      if (next_char === ']') {
+      //be sure to check for escaped ']'...
+      if ( (next_char === ']') && (previous_char !== '\\') ) {
         result = { 'index': index+1,
                    'sequences': '[' + data.substring(start, index) + ']' };
         return result; 
       }
+      previous_char = next_char;
       index += 1;
     }
   }
@@ -596,28 +635,43 @@ function SGF() {
 
           //a move is currently the only action that changes the local_cur_node
           if (last_property_id === 'B') {
-            local_cur_node = self.add_move(token_value, 'B');
+            //local_cur_node = self.add_move(token_value, 'B');
+            local_cur_node.set_move(token_value, 'B');
           } else if (last_property_id === 'W') {
-            local_cur_node = self.add_move(token_value, 'W');
+            //local_cur_node = self.add_move(token_value, 'W');
+            local_cur_node.set_move(token_value, 'W');
 
           } else if (last_property_id === 'C') {
             //have a comment
-            //self.cur_move.comment = token_value;
+            //self.cur_node.comment = token_value;
             local_cur_node.comment = token_value;
 
           } else if (last_property_id === 'N') {
-            //self.cur_move.name = token_value;
+            //self.cur_node.name = token_value;
             local_cur_node.name = token_value;
 
           //markers
           //need to break up any point lists appropriately
           //http://www.red-bean.com/sgf/sgf4.html
+
+          /*          
+           AB   Add Black       setup            list of stone
+           AE   Add Empty       setup            list of point
+           AW   Add White       setup            list of stone
+          */
           } else if ( (last_property_id === 'AB') ||
                       (last_property_id === 'AE') ||
                       (last_property_id === 'AW')
                     ){
             self.add_stones(local_cur_node, last_property_id, token_value);
 
+          /*
+            CR   Circle          -                list of point
+            MA   Mark            -                list of point
+            SL   Selected        -                list of point
+            *SQ  Square          -                list of point
+            TR   Triangle        -                list of point
+          */
           } else if ( (last_property_id === 'CR') ||
                       (last_property_id === 'MA') ||
                       (last_property_id === 'SL') ||
@@ -625,40 +679,13 @@ function SGF() {
                       (last_property_id === 'TR') 
                     ){
             self.add_markers(local_cur_node, last_property_id, token_value);
-          
- /*          
-AB   Add Black       setup            list of stone
-AE   Add Empty       setup            list of point
-AW   Add White       setup            list of stone
-CR   Circle          -                list of point
-MA   Mark            -                list of point
-SL   Selected        -                list of point
-*SQ  Square          -                list of point
-TR   Triangle        -                list of point
 
-*AR  Arrow           -                list of composed point ':' point
-!LB  Label           -                list of composed point ':' simpletext
+          //!LB  Label       -   list of composed point ':' simpletext 
+          } else if ( (last_property_id === 'LB') ||
+                      (last_property_id === 'L')
+                    ){
+            self.add_labels(local_cur_node, last_property_id, token_value);
 
- */
-            
-/*            
-            *DD  Dim points      - (inherit)      elist of point
-DM   Even position   -                double
-!FG  Figure          -                none | composed number ":" simpletext
-GB   Good for Black  -                double
-GW   Good for White  -                double
-HO   Hotspot         -                double
-*LN  Line            -                list of composed point ':' point
-*PM  Print move mode - (inherit)      number
-
-            
-UC   Unclear pos     -                double
-V    Value           -                real
-*VW  View            - (inherit)      elist of point            
-
-PL   Player to play  setup            color
-*/
-            
           //root
           } else if (last_property_id === 'FF') {
             self.format = token_value; //FF
@@ -711,9 +738,42 @@ PL   Player to play  setup            color
             self.white_rank = token_value; //WR
           } else if (last_property_id === 'WT') {
             self.white_team = token_value; //WT 
+
+/*
+TODO:
+PL   Player to play  setup            color
+
+TB   Territory Black -                elist of point
+TW   Territory White -                elist of point
+
+HA   Handicap        game-info        number
+KM   Komi            game-info        real
+
+
+*AR  Arrow           -                list of composed point ':' point
+
+*DD  Dim points      - (inherit)      elist of point
+DM   Even position   -                double
+!FG  Figure          -                none | composed number ":" simpletext
+GB   Good for Black  -                double
+GW   Good for White  -                double
+HO   Hotspot         -                double
+*LN  Line            -                list of composed point ':' point
+*PM  Print move mode - (inherit)      number
+            
+UC   Unclear pos     -                double
+V    Value           -                real
+*VW  View            - (inherit)      elist of point            
+
+*/
+
             
           } else {
-            console.log(last_property_id + ': ->' + token_value + '<-');
+            //might want to see what properties were not applied from a SGF
+            //but sometimes don't want to see the output:
+            if (self.debug) {
+              console.log(last_property_id + ': ->' + token_value + '<-');
+            }
           }
             
         }
@@ -721,9 +781,11 @@ PL   Player to play  setup            color
           // must be a property id
           // process that
 
-          console.log(item);
+          //console.log(item);
 
           while (item[0] == ';') {
+            //now this is the only place new nodes are created!
+            local_cur_node = self.add_node();
             item = item.substring(1);
           }
           last_property_id = item.trim();
@@ -753,34 +815,21 @@ PL   Player to play  setup            color
     //that includes resetting board state...
     //go_to(0) first?
 
-    //parse_sequences is better suited to this task:
-    //var tokens = data.split(']');
     var sequences = self.parse_sequences(data)
 
+    //reset everything:
+    self.init();
     
-    //console.log(tokens);
-    //console.log(data);
-    //var result;
-    //lodash.each(tokens, function(token, i) {
-      //console.log('->' + token.trim() + '<-');
-      //result = self.parse_token(token.trim());
-      //console.log('->' + result + '<-');
-      //self.handle_token(result, local_cur_move);
-    //});
-
-    self.root = new Node();
-    self.cur_move = self.root;
-
     lodash.each(sequences, function(sequence, i) {
       self.handle_sequence(sequence, self.root);
     });
-    
+    self.go(0);
+    return true;
   };
   
   self.serialize = function() {
     //return a string representation of the SGF
-    
-    
+        
   };
   
   self.save = function() {
@@ -788,10 +837,11 @@ PL   Player to play  setup            color
     
   };
   
-  
 }
 
 function Space(board, name, contains, pixels, row, column) {
+  //representation of a Space within the DOM (on the board)
+  
   var self = this;
   
   self.board = board;
@@ -819,19 +869,21 @@ function Space(board, name, contains, pixels, row, column) {
   self.left = ko.computed(function() {
     return self.column * self.pixels();
   });
-
   
-  //alert(self.image_px);
+  //this is useful for debugging:
   self.name = name;
-  self.contains = ko.observable(contains);
   
-  // this can be initialized later, after board has been set up properly
-  self.neighbors = [ ];
+  self.contains = ko.observable(contains);
   
   //marker type
   self.mtype = ko.observable('');
-  
+
+  self.label = ko.observable('');
+
   self.hovering = ko.observable(false);
+  
+  // this can be initialized later, after board has been set up properly
+  self.neighbors = [ ];
   
   self.shadow = ko.computed(function() {
     if (self.contains() === 'B' || self.contains() === 'W') {
@@ -907,9 +959,9 @@ function Space(board, name, contains, pixels, row, column) {
       }
       else {
 	return 'transparent url("images/circle-red.png") no-repeat center center' ;
-      }
-      
+      }      
     }
+    
     else {
       return '';
     }
@@ -941,17 +993,27 @@ function Space(board, name, contains, pixels, row, column) {
     }
     //console.log("found liberties?: " + liberties);
     
-    return liberties;
-    
+    return liberties;    
   };
-  
 }
 
-//Only represent board data here (no labels)
+//Only represent board data here (no side labels)
 //module.exports.Board = function (size, pixels) {
 function Board(size, pixels) {
   var self = this;
 
+  self.init = function () {
+  
+    self.next_move = 'B';
+
+    self.last_move = false;
+  
+    //tracking this here so we know which direction a change happens for self.go
+    self.move = 0;
+  }
+
+  self.init();
+  
   if (ko.isObservable(size)) {
     self.size = size;
   }
@@ -971,22 +1033,13 @@ function Board(size, pixels) {
 
   self.space_pixels = ko.computed(function() {
     return self.pixels() / self.size();
-  });
-  
-  self.next_move = 'B';
-
-  self.last_move = false;
-  
-  //this might be better in an sgf object
-  self.move = 0;
+  });  
 
   self.sgf = new SGF();
   
-  
-  self.label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
   //aka labels_x
   self.labels_h = ko.computed(function() {
-    return lodash.first(self.label_options, self.size());
+    return lodash.first(label_options, self.size());
   });
   //console.log(self.labels_h);
   
@@ -1005,7 +1058,9 @@ function Board(size, pixels) {
   
   self.spaces = ko.observableArray();
   
-  self.make_spaces = ko.computed(function() { 
+  self.make_spaces = ko.computed(function() {
+    //console.log("Regenerating board spaces");
+    
     self.rows = [ ];
     self.spaces.removeAll();
     
@@ -1014,18 +1069,15 @@ function Board(size, pixels) {
   
     for (var i = 0; i < self.size(); i++) {
       
-      //going to generate space_name in following loop:
+      //space_name is generated in the following loop:
       var row_spaces = [ ];
       for (var j = 0; j < self.size(); j++) {
-        //space_name = i + ',' + j;
-        //space_name = self.label_options[i] + j;
-        space_name = self.label_options[i] + self.label_options[j];
+        space_name = label_options[i] + label_options[j];
         current = new Space(self, space_name, '', self.space_pixels, i, j);
         self.spaces.push(current);
         row_spaces.push(current);
       }
     
-      //self.rows.push(new Row(self.size(), row_name, self.space_pixels()));
       self.rows.push(row_spaces);
     }
   });
@@ -1033,19 +1085,143 @@ function Board(size, pixels) {
   //console.log(self.spaces());
   
   // done with setup.
-  
-  
-  self.make_move = function(space) { 
-    if (space.contains() === '') {
+
+  //self.go = function(position) {
+  self.go = function(move) {
+    //hehe... go... get it?
+    //move to a specific position within the board
+
+    //TODO:
+    //unset markers from current node first:
+    
+    var last_node;
+    
+    //use SGF object to determine branches and track positions
+    var nodes = self.sgf.go(move);
+    if (move > self.move) {
       
+      lodash.each(nodes, function(node, i) {
+        self.apply_node(node);
+        last_node = node;
+      });
+    }
+    else {        
+      lodash.each(nodes, function(node, i) {
+        self.undo_node(node);
+        last_node = node;
+      });
+    }
+
+    //TODO:
+    //set markers from last node now
+
+    
+  }
+
+  self.next = function(branch) {
+    if (!branch) {
+      branch = 0;
+    }
+    //console.log(branch);
+    //console.log(self.sgf);
+    //use SGF object to determine branches and track positions
+
+
+    var node = self.sgf.next(branch);
+    console.log(node);
+
+    //first apply any markers
+    
+    self.apply_node(node);
+  }
+
+  self.previous = function() {
+    var node = self.sgf.previous();
+    self.undo_node(node);
+  }
+
+  self.undo_node = function(node) {
+    // similar to apply_node
+    // but in reverse
+
+  }
+
+  self.apply_marker = function(marker) {
+    //if (marker.space) {
+    var cur_space;
+    var indexes;
+
+    indexes = marker.indexes();
+    cur_space = self.rows[indexes[0]][indexes[1]];
+    console.log(cur_space);
+    //}
+  }
+
+  self.set_markers = function(node) {
+    lodash.each(node.markers, function(marker) {
+      self.apply_marker(marker);
+    });
+
+    lodash.each(node.stones, function(marker) {
+      self.apply_marker(marker);
+    });
+
+    lodash.each(node.labels, function(marker) {
+      self.apply_marker(marker);
+    });
+    
+  }    
+  
+  self.apply_node = function(node) {
+    // similar to make move,
+    // but there may be other actions, like adding a marker
+
+    var cur_space;
+    var indexes;
+
+    //clear all current markers
+
+    //clear all current labels
+
+    //then apply the move
+    if (node.move.space) {
+      indexes = node.move.indexes();
+      cur_space = self.rows[indexes[0]][indexes[1]];
+
+      if (node.move.type !== self.next_move) {
+        console.log("Next move in SGF: ", node.move.type, " != expected next move: ", self.next_move);
+      }
+      
+      // reset these before handle move, so they get updated appropriately
+      node.total_captures.B = node.parent.total_captures.B;
+      node.total_captures.W = node.parent.total_captures.W;
+      node.captures = self.handle_move(cur_space, node);      
+    }    
+               
+  }
+
+  self.make_move = function(space) {
+    //update the SGF and handle_move
+    if (space.contains() === '') {
+      var node;
+      node = self.sgf.add_move(space.name, self.next_move);
+      self.sgf.captures = self.handle_move(space, node);
+    }
+  };
+  
+  self.handle_move = function(space, node) {
+    // only pass in node if you want captures applied to it
+    // no sgf interaction here...
+    // this should be the common bits between advancing in SGF
+    // and make_move
+    var captures;
+    if (space.contains() === '') {
       //update the value of space.contains()
       //this will automatically trigger updates of DOM
       //(thanks knockout!)
       space.contains(self.next_move);
 
-      self.sgf.add_move(space.name, self.next_move);
-
-      self.check_captures(space);
+      captures = self.check_captures(space, node);
       
       if (self.next_move === 'B') {
 	self.next_move = 'W';
@@ -1059,14 +1235,12 @@ function Board(size, pixels) {
       if (self.last_move) {
 	self.last_move.mtype('');
       }
-      space.mtype('circle');
       self.last_move = space;
-      
-      
+      space.mtype('circle');
     }
-    
+    return captures;
   };
-  
+      
   self.get_neighbors = function(space) {
     //can cache what we find in space.neighbors
     //but that is tricky to do on setup 
@@ -1146,17 +1320,19 @@ function Board(size, pixels) {
     return liberties;
   };
   
-  self.capture_group = function(group) {
+  self.capture_group = function(group, node) {
     //var message = 'capturing group of ' + group.length + ' stones at: ' + group[0].name + ' containing: ' + group[0].contains();
     //alert(message);
     //console.log(message);
     
-    if (group[0].contains() === 'W') {
+    if (group[0].contains() === 'B') {
       //self.captures['B'] += group.length;
-      self.sgf.cur_move.captures.B += group.length;
+      //self.sgf.cur_node.total_captures.B += group.length;
+      node.total_captures.B += group.length;
     }
-    else if (group[0].contains() === 'B') {
-      self.sgf.cur_move.captures.W += group.length;
+    else if (group[0].contains() === 'W') {
+      //self.sgf.cur_node.total_captures.W += group.length;
+      node.total_captures.W += group.length;
     }
     
     lodash.each(group, function(space) {
@@ -1165,9 +1341,10 @@ function Board(size, pixels) {
     
   };
   
-  self.check_captures = function(space) {
+  self.check_captures = function(space, node) {
     var neighbors = self.get_neighbors(space);
     var libs = false;
+    var captures = [];
     var group = [];
     
     //see if our move captures any of our neighboring groups:
@@ -1181,7 +1358,8 @@ function Board(size, pixels) {
 	//alert('has_liberties result: ' + libs);
         
 	if (!(libs)) {
-	  self.capture_group(group);
+	  self.capture_group(group, node);
+          captures.push(group);
 	}
       }
     });
@@ -1192,8 +1370,10 @@ function Board(size, pixels) {
     libs = self.has_liberties(group);
     if (!(libs)) {
       self.capture_group(group);
+      captures.push(group);
     }
-    
+
+    return captures;    
   };
 
   //by making this computed(), unit tests will try to run it
@@ -1235,7 +1415,7 @@ function BoardViewModel(size, pixels) {
     //breaks unit tests with no DOM access via jQuery
     //so keeping those calls separate, here
     self.size(size);
-    //TODO:
+
     //update grid via CSS
     $('.grid').css({'background-size':self.board_pixels()+'px','width':self.board_pixels()+'px','height':self.board_pixels()+'px','left':self.board_left()+'px','top':self.board_top()+'px'}); 
     
@@ -1245,23 +1425,6 @@ function BoardViewModel(size, pixels) {
   self.show_configs = ko.observable(false);
   self.show_menu = ko.observable(false);
   self.show_controls = ko.observable(false);
-
-  /*
-  self.gear = ko.observable(false);
-  self.toggle_gear = function() {
-    if (self.gear()) {
-      self.gear(false);
-      console.log("hiding gear!");
-      $('#gear_image').fadeOut();
-    }
-    else {
-      self.gear(true);
-      console.log("showing gear!");
-      $('#gear_image').fadeIn();
-    }      
-  };
-  */
-
   
   //depending on what is visible,
   //may want to change the widths available to controls
@@ -1647,7 +1810,10 @@ function BoardViewModel(size, pixels) {
     owner: self
   });
 
-  
+
+  self.copy_diagram = function() {
+    window.prompt ('Copy to clipboard: Ctrl+C, Enter', 'text');
+  }
 
   self.filename = ko.observable("");
   self.local_file = ko.observable("");
@@ -1684,6 +1850,12 @@ function BoardViewModel(size, pixels) {
           // call the function to process data:
 	  //self.original.from_json(e.target.result);
           self.board.sgf.load(e.target.result);
+          //reset board properties
+          self.board.init();
+          var size = parseInt(self.board.sgf.size);
+          console.log(size);
+          self.board.size(size);
+          self.update_all();
 	};
       })(f);
       
@@ -1695,9 +1867,9 @@ function BoardViewModel(size, pixels) {
   
 }
 
-module.exports.SGF = SGF;
-//module.exports.Move = Move;
+module.exports.Marker = Marker;
 module.exports.Node = Node;
+module.exports.SGF = SGF;
 module.exports.Space = Space;
 module.exports.Board = Board;
 module.exports.BoardViewModel = BoardViewModel;

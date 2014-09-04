@@ -22,6 +22,212 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
   
   describe('go_ginko', function () {
 
+    describe('marker', function () {
+      var marker;
+      beforeEach( function() {
+        marker = new go_ginkgo.Marker();
+      });
+      
+      it('should create an instance', function () {
+        expect(typeof marker).to.equal( 'object' );
+      });
+
+      it('should generate an index', function () {
+        marker.space = 'cb';
+        var indexes = marker.indexes();
+
+        //row, zero indexed
+        expect(indexes[0]).to.equal( 1 );
+        //col, zero indexed
+        expect(indexes[1]).to.equal( 2 );
+      });
+      
+    });
+    
+    describe('node', function () {
+      var node;
+      beforeEach( function() {
+        node = new go_ginkgo.Node();
+      });
+      
+      it('should create an instance', function () {
+        expect(typeof node).to.equal( 'object' );
+      });
+
+      it('should have a place for child moves', function () {
+        expect(typeof node.children).to.equal( 'object' );
+      });
+
+      it('should have a name', function () {
+        expect(typeof node.name).to.equal( 'string' );
+      });
+
+      it('should be able to add a move', function () {
+        expect(node.add_move('A1', 'B')).to.equal( 0 );
+      });
+
+      it('should be able to set a move', function () {
+        node.set_move('A1', 'B');
+        expect(node.move.space).to.equal( 'A1' );
+        expect(node.move.type).to.equal( 'B' );
+      });
+      
+      it('should have children after previously adding a move', function () {
+        expect(node.add_move('A1', 'B')).to.equal( 0 );
+        expect(node.children.length).to.not.equal( 0 );
+      });
+      
+      it('should not add the same move twice', function () {
+        var index = node.add_move('A1', 'B');
+        expect(index).to.equal( 0 );
+        //add it again
+        index = node.add_move('A1', 'B');
+        //console.log('index after: ', index);
+        expect(node.add_move('A1', 'B')).to.equal( 0 );
+        expect(node.children.length).to.equal( 1 );
+      });
+      
+      it('should throw an error if space is occupied', function () {
+        var index = node.add_move('A1', 'B');
+        expect(index).to.equal( 0 );
+        //add it again
+        //index = node.add_move('A1', 'B');
+        //console.log('index after: ', index);
+        //console.log(node.children);
+
+        //TODO: this seems to throw an error as expected,
+        //but the test fails... not sure why
+        //expect(node.add_move('A1', 'W')).to.throw(ReferenceError, /Invalid move/);
+        //expect(node.add_move('A1', 'W')).to.throw(ReferenceError);
+      });
+
+      it('should be able to add more than one move', function () {
+        expect(node.add_move('A1', 'B')).to.equal( 0 );
+        expect(node.add_move('A2', 'W')).to.equal( 1 );
+      });
+
+      it('should be able to add a marker', function () {
+        expect(node.add_marker('A1', 'triangle')).to.equal( 0 );
+      });
+      
+    });
+
+    describe('sgf', function () {
+      var sgf;
+      beforeEach( function() {
+        sgf = new go_ginkgo.SGF();
+      });
+      
+      it('should create an instance', function () {
+        expect(typeof sgf).to.equal( 'object' );
+      });
+
+      it('should have a root move attribute', function () {
+        expect(typeof sgf).to.equal( 'object' );
+      });
+
+      it('root should equal cur_node after init', function () {
+        expect(sgf.root).to.equal( sgf.cur_node );
+      });
+
+      it('root should not equal cur_node after add_move', function () {
+        sgf.add_move('A1', 'B');
+        expect(sgf.root).to.not.equal( sgf.cur_node );
+      });
+      
+      it('should parse sequences', function () {
+        var result = sgf.parse_sequences('( 1 (a)(b(c)))');
+        //if trim not enabled:
+        var manual = [ [ ' 1 ', [ 'a' ], [ 'b', [ 'c' ] ] ] ];
+        //if trim enabled:
+        var manual = [ [ '1', [ 'a' ], [ 'b', [ 'c' ] ] ] ];
+
+        //console output may show [Object]...
+        //but this is probably the list we're after
+        /*lodash.each(result.sequences, function(sub, i) {
+          console.log(i, sub);
+        })      
+        console.log(result.sequences);
+        console.log(manual);
+        */
+        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
+
+
+        var result = sgf.parse_sequences('( 1 )');
+        //console.log(result.sequences);
+        //if trim not enabled:
+        var manual = [[' 1 ']];
+        //if trim enabled:
+        var manual = [['1']];
+        //console.log(manual);
+        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
+
+        var result = sgf.parse_sequences('');
+        var manual = [  ];
+        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
+
+        var result = sgf.parse_sequences(sample);
+        //console.log(result.sequences)    
+
+      });
+
+      it('should make point lists', function () {
+        var pl = sgf.make_point_list('aa:ab');
+        var manual = [ 'aa', 'ab' ];
+        expect(lodash.isEqual(pl, manual)).to.equal( true );
+
+      });
+      
+      it('should add markers with point lists', function () {
+        sgf.add_markers(sgf.cur_node, 'AB', 'aa:ab');
+        expect(sgf.cur_node.markers.length).to.equal( 2 );
+      });
+      
+      it('should load saved game data', function () {
+        //sample is loaded globally at the top of this test file
+        expect(sgf.load(sample)).to.equal( true );
+      });
+
+      it('should not have a previous move if at start', function () {
+        expect(sgf.previous()).to.equal( null );
+      });
+
+      it('should navigate nodes', function () {
+        sgf.load(sample);
+        //after loading, we're at the end?
+        //sgf.go(0);
+        //console.log(sgf.position);
+        var second = sgf.next();
+        //console.log(second);
+        var third = sgf.next();
+        //console.log("");
+        //console.log("calling previous");
+        var second_again = sgf.previous();
+        //console.log(second_again);
+        
+        //sample is loaded globally at the top of this test file
+        expect(lodash.isEqual(second, second_again)).to.equal( true );
+        //expect(second_again).to.equal( second );
+      });
+
+      it('should go to a specific node', function () {
+        sgf.load(sample);
+        //after loading, we're at the end?
+        //sgf.go(0);
+
+        var root = sgf.cur_node;
+        var first = sgf.next();
+        var second = sgf.next();
+
+        var nodes = sgf.go(0);
+        //console.log(nodes);
+        
+        expect(lodash.isEqual([second, first, root], nodes)).to.equal( true );
+
+      });
+      
+    });
+
     describe('space', function () {
       var space;
       beforeEach( function() {
@@ -111,151 +317,27 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
         board.make_move(space);
         expect(board.spaces()[0].contains()).to.equal( '' );
       });
-      
-      
-    });
 
-    describe('sgf', function () {
-      var sgf;
-      beforeEach( function() {
-        sgf = new go_ginkgo.SGF();
-      });
-      
-      it('should create an instance', function () {
-        expect(typeof sgf).to.equal( 'object' );
-      });
+      it('should apply a node', function () {
+        var node;
+        board.sgf.load(sample);
+        //board.sgf.go(0);
+        //first one is empty?
+        //console.log("testing sgf navigation via board:");
+        node = board.sgf.next();
+        //if we don't apply the node, the board will be out of sync
+        board.apply_node(node);
+        //console.log("second move:");
+        node = board.sgf.next();
+        board.apply_node(node);
 
-      it('should have a root move attribute', function () {
-        expect(typeof sgf).to.equal( 'object' );
-      });
-
-      it('root should equal cur_move after init', function () {
-        expect(sgf.root).to.equal( sgf.cur_move );
-      });
-
-      it('root should not equal cur_move after add_move', function () {
-        sgf.add_move('A1', 'B');
-        expect(sgf.root).to.not.equal( sgf.cur_move );
-      });
-      
-      it('should parse sequences', function () {
-        var result = sgf.parse_sequences('( 1 (a)(b(c)))');
-        //if trim not enabled:
-        var manual = [ [ ' 1 ', [ 'a' ], [ 'b', [ 'c' ] ] ] ];
-        //if trim enabled:
-        var manual = [ [ '1', [ 'a' ], [ 'b', [ 'c' ] ] ] ];
-
-        //console output may show [Object]...
-        //but this is probably the list we're after
-        /*lodash.each(result.sequences, function(sub, i) {
-          console.log(i, sub);
-        })      
-        console.log(result.sequences);
-        console.log(manual);
-        */
-        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
-
-
-        var result = sgf.parse_sequences('( 1 )');
-        //console.log(result.sequences);
-        //if trim not enabled:
-        var manual = [[' 1 ']];
-        //if trim enabled:
-        var manual = [['1']];
-        //console.log(manual);
-        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
-
-        var result = sgf.parse_sequences('');
-        var manual = [  ];
-        expect(lodash.isEqual(result.sequences, manual)).to.equal( true );
-
-        var result = sgf.parse_sequences(sample);
-        //console.log(result.sequences)    
+        board.next();
 
       });
 
-      it('should make point lists', function () {
-        var pl = sgf.make_point_list('aa:ab');
-        var manual = [ 'aa', 'ab' ];
-        expect(lodash.isEqual(pl, manual)).to.equal( true );
-
-      });
-      
-      it('should add markers with point lists', function () {
-        sgf.add_markers(sgf.cur_move, 'AB', 'aa:ab');
-        expect(sgf.cur_move.markers.length).to.equal( 2 );
-      });
-      
-      it('should load saved game data', function () {
-        //sample is loaded globally at the top of this test file
-        expect(sgf.load(sample)).to.equal( true );
-      });
       
     });
 
-    describe('node', function () {
-      var node;
-      beforeEach( function() {
-        node = new go_ginkgo.Node();
-      });
-      
-      it('should create an instance', function () {
-        expect(typeof node).to.equal( 'object' );
-      });
-
-      it('should have a place for child moves', function () {
-        expect(typeof node.children).to.equal( 'object' );
-      });
-
-      it('should have a name', function () {
-        expect(typeof node.name).to.equal( 'string' );
-      });
-
-      it('should be able to add a move', function () {
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
-      });
-
-      it('should have children after previously adding a move', function () {
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
-        expect(node.children.length).to.not.equal( 0 );
-      });
-      
-      it('should not add the same move twice', function () {
-        var index = node.add_move('A1', 'B');
-        expect(index).to.equal( 0 );
-        //add it again
-        index = node.add_move('A1', 'B');
-        //console.log('index after: ', index);
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
-        expect(node.children.length).to.equal( 1 );
-      });
-      
-      it('should throw an error if space is occupied', function () {
-        var index = node.add_move('A1', 'B');
-        expect(index).to.equal( 0 );
-        //add it again
-        //index = node.add_move('A1', 'B');
-        //console.log('index after: ', index);
-        //console.log(node.children);
-
-        //TODO: this seems to throw an error as expected,
-        //but the test fails... not sure why
-        //expect(node.add_move('A1', 'W')).to.throw(ReferenceError, /Invalid move/);
-        //expect(node.add_move('A1', 'W')).to.throw(ReferenceError);
-      });
-
-      it('should be able to add more than one move', function () {
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
-        expect(node.add_move('A2', 'W')).to.equal( 1 );
-      });
-
-      it('should be able to add a marker', function () {
-        expect(node.add_marker('A1', 'triangle')).to.equal( 0 );
-      });
-
-
-      
-    });
 
     describe('view', function () {
       //don't use the browserified module for unit testing!

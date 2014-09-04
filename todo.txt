@@ -1,3 +1,6 @@
+*2013.02.06 08:47:16
+forward and backward move integration (undo / redo) (requires SGF)
+
 *2014.08.12 10:38:53
 use CSS transitions instead of jQuery Fades
 
@@ -13,131 +16,6 @@ create 13x13 grid
 *2014.08.11 11:06:29
 alert on board size change that the current game data will be lost, are you sure?
 
-*2014.08.01 07:21:27
-update README.txt
-
-*2013.02.05 09:54:23 
-sgf integration
-
-also [2013.02.06 08:47:16] 
-forward and backward move integration (undo / redo) (requires SGF)
-
-*2013.01.24 14:29:26 sgf
-General properties
-
-ID   Description     property type    property value
----- --------------- ---------------  --------------------------------------
-B    Black           move             move
-BL   Black time left move             real
-BM   Bad move        move             double
-DO   Doubtful        move             none
-IT   Interesting     move             none
-KO   Ko              move             none
-MN   set MoveNumber  move             number
-OB   OtStones Black  move             number
-OW   OtStones White  move             number
-TE   Tesuji          move             double
-W    White           move             move
-WL   White time left move             real
-
-AB   Add Black       setup            list of stone
-AE   Add Empty       setup            list of point
-AW   Add White       setup            list of stone
-PL   Player to play  setup            color
-
-*AR  Arrow           -                list of composed point ':' point
-C    Comment         -                text
-CR   Circle          -                list of point
-*DD  Dim points      - (inherit)      elist of point
-DM   Even position   -                double
-!FG  Figure          -                none | composed number ":" simpletext
-GB   Good for Black  -                double
-GW   Good for White  -                double
-HO   Hotspot         -                double
-!LB  Label           -                list of composed point ':' simpletext
-*LN  Line            -                list of composed point ':' point
-MA   Mark            -                list of point
-N    Nodename        -                simpletext
-*PM  Print move mode - (inherit)      number
-SL   Selected        -                list of point
-*SQ  Square          -                list of point
-TR   Triangle        -                list of point
-UC   Unclear pos     -                double
-V    Value           -                real
-*VW  View            - (inherit)      elist of point
-
-*AP  Application     root	      composed simpletext ':' number
-*CA  Charset         root	      simpletext
-FF   Fileformat      root	      number (range: 1-4)
-GM   Game            root	      number (range: 1-5,7-17)
-*ST  Style           root	      number (range: 0-3)
-!SZ  Size            root	      (number | composed number ':' number)
-
-AN   Annotation      game-info        simpletext
-BR   Black rank      game-info        simpletext
-BT   Black team      game-info        simpletext
-CP   Copyright       game-info        simpletext
-!DT  Date            game-info        simpletext
-EV   Event           game-info        simpletext
-GC   Game comment    game-info        text
-GN   Game name       game-info        simpletext
-ON   Opening         game-info        simpletext
-*OT  Overtime        game-info        simpletext
-PB   Player Black    game-info        simpletext
-PC   Place           game-info        simpletext
-PW   Player White    game-info        simpletext
-!RE  Result          game-info        simpletext
-RO   Round           game-info        simpletext
-!RU  Rules           game-info        simpletext
-SO   Source          game-info        simpletext
-TM   Timelimit       game-info        real
-US   User            game-info        simpletext
-WR   White rank      game-info        simpletext
-WT   White team      game-info        simpletext
-
-Go (GM[1]) specific properties
-
-ID   Description     property type    property value
----- --------------- ---------------  --------------------------------------
-TB   Territory Black -                elist of point
-TW   Territory White -                elist of point
-
-HA   Handicap        game-info        number
-KM   Komi            game-info        real
-
-Lines of Action (GM[9]) specific properties
-
-ID   Description     property type    property value
----- --------------- ---------------  --------------------------------------
-*AS  Who adds stones -                simpletext
-*IP  Initial pos.    game-info        simpletext
-*IY  Invert Y-axis   game-info        simpletext
-*SE  Markup          -                point
-*SU  Setup type      game-info        simpletext
-
-*2013.01.24 14:29:03 go sgf links
-http://www.google.com/search?q=go+board+coordinates&oq=go+board+coordinates&sugexp=chrome,mod=17&sourceid=chrome&client=ubuntu&channel=cs&ie=UTF-8
-http://senseis.xmp.net/?Coordinates
-http://senseis.xmp.net/?AudouardCoordinates
-http://www.google.com/search?q=jgoboard&oq=jgoboard&sugexp=chrome,mod=17&sourceid=chrome&client=ubuntu&channel=cs&ie=UTF-8
-http://static.jgoboard.com/sgf.html?url=http://static.jgoboard.com/sgf/shusaku.sgf
-http://www.google.com/search?q=sgf+&aq=f&oq=sgf+&sugexp=chrome,mod=17&sourceid=chrome&client=ubuntu&channel=cs&ie=UTF-8#hl=en&sugexp=les%3B&gs_rn=1&gs_ri=serp&gs_mss=sgf%20cap&pq=sgf%20&cp=11&gs_id=w&xhr=t&q=sgf+capture&es_nrs=true&pf=p&client=ubuntu&hs=SR3&tbo=d&channel=cs&sclient=psy-ab&oq=sgf+capture&gs_l=&pbx=1&bav=on.2,or.r_gc.r_pw.r_qf.&bvm=bv.41248874,d.aWM&fp=ade360d3be480845&biw=1193&bih=944
-http://www.red-bean.com/sgf/ff5/m_vs_ax.htm
-http://senseis.xmp.net/?SmartGameFormat
-http://www.red-bean.com/sgf/user_guide/index.html
-http://www.red-bean.com/sgf/proplist_t.html
-
-
-*2013.01.24 14:29:48 
-http://senseis.xmp.net/?Coordinates
-Style A1
-
-In Europe it is usual to give coordinates in the form of A1 to T19. Where A1 is in the lower left corner and T19 in the upper right corner (from black's view).
-
-Note: "I" is not used, historically to avoid confusion with "J"
-
-[edit]
-
 *2014.08.07 05:18:50
 consider getting size from a container element rather than the whole document during a resize...
 that would allow it to be embedded on other sites more easily.
@@ -148,13 +26,6 @@ square
 territory
 triangle
 X
-
-*2014.08.01 07:12:52
-configure testing (mocha, chai)
-./test
-
-
-
 
 *2013.02.05 09:55:15 
 handicap integration
