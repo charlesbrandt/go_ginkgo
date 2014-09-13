@@ -167,6 +167,8 @@ gulp.task('styles', function () {
     .pipe($.size());
 });
 
+//for running tests before lint:
+//gulp.task('scripts', ['test'], function () {
 gulp.task('scripts', function () {
   return gulp.src('app/scripts/**/*.js')
     .pipe($.jshint())
@@ -255,7 +257,9 @@ gulp.task('serve', ['connect', 'styles'], function () {
   require('opn')('http://localhost:9000');
 });
 
-gulp.task('test', function() {
+//want browserify to finish before the tests run...
+//otherwise live reload may not work as well.
+gulp.task('test', ['browserify'], function() {
   return gulp.src('test/spec/test.js', {read: false})
     .pipe($.mocha({reporter: 'nyan'}));
 });
@@ -280,6 +284,6 @@ gulp.task('watch', ['connect', 'serve'], function () {
 
   gulp.watch('test/spec/**/*.js', ['test']);
   //gulp.watch('app/scripts/**/*.js', ['watchify', 'test']);
-  gulp.watch('app/scripts/**/*.js', ['browserify', 'test']);
+  gulp.watch('app/scripts/**/*.js', ['scripts', 'test']);
   
 });

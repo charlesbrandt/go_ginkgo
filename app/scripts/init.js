@@ -1,3 +1,6 @@
+/*global $: true */
+'use strict';
+
 /*
 Take care of initializing elements needed in the DOM, 
 or requiring access to the DOM 
@@ -11,11 +14,12 @@ var mustache = require('mustache');
 var go_ginko = require('./view');
 
 //https://github.com/WTK/ko.mustache.js/blob/master/ko.mustache.js
-ko.mustacheTemplateEngine = function () { }
+ko.mustacheTemplateEngine = function () { };
 
 ko.mustacheTemplateEngine.prototype = ko.utils.extend(new ko.templateEngine(), {
   
-  renderTemplateSource: function (templateSource, bindingContext, options) {
+  //renderTemplateSource: function (templateSource, bindingContext, options) {
+  renderTemplateSource: function (templateSource, bindingContext) {
     var data = bindingContext.$data;
     var templateText = templateSource.text();		
     var htmlResult = mustache.to_html(templateText, data);
@@ -39,13 +43,13 @@ var bv = new go_ginko.BoardViewModel(19, 762);
 ko.applyBindings(bv);
 
 $(document).ready(function() {
-  bv.update_all()
+  bv.update_all();
 });
 
 $(window).resize(function() {
   //$('body').prepend('<div>Window: ' + $(window).width() + ' x ' + $(window).height() + '</div>');
   //$('body').prepend('<div>Document: ' + $(document).width() + ' x ' + $(document).height() + '</div>');
-  bv.update_all()
+  bv.update_all();
 });
 
 document.getElementById('source').addEventListener('change', bv.load_local, false);

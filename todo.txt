@@ -1,24 +1,35 @@
-*2013.02.06 08:47:16
-forward and backward move integration (undo / redo) (requires SGF)
+*2014.09.10 19:42:03
+
+
+*2014.09.10 09:31:18
+integrate comments and other SGF fields with DOM interface
+
+*2014.09.10 09:31:31
+integrate position with DOM interface
+
+*2014.09.10 09:34:07
+add markers to board via SGF
+
+*2014.09.10 09:34:13
+other SGF properties (e.g. pass)
+
+*2014.08.07 05:18:50
+consider getting size from a container element rather than the whole document during a resize...
+that would allow it to be embedded on other sites more easily.
 
 *2014.08.12 10:38:53
 use CSS transitions instead of jQuery Fades
-
-*2014.08.12 09:36:27
-send game via email (this will need a server side component)
 
 *2014.08.12 09:30:00
 add in touch events via hammer.js (touchstart == hover, touchend == click)
 
 *2014.08.11 10:58:59
 create 13x13 grid
+also [2014.09.10 09:32:46]
+way to generate arbitrary sgf grids? (especially ones w/o borders for subsections of board)
 
 *2014.08.11 11:06:29
 alert on board size change that the current game data will be lost, are you sure?
-
-*2014.08.07 05:18:50
-consider getting size from a container element rather than the whole document during a resize...
-that would allow it to be embedded on other sites more easily.
 
 *2014.08.01 07:10:36
 svg (+png) versions of other common markers:
@@ -33,11 +44,17 @@ handicap integration
 *2013.02.06 18:14:51 
 check for kos
 
+*2014.09.10 09:55:38
+handle diagrams with previous moves included
+
 *2013.02.05 09:52:45 
 socket.io integration
 
 *2013.02.06 08:27:41 
     //TODO: click sound
+
+*2014.08.12 09:36:27
+send game via email (this will need a server side component)
 
 *2013.02.06 13:50:07 
 consider using underscore or lo-dash instead of mustache for templates...

@@ -1,4 +1,7 @@
+'use strict';
+
 var lodash = require('lodash-node/underscore');
+var ko = require('knockout');
 
 var Marker = require('./marker').Marker;
 
@@ -23,7 +26,11 @@ function Node(space, type) {
   //will not be provided by SGF,
   //but will help when returning to previous board states (undoing)
   //only hold captures after *this* move
-  self.captures = [];
+  //self.captures = [];
+
+  //rather than track captures and try to recreate
+  //hold the snapshot text output from a Diagram
+  self.snapshot = '';
   
   //as they stand, cumulatively, after the current move
   self.total_captures = { 'B': 0, 'W': 0 };
@@ -33,8 +40,8 @@ function Node(space, type) {
   //corresponds well to 'N' in SGF... Nodename
   self.name = '';
 
-  self.comment = '';
-  
+  self.comment = ko.observable('');
+    
   self.children = [];
 
   //not sure that this will ever be needed within a Node
@@ -49,21 +56,22 @@ function Node(space, type) {
     //rather than creating a new node and adding it to children
     //this simply sets the properties on the current node (self)
     //this is more useful when loading an SGF
-
+    var err;
+    
     if ( (self.move.space) && (self.move.space !== space) ) {
-      var err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + " cannot change space to: " + space);
+      err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + ' cannot change space to: ' + space);
       throw err;
     }
 
     else if ( (self.move.type) && (self.move.type !== color) ) {
-      var err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + " cannot change content to: " + color);
+      err = new ReferenceError('Invalid move. Space: ' + self.move.space + ' already contains: ' + self.move.type + ' cannot change content to: ' + color);
       throw err;
     }
     else {
       self.move.space = space;
       self.move.type = color;
     }
-  }
+  };
 
   self.make_node = function() {
     //no error checking here
@@ -76,7 +84,7 @@ function Node(space, type) {
     node.total_captures.W = self.total_captures.W;
     self.children.push(node);
     return self.children.indexOf(node);
-  }
+  };
   
   self.add_move = function(space, color) {
     //this is more useful when playing a game and recording the action
@@ -103,7 +111,7 @@ function Node(space, type) {
     });
 
     if (! matched) {
-      var index = self.make_node();
+      index = self.make_node();
       var child = self.children[index];
       child.move.space = space;
       child.move.type = color;
@@ -112,7 +120,7 @@ function Node(space, type) {
     else {
       return index;
     }
-  }
+  };
 
   self.check_for_conflict = function(options, space, type, attribute) {
     //var matched = false;
@@ -125,13 +133,13 @@ function Node(space, type) {
         result.index = i;
       }
       else if ( (option.space === space) && (option.type !== type) ) {
-        var err = new ReferenceError('Invalid ' + attribute + ' Space: ' + option.space + ' already contains: ' + option.type + " cannot add: " + type);
+        var err = new ReferenceError('Invalid ' + attribute + ' Space: ' + option.space + ' already contains: ' + option.type + ' cannot add: ' + type);
         throw err;
       }
     });
 
     return result;
-  }
+  };
   
   self.add_marker = function(space, type) {
     //similar to add_move, but not adding a new move to children
@@ -153,7 +161,7 @@ function Node(space, type) {
     else {
       return result.index;
     }
-  }
+  };
 
   self.add_stone = function(space, type) {
     //not the same as a move... these are setup configurations
@@ -171,7 +179,7 @@ function Node(space, type) {
     else {
       return result.index;
     }
-  }  
+  }; 
 
   self.add_label = function(space, type) {
     //similar to add_marker, but not a marker...
@@ -188,7 +196,7 @@ function Node(space, type) {
     else {
       return result.index;
     }
-  }  
+  };  
 }
 
 module.exports.Node = Node;

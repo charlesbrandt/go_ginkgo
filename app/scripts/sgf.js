@@ -1,23 +1,61 @@
+'use strict';
+
 var lodash = require('lodash-node/underscore');
-var Node = require('./node').Node;
+var ko = require('knockout');
+
+var SGFNode = require('./node').Node;
 
 function SGF() {  
   var self = this;
 
+  //setup... this should only happen once for the object
+  //then reset (clear?) should re-initialize
+
+  //now that Node object exists, we can track everything there
+  //start with a blank object
+  self.root = new SGFNode();
+  self.root.name = 'root';
+
+  self.cur_node = ko.observable(self.root);
+  //self.cur_node = self.root;
+  self.empty = true;    
+  
+  // game-info properties
+  self.annotation = ko.observable(''); //AN
+  self.black_rank = ko.observable(''); //BR
+  self.black_team = ko.observable(''); //BT
+  self.black_player = ko.observable('');//PB
+  
+  self.copyright = ko.observable('');//CP
+  self.date = ko.observable('');//DT
+  self.event = ko.observable('');//EV
+  self.comment = ko.observable('');//GC
+  self.name = ko.observable('');//GN
+  self.opening = ko.observable('');//ON
+  self.overtime = ko.observable('');//*OT
+  
+  self.place = ko.observable('');//PC 
+  
+  self.result = ko.observable('');//!RE
+  self.round = ko.observable('');//RO
+  self.rules = ko.observable('');//!RU 
+  self.source = ko.observable('');//SO
+  self.timelimit = ko.observable('');//TM 
+  self.user = ko.observable('');//US
+  
+  self.white_player = ko.observable('');//PW
+  self.white_rank = ko.observable('');//WR
+  self.white_team = ko.observable('');//WT 
+
+
+  
   //whether or not to show some console messages
   self.debug = false;
   
-  self.init = function(size) {
+  self.reset = function(size) {
     //position needs to be an array of indexes 
     //multiple points required to get to correct branch
     self.position = [ ];
-    
-    //now that Node object exists, we can track everything there
-    //start with a blank object
-    self.root = new Node();  
-    self.root.name = 'root';
-    self.cur_node = self.root;
-    self.empty = true;
     
     // root level properties
     // not currently making the distinction of different games in one SGF
@@ -26,38 +64,55 @@ function SGF() {
     if (size) { 
       self.size = size; //SZ
     }
-    else self.size = '19'; //SZ
+    else {
+      self.size = '19'; //SZ
+    }
       
     self.game = '1'; //GM
     self.application = 'Go Ginkgo 0.1'; //AP
+
+    ///////////////
+    //Observables:
+    ///////////////
+    
+    //now that Node object exists, we can track everything there
+    //start with a blank object
+    self.root = new SGFNode();  
+    self.root.name = 'root';
+    self.cur_node(self.root);
+    self.empty = true;    
     
     // game-info properties
-    self.annotation = ''; //AN
-    self.black_rank = ''; //BR
-    self.black_team = ''; //BT
-    self.black_player = '';//PB
+    self.annotation(''); //AN
+    self.black_rank(''); //BR
+    self.black_team(''); //BT
+    self.black_player('');//PB
     
-    self.copyright = '';//CP
-    self.date = '';//DT
-    self.event = '';//EV
-    self.comment = '';//GC
-    self.name = '';//GN
-    self.opening = '';//ON
-    self.overtime = '';//*OT
-    self.place = '';//PC 
-    self.result = '';//!RE
-    self.round = '';//RO
-    self.rules = '';//!RU 
-    self.source = '';//SO
-    self.timelimit = '';//TM 
-    self.user = '';//US
+    self.copyright('');//CP
+    self.date('');//DT
+    self.event('');//EV
+    self.comment('');//GC
+    self.name('');//GN
+    self.opening('');//ON
+    self.overtime('');//*OT
 
-    self.white_player = '';//PW
-    self.white_rank = '';//WR
-    self.white_team = '';//WT 
-  }
+    //self.place('');//PC 
+    //self.place = ko.observable('');//PC 
+    self.place('');//PC
+    
+    self.result('');//!RE
+    self.round('');//RO
+    self.rules('');//!RU 
+    self.source('');//SO
+    self.timelimit('');//TM 
+    self.user('');//US
 
-  self.init(19);
+    self.white_player('');//PW
+    self.white_rank('');//WR
+    self.white_team('');//WT 
+  };
+
+  self.reset(19);
   
   self.go = function(index) {
     //go to the given index file.
@@ -82,7 +137,7 @@ function SGF() {
     //handle if we're moving backward
     //if going backwards, we want to include the current node in the list
     if (index < self.position.length) {
-      nodes.push(self.cur_node);
+      nodes.push(self.cur_node());
       while ((index < self.position.length) && (! at_beginning)) {
         cur_node = self.previous();
         if (cur_node) {
@@ -101,22 +156,24 @@ function SGF() {
     //change position
     //retun node
     //board state will be updated by the board object
-    if (self.cur_node.children.length) {
+    if (self.cur_node().children.length) {
       if (branch) {
-        if (branch < self.cur_node.children.length) {
-          self.cur_node = self.cur_node.children[branch];
+        if (branch < self.cur_node().children.length) {
+          //self.cur_node = self.cur_node.children[branch];
+          self.cur_node(self.cur_node.children[branch]);
           self.position.push(branch);
         }
         else {
-          var err = new ReferenceError('Invalid branch: ' + branch + ' cur_node only has: ' + self.cur_node.children.length + " children." + self.cur_node);
+          var err = new ReferenceError('Invalid branch: ' + branch + ' cur_node only has: ' + self.cur_node().children.length + ' children.' + self.cur_node());
           throw err;
         }
       }
       else {
-        self.cur_node = self.cur_node.children[0];
+        //self.cur_node = self.cur_node.children[0];
+        self.cur_node(self.cur_node().children[0]);
         self.position.push(0);
       }
-      return self.cur_node;
+      return self.cur_node();
     }
     else {
       //console.log("No more moves!");
@@ -128,10 +185,11 @@ function SGF() {
     //change position
     //retun node
     //board state will be updated by the board object
-    if (self.cur_node.parent) {
-      self.cur_node = self.cur_node.parent;
+    if (self.cur_node().parent) {
+      //self.cur_node = self.cur_node.parent;
+      self.cur_node(self.cur_node().parent);
       self.position.pop();
-      return self.cur_node;
+      return self.cur_node();
     }
     else {
       //console.log("No more moves!");
@@ -165,8 +223,8 @@ function SGF() {
       point_list.push(value);
     }
     //console.log(point_list);
-    return point_list
-  }
+    return point_list;
+  };
 
   self.add_move = function(position, color) {
     //use the current position to add the move
@@ -176,31 +234,33 @@ function SGF() {
     //will need to use position to find current branch
     //and should also update position accordingly
 
-    var index = self.cur_node.add_move(position, color);
+    var index = self.cur_node().add_move(position, color);
     self.position.push(index);
-    self.cur_node = self.cur_node.children[index];
-    return self.cur_node;
+    //self.cur_node = self.cur_node.children[index];
+    self.cur_node(self.cur_node().children[index]);
+    return self.cur_node();
   };
 
   self.add_node = function() {
     if (self.empty) {
       self.empty = false;
-      return self.cur_node
+      return self.cur_node();
     }
     else {
-      var index = self.cur_node.make_node();
+      var index = self.cur_node().make_node();
       self.position.push(index);
-      self.cur_node = self.cur_node.children[index];
-      return self.cur_node;
+      //self.cur_node = self.cur_node.children[index];
+      self.cur_node(self.cur_node().children[index]);
+      return self.cur_node();
     }
   };
   
   self.add_markers = function(node, id, value) {
     var point_list = self.make_point_list(value);
-    lodash.each(point_list, function(point, i) {
+    lodash.each(point_list, function(point) {
       node.add_marker(point, id);
     });
-  }
+  };
 
   self.add_labels = function(node, id, value) {
     //we know id == "LB" in this case... don't need to use that in Marker object
@@ -208,14 +268,14 @@ function SGF() {
     var point = parts[0];
     var label = parts[1];
     node.add_label(point, label);
-  }
+  };
 
   self.add_stones = function(node, id, value) {
     var point_list = self.make_point_list(value);
-    lodash.each(point_list, function(point, i) {
+    lodash.each(point_list, function(point) {
       node.add_stone(point, id);
     });
-  }
+  };
   
   self.handle_substring = function(data, start, index, cur_sequences) {
     /*helper to push the current substring on to the list
@@ -233,7 +293,7 @@ function SGF() {
       //for keeping trimmed version:
       cur_sequences.push(cur_string);
     }
-  }
+  };
   
   self.parse_property_value = function(data) {
     /* helper to scan to the end of a property value, designated with ']'
@@ -258,7 +318,7 @@ function SGF() {
       previous_char = next_char;
       index += 1;
     }
-  }
+  };
   
   self.parse_sequences = function(data) {
     /* a recursive call to split up all sequences into actual lists of lists
@@ -275,10 +335,11 @@ function SGF() {
     */
 
     //console.log("Starting with ->", data, "<-");
-    var closed = false;
+
     var next_char = '';
     var cur_sequences = [];
     var result = {};
+    var remainder;
     
     var index = 0;
     var start = index;
@@ -291,7 +352,7 @@ function SGF() {
         //move past current open parenthesis:
         index += 1;
 
-        var remainder = data.substring(index);
+        remainder = data.substring(index);
 
         result = self.parse_sequences(remainder);
 
@@ -324,7 +385,7 @@ function SGF() {
         //move past current open parenthesis:
         index += 1;
 
-        var remainder = data.substring(index);
+        remainder = data.substring(index);
 
         result = self.parse_property_value(remainder);
 
@@ -365,7 +426,7 @@ function SGF() {
     result = { 'index': index+1,
                'sequences': cur_sequences };
     return result;    
-  }
+  };
 
   
   self.handle_sequence = function(sequence, parent) {
@@ -377,8 +438,8 @@ function SGF() {
     var last_property_id = '';
     var local_cur_node = parent;
     var token_value;
-    lodash.each(sequence, function(item, i) {
-      if (typeof item === "string") {
+    lodash.each(sequence, function(item) {
+      if (typeof item === 'string') {
         if (item[0] === '[') {
           // must have a property value...
           // process that
@@ -397,7 +458,8 @@ function SGF() {
           } else if (last_property_id === 'C') {
             //have a comment
             //self.cur_node.comment = token_value;
-            local_cur_node.comment = token_value;
+            //local_cur_node.comment = token_value;
+            local_cur_node.comment(token_value);
 
           } else if (last_property_id === 'N') {
             //self.cur_node.name = token_value;
@@ -448,49 +510,71 @@ function SGF() {
             self.game = token_value; //GM          
           } else if (last_property_id === 'AP') {
             self.application = token_value; //AP
-
+            
           } else if (last_property_id === 'AN') {
-            self.annotation = token_value; //AN
+            //self.annotation = token_value; //AN
+            self.annotation(token_value); //AN
           } else if (last_property_id === 'BR') {
-            self.black_rank = token_value; //BR
+            //self.black_rank = token_value; //BR
+            self.black_rank(token_value); //BR
           } else if (last_property_id === 'BT') {
-            self.black_team = token_value; //BT
+            //self.black_team = token_value; //BT
+            self.black_team(token_value); //BT
           } else if (last_property_id === 'PB') {
-            self.black_player = token_value; //PB
+            //self.black_player = token_value; //PB
+            self.black_player(token_value); //PB
           } else if (last_property_id === 'CP') {
-            self.copyright = token_value; //CP
+            //self.copyright = token_value; //CP
+            self.copyright(token_value); //CP
           } else if (last_property_id === 'DT') {
-            self.date = token_value; //DT
+            //self.date = token_value; //DT
+            self.date(token_value); //DT
           } else if (last_property_id === 'EV') {
-            self.event = token_value; //EV
+            //self.event = token_value; //EV
+            self.event(token_value); //EV
           } else if (last_property_id === 'GC') {
-            self.comment = token_value; //GC
+            //self.comment = token_value; //GC
+            self.comment(token_value); //GC
           } else if (last_property_id === 'GN') {
-            self.name = token_value; //GN
+            //self.name = token_value; //GN
+            self.name(token_value); //GN
           } else if (last_property_id === 'ON') {
-            self.opening = token_value; //ON
+            //self.opening = token_value; //ON
+            self.opening(token_value); //ON
           } else if (last_property_id === 'OT') {
-            self.overtime = token_value; //OT
-          } else if (last_property_id === 'PC') {
-            self.place = token_value; //PC 
+            //self.overtime = token_value; //OT
+            self.overtime(token_value); //OT
           } else if (last_property_id === 'RE') {
-            self.result = token_value; //RE
+            //self.result = token_value; //RE
+            self.result(token_value); //RE
           } else if (last_property_id === 'RO') {
-            self.round = token_value; //RO
+            //self.round = token_value; //RO
+            self.round(token_value); //RO
           } else if (last_property_id === 'RU') {
-            self.rules = token_value; //RU
+            //self.rules = token_value; //RU
+            self.rules(token_value); //RU
           } else if (last_property_id === 'SO') {
-            self.source = token_value; //SO
+            //self.source = token_value; //SO
+            self.source(token_value); //SO
           } else if (last_property_id === 'TM') {
-            self.timelimit = token_value; //TM 
+            //self.timelimit = token_value; //TM 
+            self.timelimit(token_value); //TM 
           } else if (last_property_id === 'US') {
-            self.user = token_value; //US
+            //self.user = token_value; //US
+            self.user(token_value); //US
           } else if (last_property_id === 'PW') {
-            self.white_player = token_value; //PW
+            //self.white_player = token_value; //PW
+            self.white_player(token_value); //PW
           } else if (last_property_id === 'WR') {
-            self.white_rank = token_value; //WR
+            //self.white_rank = token_value; //WR
+            self.white_rank(token_value); //WR
           } else if (last_property_id === 'WT') {
-            self.white_team = token_value; //WT 
+            //self.white_team = token_value; //WT 
+            self.white_team(token_value); //WT 
+          } else if (last_property_id === 'PC') {
+            //self.place = token_value; //PC 
+            self.place(token_value); //PC
+            //console.log(self.place());
 
 /*
 TODO:
@@ -536,7 +620,7 @@ V    Value           -                real
 
           //console.log(item);
 
-          while (item[0] == ';') {
+          while (item[0] === ';') {
             //now this is the only place new nodes are created!
             local_cur_node = self.add_node();
             item = item.substring(1);
@@ -559,7 +643,7 @@ V    Value           -                real
       }
 
     });
-  }
+  };
   
   self.load = function(data) {
     //load moves from an existing SGF data stream (do not change position)
@@ -568,12 +652,12 @@ V    Value           -                real
     //that includes resetting board state...
     //go_to(0) first?
 
-    var sequences = self.parse_sequences(data)
+    var sequences = self.parse_sequences(data);
 
     //reset everything:
-    self.init();
+    self.reset();
     
-    lodash.each(sequences, function(sequence, i) {
+    lodash.each(sequences, function(sequence) {
       self.handle_sequence(sequence, self.root);
     });
     self.go(0);

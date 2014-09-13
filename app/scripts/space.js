@@ -1,6 +1,8 @@
+'use strict';
+
 var ko = require('knockout');
 
-function Space(board, name, contains, pixels, row, column) {
+function Space(board, contains, pixels, row, column) {
   //representation of a Space within the DOM (on the board)
   
   var self = this;
@@ -32,8 +34,14 @@ function Space(board, name, contains, pixels, row, column) {
   });
   
   //this is useful for debugging:
-  self.name = name;
-  
+  //should just use row and column now...
+  //self.name = name;
+
+  //TODO
+  //thoughts on refactoring these to be closer to expectations
+  //(stone, marker, label)
+  //would also need to refactor computed fuctions by those names
+  //used to render html in the dom
   self.contains = ko.observable(contains);
   
   //marker type
@@ -45,6 +53,12 @@ function Space(board, name, contains, pixels, row, column) {
   
   // this can be initialized later, after board has been set up properly
   self.neighbors = [ ];
+
+  self.clear_markers = function() {
+    // clear both marker and label
+    self.mtype('');
+    self.label('');
+  };
   
   self.shadow = ko.computed(function() {
     if (self.contains() === 'B' || self.contains() === 'W') {

@@ -1,3 +1,6 @@
+/*global $: true */
+'use strict';
+
 var $ = require('jquery');
 var lodash = require('lodash-node/underscore');
 //I had trouble getting this version to work with broserify + node + mocha:
@@ -5,6 +8,9 @@ var lodash = require('lodash-node/underscore');
 var ko = require('knockout');
 
 var Board = require('./board').Board;
+//var label_options = require('./board').label_options;
+var label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
+
 
 function BoardViewModel(size, pixels) {
   var self = this;
@@ -31,7 +37,7 @@ function BoardViewModel(size, pixels) {
     $('.grid').css({'background-size':self.board_pixels()+'px','width':self.board_pixels()+'px','height':self.board_pixels()+'px','left':self.board_left()+'px','top':self.board_top()+'px'}); 
     
     self.update_all();
-  }
+  };
   
   self.show_configs = ko.observable(false);
   self.show_menu = ko.observable(false);
@@ -46,13 +52,13 @@ function BoardViewModel(size, pixels) {
     //use mouseenter and mouseleave to avoid multiple calls
     //http://stackoverflow.com/questions/9387433/onmouseover-running-multiple-times-while-hovering-on-element
     //$('#gear_image').fadeIn();
-    $('#gear_image').fadeTo(400,.75);
+    $('#gear_image').fadeTo(400, 0.75);
     //console.log("showing gear!");
   };
   self.gear_inactive = function() {
     //$('#gear_image').fadeOut();
     if (! self.show_configs()) {
-      $('#gear_image').fadeTo(400,.25);
+      $('#gear_image').fadeTo(400, 0.25);
     }
     //console.log("hiding gear!");
   };
@@ -61,7 +67,7 @@ function BoardViewModel(size, pixels) {
     if (self.show_configs()) {
       self.show_configs(false);
       //console.log("hiding configs!");
-      if ( (! self.show_controls()) && (self.min_control_width() != 50)) {
+      if ( (! self.show_controls()) && (self.min_control_width() !== 50)) {
         self.min_control_width = ko.observable(50);
         self.update_all();
       }
@@ -78,17 +84,17 @@ function BoardViewModel(size, pixels) {
   
 
   self.menu_active = function() {
-    $('#menu_image').fadeTo(400,.75);
+    $('#menu_image').fadeTo(400, 0.75);
   };
   self.menu_inactive = function() {
     if (! self.show_menu()) {
-      $('#menu_image').fadeTo(400,.25);
+      $('#menu_image').fadeTo(400, 0.25);
     }
   };  
   self.toggle_menu = function() {
     if (self.show_menu()) {
       self.show_menu(false);
-      if ( (! self.show_controls()) && (self.min_control_width() != 50)) {
+      if ( (! self.show_controls()) && (self.min_control_width() !== 50)) {
         self.min_control_width = ko.observable(50);
         self.update_all();
       }
@@ -99,17 +105,17 @@ function BoardViewModel(size, pixels) {
   };
   
   self.controls_active = function() {
-    $('#controls_image').fadeTo(400,.75);
+    $('#controls_image').fadeTo(400, 0.75);
   };
   self.controls_inactive = function() {
     if (! self.show_controls()) {
-      $('#controls_image').fadeTo(400,.25);
+      $('#controls_image').fadeTo(400, 0.25);
     }
   };  
   self.toggle_controls = function() {
     if (self.show_controls()) {
       self.show_controls(false);
-      if ( (! self.show_controls()) && (self.min_control_width() != 50)) {
+      if ( (! self.show_controls()) && (self.min_control_width() !== 50)) {
         self.min_control_width = ko.observable(50);
         self.update_all();
       }
@@ -120,22 +126,55 @@ function BoardViewModel(size, pixels) {
   };
 
   
-  //self.show_labels = ko.observable(true);
-  self.show_labels = ko.observable(false);
+  self._diagram_input = ko.observable('');
+  self.editing_diagram_input = ko.observable(false);
+  self.edit_diagram_input = function() { self.editing_diagram_input(true); };	
+  self.diagram_input = ko.computed({
+    read: function () {
+      return self._diagram_input();
+    },
+    write: function (value) {
+      self._diagram_input(value);
+      self.board.import_diagram(self._diagram_input());
+    },
+    owner: self
+  });
+  
+
+
+
+
+  //aka labels_x
+  self.labels_h = ko.computed(function() {
+    return lodash.first(label_options, self.size());
+  });
+  //console.log(self.labels_h);
+  
+  //aka labels_y
+  self.labels_v = ko.computed(function() {
+    var temp = [ ];
+    for (var i = 1; i <= self.size(); i++) { 
+      temp.push(i.toString());
+    }
+    //this is the way they're shown when rendering them:
+    temp.reverse();
+    return temp;
+  });
+
+  //console.log(self.labels_v);  
 
   self.labels_top = ko.observableArray();
   self.labels_left = ko.observableArray();
   self.labels_right = ko.observableArray();
-  self.labels_bottom = ko.observableArray();
-    
+  self.labels_bottom = ko.observableArray();    
 
   self.toggle_labels = function() {
-    if (self.show_labels()) {
-      self.show_labels(false);
+    if (self.board.show_labels()) {
+      self.board.show_labels(false);
       self.update_all();
     }
     else {
-      self.show_labels(true);
+      self.board.show_labels(true);
       self.update_all();
     }      
   };
@@ -170,7 +209,7 @@ function BoardViewModel(size, pixels) {
     //var labels_width = ((self.board.space_pixels() * self.size()) + (self.label_pixels() * 2));
     //var labels_width = (self.board.space_pixels() * (self.size()+2));
     
-    if (self.show_labels()) {
+    if (self.board.show_labels()) {
       return (self.board.space_pixels() * (self.size()+2));
     }
     else {
@@ -181,7 +220,7 @@ function BoardViewModel(size, pixels) {
   });
   
   self.board_top = ko.computed(function() {
-    if (self.show_labels()) {
+    if (self.board.show_labels()) {
       return self.label_pixels();
     }
     else {
@@ -190,7 +229,7 @@ function BoardViewModel(size, pixels) {
   });
 
   self.board_left = ko.computed(function() {
-    if (self.show_labels()) {
+    if (self.board.show_labels()) {
       return self.board.space_pixels();
     }
     else {
@@ -203,12 +242,12 @@ function BoardViewModel(size, pixels) {
     var sp = self.board.space_pixels();
 
     //want to re-create these incase dimensions have changed:
-    self.labels_top.removeAll()
-    self.labels_bottom.removeAll()
-    self.labels_left.removeAll()
-    self.labels_right.removeAll()
+    self.labels_top.removeAll();
+    self.labels_bottom.removeAll();
+    self.labels_left.removeAll();
+    self.labels_right.removeAll();
     
-    if (self.show_labels()) {
+    if (self.board.show_labels()) {
       //cur_pos = self.label_pixels();
       cur_pos = self.board.space_pixels();
       lodash.each(self.board.labels_h(), function(label) {
@@ -222,7 +261,7 @@ function BoardViewModel(size, pixels) {
       
       cur_pos = self.label_pixels();
       //cur_pos = self.board.space_pixels();
-      lodash.each(self.board.labels_v(), function(label) {
+      lodash.each(self.labels_v(), function(label) {
 	l = {
 	  'label': label,
 	  'left': 0,
@@ -233,7 +272,7 @@ function BoardViewModel(size, pixels) {
       
       cur_pos = self.label_pixels();
       //cur_pos = self.board.space_pixels();
-      lodash.each(self.board.labels_v(), function(label) {
+      lodash.each(self.labels_v(), function(label) {
 	l = {
 	  'label': label,
 	  //'left': self.label_pixels() + self.board_pixels(),
@@ -268,7 +307,7 @@ function BoardViewModel(size, pixels) {
     $('.label_v').css({'height':self.board.space_pixels()+'px'});
     $('.label_v').css({'line-height':self.board.space_pixels()+'px'});
      
-    var label_font = self.label_pixels() * .8;
+    var label_font = self.label_pixels() * 0.8;
     //console.log(self.board_width());
     $('.labels').css({'width':self.board_width()+'px'});
     //$('.labels').css({'height':self.label_pixels()+'px'});
@@ -316,7 +355,7 @@ function BoardViewModel(size, pixels) {
     }
     */
 
-    if (self.show_labels()) {
+    if (self.board.show_labels()) {
       //get rid of page padding:
       min_dimension = min_dimension - 16;
     
@@ -396,9 +435,9 @@ function BoardViewModel(size, pixels) {
   //XMLHttpRequest cannot load http://www.red-bean.com/sgf/examples/ff4_ex.sgf.
   //No 'Access-Control-Allow-Origin' header is present on the requested resource.
   //Origin 'http://localhost:9000' is therefore not allowed access.
-  self._remote_file = ko.observable("");
+  self._remote_file = ko.observable('');
   self.editing_remote_file = ko.observable(false);
-  self.edit_remote_file = function() { self.editing_remote_file(true) };	
+  self.edit_remote_file = function() { self.editing_remote_file(true); };
   self.remote_file = ko.computed({
     read: function () {
       return self._remote_file();
@@ -407,50 +446,84 @@ function BoardViewModel(size, pixels) {
       self._remote_file(value);
       $.ajax({  
         url: self._remote_file(),  
-        dataType: "text",  
+        dataType: 'text',  
         done: function(data) {
           console.log(data);
           //if it works, could parse the data accordingly here
-          remoteFile = data;
+          //remoteFile = data;
+          self.board.sgf().load(data);
+          //reset board properties
+          self.board.init();
+          var size = parseInt(self.board.sgf().size);
+          console.log(size);
+          self.board.size(size);
+          self.update_all();
         },
         fail: function() {
-          alert("Could not load: " + self._remote_file());
+          window.alert('Could not load: ' + self._remote_file());
         },
       });       
     },
     owner: self
   });
 
-
   self.copy_diagram = function() {
-    window.prompt ('Copy to clipboard: Ctrl+C, Enter', 'text');
-  }
+    var text = self.board.make_diagram();
+    window.prompt ('Copy to clipboard: Ctrl+C, Enter', text);
+  };
 
-  self.filename = ko.observable("");
-  self.local_file = ko.observable("");
+  self.mailto = function() {
+    return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram());
+  };
+
+  /*
+  self.current_comment = ko.computed({
+    read: function () {
+      var comment = self.board.sgf().cur_node().comment();
+      console.log("Read comment called: ", comment); 
+      return comment;
+    },
+    write: function (value) {
+      self.board.sgf().cur_node().comment(value);
+    },
+    owner: self
+  });
+
+  self.current_comment = ko.computed(function() {
+    return self.board.sgf().cur_node().comment();    
+  });
+  */
+                                     
+  self.filename = ko.observable('');
+  self.local_file = ko.observable('');
   //http://www.html5rocks.com/en/tutorials/file/dndfiles/
   self.load_local = function (evt) {
     var files = evt.target.files; // FileList object    
     //javascript regular expressions:
     //https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Regular_Expressions
-    var check_dash = /-/g;
+
+    //var check_dash = /-/g;
+    
     // files is a FileList of File objects. 
-    for (var i = 0, f; f = files[i]; i++) {
+    for (var i = 0; i < files.length; i++) {
+      var f = files[i];
       var reader = new FileReader();
       
       console.log(f);
       
       //update self.filename with loaded name:
+      /*
       var parts = f.name.split('.');
       var prefix = parts[0];
       if (check_dash.test(prefix)) {
-	console.log("Prefix has dash: ", prefix);
+	console.log('Prefix has dash: ', prefix);
 	parts = prefix.split('-');
 	self.local_file(parts[2]);
       }
       else {
 	self.local_file(prefix);
       }
+      */
       
       // Closure to capture the file information.
       reader.onload = (function(theFile) {
@@ -458,12 +531,13 @@ function BoardViewModel(size, pixels) {
 	return function(e) {
           //console.log("function called");
           //console.log(e.target.result);
-          // call the function to process data:
+          
+          // call a function to process data:
 	  //self.original.from_json(e.target.result);
-          self.board.sgf.load(e.target.result);
+          self.board.sgf().load(e.target.result);
           //reset board properties
           self.board.init();
-          var size = parseInt(self.board.sgf.size);
+          var size = parseInt(self.board.sgf().size);
           console.log(size);
           self.board.size(size);
           self.update_all();

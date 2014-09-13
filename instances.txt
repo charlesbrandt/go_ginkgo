@@ -1,3 +1,34 @@
+*2014.09.04 07:21:12 settings
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/.jshintrc
+/c/go_ginkgo/package.json
+/c/go_ginkgo/gulpfile.js
+
+*2014.09.04 07:20:26 layout
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/app/styles/globals.less
+/c/go_ginkgo/app/styles/main.less
+/c/go_ginkgo/app/board.html
+
+*2014.09.04 07:19:52 test
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/test/spec/ff4_ex.sgf
+/c/go_ginkgo/test/spec/test.js
+
+*2014.09.04 07:19:05 javascript
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/app/scripts/init.js
+/c/go_ginkgo/app/scripts/view.js
+/c/go_ginkgo/app/scripts/marker.js
+/c/go_ginkgo/app/scripts/node.js
+/c/go_ginkgo/app/scripts/sgf.js
+/c/go_ginkgo/app/scripts/space.js
+/c/go_ginkgo/app/scripts/board.js
+
 *2014.08.01 07:23:53 code
 /c/go_ginkgo/instances.txt
 /c/go_ginkgo/launch.sh

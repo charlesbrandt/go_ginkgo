@@ -1,5 +1,3 @@
-
-
 <!doctype html>
 <html class="no-js">
   <head>
@@ -75,7 +73,7 @@
             <li class="action">White: <input></li>
             <li class="action">Komi: <input></li>
             <li class="action">Date: <input></li>
-            <li class="action">Location: <input></li>
+            <li class="action">Location: <input data-bind="value: board.sgf().place()"></li>
             <li class="action">Clear</li>            
             
           </ul>
@@ -84,11 +82,14 @@
           <ul class="menu-options">
             <li class="action">Save SGF</li>
             <li class="action" data-bind="click: function(data, event) { copy_diagram() }">Copy Diagram</li>
-            <li class="action">Paste Diagram</li>
+            <li class="action" data-bind="click: edit_diagram_input">Paste Diagram
+              <textarea data-bind="visible: editing_diagram_input(), value: diagram_input, hasFocus: editing_diagram_input" rows="22" cols="40"></textarea>
+            </li>
+
             <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
 
             <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
-            <li class="action">Email SGF...</li>
+            <li class="action"><a data-bind="attr: { href: mailto() }">Email SGF...</a></li>
             <li class="action">About...</li>
           </ul>
         </div>
@@ -97,7 +98,7 @@
           <ul class="menu-options">
             <li class="action">Add Marker...</li>
             <li class="action">Delete Branch...</li>
-            <li class="action">Current Comment (click for edit box)</li>
+            <li class="action"><textarea data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
             <li class="action" data-bind="click: function(data, event) { board.previous() }">Backward</li>
             <li class="action">Current Position: <input> / (out of)</li>
             <li class="action" data-bind="click: function(data, event) { board.next(0) }">Forward</li>

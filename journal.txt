@@ -1,3 +1,55 @@
+*2014.09.13 11:04:53
+shouldn't need this approach... found the problem... new nodes were not being assigned to the same observable!
+
+too many things to keep track of if replicating this way
+            <li class="action"><textarea data-bind="value: board.current_comment()" rows="4" cols="50"></textarea></li>
+
+
+*2014.09.13 09:15:51
+can't get this working:
+
+
+
+*2014.09.10 09:29:58 complete
+diagrams seem to work...
+do not include 10 move history yet
+but can add that in later
+requested [2014.09.07 17:27:26]
+$$Bc19m4 msample title goes here
+$$ +---------------------------------------+
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . W . . |
+$$ | . . . . . . . . . . . . . B . . . . . |
+$$ | . . . . . . . . . W . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . B . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ | . . . . . . . . . . . . . . . . . . . |
+$$ +---------------------------------------+
+
+
+*2014.09.10 09:30:25 complete
+forward and backward seem to work...
+still a few missing SGF properties that are tripping up sample
+requested [2014.09.04 07:39:37]
+use text diagrams to store board state at each node
+this should help return to previous nodes
+without regenerating / replaying the entire sequence
+
+requested [2013.02.06 08:47:16]
+forward and backward move integration (undo / redo) (requires SGF)
+
 *2014.09.01 17:46:45 complete
 using testing has been very helpful!!
 requested [2014.08.01 07:12:52]

@@ -13,8 +13,12 @@ var Space = require("../../app/scripts/space.js").Space;
 var ko = require('knockout');
 var lodash = require('lodash-node/underscore');
 
-//var sample = require('./sample').data;
+//rather than try to create multi-line strings in raw javascript
+//(http://stackoverflow.com/questions/805107/creating-multiline-strings-in-javascript)
+//I find it easier to just read the data in from a file:
+
 var sample;
+var diagram;
 var fs = require('fs');
 fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
   if (err) {
@@ -22,6 +26,14 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
   }
   sample = data.toString();
 });
+
+fs.readFile( __dirname + '/diagram.txt', function (err, data) {
+  if (err) {
+    throw err; 
+  }
+  diagram = data.toString();
+});
+
 
 (function () {
   'use strict';
@@ -47,6 +59,13 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
         //col, zero indexed
         expect(indexes[1]).to.equal( 2 );
       });
+
+      it('should apply an index', function () {
+        marker.apply_indexes(3, 2);
+        //console.log("Marker space: ", marker.space);
+        expect(marker.space).to.equal( 'cd' );
+      });
+      
       
     });
     
@@ -133,12 +152,12 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
       });
 
       it('root should equal cur_node after init', function () {
-        expect(sgf.root).to.equal( sgf.cur_node );
+        expect(sgf.root).to.equal( sgf.cur_node() );
       });
 
       it('root should not equal cur_node after add_move', function () {
         sgf.add_move('A1', 'B');
-        expect(sgf.root).to.not.equal( sgf.cur_node );
+        expect(sgf.root).to.not.equal( sgf.cur_node() );
       });
       
       it('should parse sequences', function () {
@@ -185,8 +204,8 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
       });
       
       it('should add markers with point lists', function () {
-        sgf.add_markers(sgf.cur_node, 'AB', 'aa:ab');
-        expect(sgf.cur_node.markers.length).to.equal( 2 );
+        sgf.add_markers(sgf.cur_node(), 'AB', 'aa:ab');
+        expect(sgf.cur_node().markers.length).to.equal( 2 );
       });
       
       it('should load saved game data', function () {
@@ -221,7 +240,7 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
         //after loading, we're at the end?
         //sgf.go(0);
 
-        var root = sgf.cur_node;
+        var root = sgf.cur_node();
         var first = sgf.next();
         var second = sgf.next();
 
@@ -240,7 +259,8 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
         var board = null;
         var contains = '';
         var pixels = 40;
-        space = new Space(board, "AA", contains, pixels, 0, 0);
+        //space = new Space(board, "AA", contains, pixels, 0, 0);
+        space = new Space(board, contains, pixels, 0, 0);
       });
       
       it('should create an instance', function () {
@@ -326,21 +346,29 @@ fs.readFile( __dirname + '/ff4_ex.sgf', function (err, data) {
 
       it('should apply a node', function () {
         var node;
-        board.sgf.load(sample);
-        //board.sgf.go(0);
+        board.sgf().load(sample);
+        //board.sgf.load(sample);
+        //board.sgf().go(0);
         //first one is empty?
         //console.log("testing sgf navigation via board:");
-        node = board.sgf.next();
+        node = board.sgf().next();
+        //node = board.sgf.next();
         //if we don't apply the node, the board will be out of sync
         board.apply_node(node);
         //console.log("second move:");
-        node = board.sgf.next();
+        node = board.sgf().next();
+        //node = board.sgf.next();
         board.apply_node(node);
 
         board.next();
 
       });
 
+      it('should apply a diagram', function () {
+        board.apply_diagram(diagram);
+        expect(board.spaces()[0].contains()).to.equal( 'W' );
+        
+      });
       
     });
 
