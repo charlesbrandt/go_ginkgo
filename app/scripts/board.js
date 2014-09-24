@@ -21,8 +21,12 @@ function Board(size, pixels) {
   var self = this;
 
   self.init = function () {
-  
-    self.next_move = 'B';
+
+    //moving this to be an attribute of SGF.node
+    //self.next_move = 'B';
+
+    //use this to determine if the click should cause a move or a marker
+    self.cur_action = 'move';
 
     self.last_move = false;
   
@@ -89,6 +93,10 @@ function Board(size, pixels) {
     }
   });
 
+  //console.log(self.spaces());
+  
+  // done with setup.
+
   self.make_diagram = function() {
     // generate a text based representation of the board state (snapshot)
     // http://senseis.xmp.net/?HowDiagramsWork
@@ -98,7 +106,7 @@ function Board(size, pixels) {
     // get (up to) the last 10 *moves* from the SGF
     var i;
     
-    var text = '$$' + self.next_move;
+    var text = '$$' + self.sgf().cur_node().next_move;
     if (self.show_labels) {
       //c is for show coordinates
       text += 'c';
@@ -158,7 +166,6 @@ function Board(size, pixels) {
   
   self.apply_diagram = function(text) {
     //inverse of make_diagram
-
     //if we're loading from a saved state in the SGF,
     //don't want to automatically trigger a new node
 
@@ -167,6 +174,8 @@ function Board(size, pixels) {
     //console.log(lines);
     //var header = lines[0];
     //console.log(header);
+
+    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-negated-character-set
     //var header_parts = header.match(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
     //var re = /^(?:\$+)([WB])(c)(\d+)(m\d+) (.*)/;
     //var header_parts = re.exec(header);
@@ -178,10 +187,10 @@ function Board(size, pixels) {
     //console.log(header_parts);
     lodash.each(sub_parts, function(part) {
       if (part === 'W') {
-	self.next_move = 'W';        
+	self.sgf().cur_node().next_move = 'W';        
       }
       else if (part === 'B') {
-	self.next_move = 'B';        
+	self.sgf().cur_node().next_move = 'B';        
       }
       else if (part === 'c') {
         //show labels (coordinates)
@@ -199,22 +208,19 @@ function Board(size, pixels) {
         if (size !== self.size()) {
           console.log('Found size:', size, '!= Board size:', self.size());
         }
-      }
-                
-    });
-
-    
+      }                
+    });   
     //var top_border = lines[1];
     var next_line;
     var next_part;
     var cur_space;
     var parts;
     var row, column;
-    var marker;
-    
+    var marker;    
     //collect and return these, just in case they should be applied to SGF
     var markers = [];
     var stones = [];
+    
     for (var i = 2; i < lines.length; i++) {
       next_line = lines[i];
       parts = next_line.split(' ');
@@ -250,8 +256,7 @@ function Board(size, pixels) {
           //TODO: handle markers in a diagram
                     
         }
-      }
-        
+      }        
     }
     var result = { 'stones': stones, 'markers': markers };
     //console.log(result);
@@ -259,10 +264,6 @@ function Board(size, pixels) {
   };
 
   
-  //console.log(self.spaces());
-  
-  // done with setup.
-
   //self.go = function(position) {
   self.go = function(move) {
     //hehe... go... get it?
@@ -275,13 +276,13 @@ function Board(size, pixels) {
     //get the nodes first... apply node will need the cur node to unset markers?
     //var nodes = self.sgf.get(move);
     var nodes = self.sgf().go(move);
-    if (move > self.move) {
-      
+    if (move > self.move) {      
       lodash.each(nodes, function(node) {
         self.apply_node(node);
         last_node = node;
       });
     }
+    
     else {
       //if going backwards, node snapshot should be set
       //use that to apply_diagram
@@ -290,37 +291,9 @@ function Board(size, pixels) {
       self.clear_markers();
       self.apply_diagram(node.snapshot);
       self.set_markers(node);
-
-      /*
-      lodash.each(nodes, function(node) {
-        self.undo_node(node);
-        last_node = node;
-      });
-      */
-    }
-    
+    }    
   };
 
-  //trying to use board.sgf().cur_node().comment directly doesn't seem to work
-  //even if it is set as an observable
-  //(and even if all parent objects are observable... which is a hassle)
-  //so we can track those values at the board level, which does work
-  //this approach seems kludgy and redundant, but I can't find a better option
-  self._current_comment = ko.observable();
-  self.current_comment = ko.computed({
-    read: function () {
-      //console.log("Read comment called: ", self.cur_comment()); 
-      return self._current_comment();
-      //this won't work
-      //self.sgf().cur_node().comment();
-    },
-    write: function (value) {
-      self.sgf().cur_node().comment(value);
-      console.log(self.sgf().cur_node().comment());
-      
-    },
-    owner: self
-  });
   
   self.next = function(branch) {
     if (!branch) {
@@ -332,8 +305,8 @@ function Board(size, pixels) {
 
     var node = self.sgf().next(branch);
     //console.log(node);
-    console.log(self.sgf().cur_node().comment());
-    self._current_comment(self.sgf().cur_node().comment());
+    //console.log(self.sgf().cur_node().comment());
+    //self._current_comment(self.sgf().cur_node().comment());
     self.apply_node(node);
   };
 
@@ -345,13 +318,6 @@ function Board(size, pixels) {
     //self.undo_node(node);
   };
 
-  /*
-  self.undo_node = function(node) {
-    // similar to apply_node
-    // but in reverse
-  };
-  */
-  
   self.clear_markers = function() {
     //go through each space on the board
     //and make sure no markers or labels are set
@@ -369,10 +335,58 @@ function Board(size, pixels) {
 
     indexes = marker.indexes();
     cur_space = self.rows[indexes[0]][indexes[1]];
-    console.log(cur_space);
+    if (marker.type === 'AW') {
+      cur_space.contains('W');
+    }
+    else if (marker.type === 'AB') {
+      cur_space.contains('B');
+    }
+    else if (marker.type === 'AE') {
+      cur_space.contains('');
+    }
+    else if (marker.type === 'TR') {
+      cur_space.mtype('triangle');
+    }
+    else if (marker.type === 'CR') {
+      cur_space.mtype('circle');
+    }
+    else if (marker.type === 'SQ') {
+      cur_space.mtype('square');
+    }
+    else if (marker.type === 'MA') {
+      cur_space.mtype('mark');
+    }
+    else if (marker.type === 'SL') {
+      cur_space.mtype('selected');
+    }
+    else if (marker.type === 'TB') {
+      cur_space.mtype('territory_black');
+    }
+    else if (marker.type === 'TW') {
+      cur_space.mtype('territory_white');
+    }
+    else {
+      console.log('Unhandled Marker:');
+      console.log(cur_space);
+      console.log(marker.type);
+    }
     //}
   };
 
+  self.apply_label = function(marker) {
+    // Don't want to do any checks in this case...
+    // if a label is set to AB, don't want to confuse it with 'add black'
+    
+    //if (marker.space) {
+    var cur_space;
+    var indexes;
+
+    indexes = marker.indexes();
+    cur_space = self.rows[indexes[0]][indexes[1]];
+    //console.log(cur_space);
+    console.log(marker.type);
+    cur_space.label(marker.type);
+  };
   
   self.set_markers = function(node) {
     lodash.each(node.markers, function(marker) {
@@ -384,6 +398,10 @@ function Board(size, pixels) {
     });
 
     lodash.each(node.labels, function(marker) {
+      self.apply_label(marker);
+    });
+
+    lodash.each(node.territory, function(marker) {
       self.apply_marker(marker);
     });
     
@@ -413,50 +431,34 @@ function Board(size, pixels) {
         //console.log(self.rows);
         cur_space = self.rows[indexes[0]][indexes[1]];
 
-        if (node.move.type !== self.next_move) {
-          console.log('Next move in SGF: ', node.move.type, ' != expected next move: ', self.next_move);
+        if (node.move.type !== self.sgf().cur_node().next_move) {
+          //this seems likely to happen after jumping
+          //to a different position or node in the SGF
+          console.log('Next move in SGF: ', node.move.type, ' != expected next move: ', self.sgf().cur_node().next_move);
         }
       
         // reset these before handle move, so they get updated appropriately
         node.total_captures.B = node.parent.total_captures.B;
         node.total_captures.W = node.parent.total_captures.W;
-        node.captures = self.handle_move(cur_space, node);
-        
+        node.captures = self.handle_move(cur_space, node);        
       }
     }
 
-    //make a snapshot for future reference (easier moving between states)
-    if (! node.snapshot) {
-      node.snapshot = self.make_diagram();
-    }
-    
   };
 
   self.make_move = function(space) {
     //update the SGF *and* handle_move
     if (space.contains() === '') {
       var node;
-      node = self.sgf().add_move(space.name, self.next_move);
+      //save this for later:
+      //self.cur_move = self.sgf().cur_node().next_move;
+      //node = self.sgf().add_move(space.name, self.sgf().cur_node().next_move);
+      node = self.sgf().add_move(space.row, space.column, self.sgf().cur_node().next_move);
+      console.log(node);
       self.sgf().captures = self.handle_move(space, node);
     }
   };
 
-  self.handle_pass = function() {
-      if (self.next_move === 'B') {
-	self.next_move = 'W';
-      }
-      else {
-	self.next_move = 'B';
-      }
-      self.move += 1;
-      
-      //update last move marker
-      if (self.last_move) {
-	self.last_move.mtype('');
-      }
-      self.last_move = '';
-  };
-  
   self.handle_move = function(space, node) {
     // only pass in node if you want captures applied to it
     // no sgf interaction here...
@@ -467,15 +469,22 @@ function Board(size, pixels) {
       //update the value of space.contains()
       //this will automatically trigger updates of DOM
       //(thanks knockout!)
-      space.contains(self.next_move);
+      //space.contains(self.sgf().cur_node().next_move);
 
+      //this:
+      //space.contains(self.sgf().cur_node().move.type);
+      //should be the same as:
+      space.contains(node.move.type);
+      space.hover_off();
+      
       captures = self.check_captures(space, node);
       
-      if (self.next_move === 'B') {
-	self.next_move = 'W';
+      //if (self.sgf().cur_node().next_move === 'B') {
+      if (node.move.type === 'B') {
+	self.sgf().cur_node().next_move = 'W';
       }
       else {
-	self.next_move = 'B';
+	self.sgf().cur_node().next_move = 'B';
       }
       self.move += 1;
       
@@ -486,9 +495,32 @@ function Board(size, pixels) {
       self.last_move = space;
       space.mtype('circle');
     }
+
+    //make a snapshot for future reference (easier moving between states)
+    if (! node.snapshot) {
+      node.snapshot = self.make_diagram();
+    }
+    
+    //console.log(self.sgf());
     return captures;
   };
       
+  self.handle_pass = function() {
+      if (self.sgf().cur_node().next_move === 'B') {
+	self.sgf().cur_node().next_move = 'W';
+      }
+      else {
+	self.sgf().cur_node().next_move = 'B';
+      }
+      self.move += 1;
+      
+      //update last move marker
+      if (self.last_move) {
+	self.last_move.mtype('');
+      }
+      self.last_move = '';
+  };
+  
   self.get_neighbors = function(space) {
     //can cache what we find in space.neighbors
     //but that is tricky to do on setup 

@@ -1,14 +1,31 @@
-*2014.09.10 19:42:03
+*2014.09.14 10:53:57
+way to change svg stroke color via css
+would eliminate the need for many pngs, along with the different black/white/red combinations
 
+*2014.09.14 02:29:28
+add labels to board / space
+
+*2014.09.14 02:22:53
+captured svgs (for marking stones that were caputred)
+(configure if they're shown or not)
+
+*2014.09.14 01:14:32
+is it possible to limit the number of initial divs for spaces
+to just the hover ones...
+then as spaces have content, add the remaining divs dynamically
+rather than having them all in place initially
+
+*2014.09.14 01:03:13
+add next player's turn to controls
+
+*2014.09.14 01:02:56
+add current captures to controls
 
 *2014.09.10 09:31:18
-integrate comments and other SGF fields with DOM interface
+integrate other SGF fields with DOM interface
 
 *2014.09.10 09:31:31
 integrate position with DOM interface
-
-*2014.09.10 09:34:07
-add markers to board via SGF
 
 *2014.09.10 09:34:13
 other SGF properties (e.g. pass)

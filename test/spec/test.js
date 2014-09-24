@@ -88,7 +88,14 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
       });
 
       it('should be able to add a move', function () {
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
+        //var index = node.add_move('A1', 'B');
+        var index = node.add_move(0, 0, 'B');
+        expect(index).to.equal( 0 );
+        var new_node = node.children[index];
+        var indexes = new_node.move.indexes();
+        //console.log(indexes);
+        expect(indexes[0]).to.equal( 0 );        
+        expect(indexes[1]).to.equal( 0 );        
       });
 
       it('should be able to set a move', function () {
@@ -103,12 +110,15 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
       });
       
       it('should not add the same move twice', function () {
-        var index = node.add_move('A1', 'B');
+        //var index = node.add_move('A1', 'B');
+        var index = node.add_move(1, 1, 'B');
         expect(index).to.equal( 0 );
         //add it again
-        index = node.add_move('A1', 'B');
+        //index = node.add_move('A1', 'B');
+        index = node.add_move(1, 1, 'B');
         //console.log('index after: ', index);
-        expect(node.add_move('A1', 'B')).to.equal( 0 );
+        //expect(node.add_move('A1', 'B')).to.equal( 0 );
+        expect(node.add_move(1, 1, 'B')).to.equal( 0 );
         expect(node.children.length).to.equal( 1 );
       });
       
@@ -156,7 +166,8 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
       });
 
       it('root should not equal cur_node after add_move', function () {
-        sgf.add_move('A1', 'B');
+        //sgf.add_move('A1', 'B');
+        sgf.add_move(1, 1, 'B');
         expect(sgf.root).to.not.equal( sgf.cur_node() );
       });
       

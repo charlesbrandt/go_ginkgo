@@ -1,3 +1,51 @@
+*2014.09.23 22:29:05 complete
+I think this is working, now that next move is stored as part of a node, rather than at the board level
+requested [2014.09.14 11:03:42]
+handle:
+node marked as white to play
+node marked as black to play
+(similar to pass)
+
+*2014.09.14 11:07:52 complete
+requested [2014.09.14 02:23:51]
+increase size of selection (try 32 to 64)
+
+requested [2014.09.14 02:23]:44
+raise position of triangle
+
+*2014.09.14 11:00:07
+shouldn't need this in board.js any more, now that observables are working in SGF and node objects.
+
+  //trying to use board.sgf().cur_node().comment directly doesn't seem to work
+  //even if it is set as an observable
+  //(and even if all parent objects are observable... which is a hassle)
+  //so we can track those values at the board level, which does work
+  //this approach seems kludgy and redundant, but I can't find a better option
+  self._current_comment = ko.observable();
+  self.current_comment = ko.computed({
+    read: function () {
+      //console.log("Read comment called: ", self.cur_comment()); 
+      return self._current_comment();
+      //this won't work
+      //self.sgf().cur_node().comment();
+    },
+    write: function (value) {
+      self.sgf().cur_node().comment(value);
+      console.log(self.sgf().cur_node().comment());
+      
+    },
+    owner: self
+  });
+
+
+*2014.09.14 02:29:13 complete
+just got most of these working
+requested [2014.09.10 09:34:07]
+add markers to board via SGF
+
+*2014.09.14 02:28:55
+comments showing up as of earlier today?
+
 *2014.09.13 11:04:53
 shouldn't need this approach... found the problem... new nodes were not being assigned to the same observable!
 

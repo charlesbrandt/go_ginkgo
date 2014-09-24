@@ -13,6 +13,11 @@ function Node(space, type) {
   
   self.move = new Marker(space, type);
 
+  //track this on a node by node basis,
+  //rather than at board level (as before)
+  //this way we can respond to the 'Player to Play' property from an SGF
+  self.next_move = 'B';
+
   //these only apply for add stones
   self.stones = [];
 
@@ -22,6 +27,14 @@ function Node(space, type) {
   //keeping labels separate...
   //would be nice to be able to have a marker and a label on the same space
   self.labels = [];
+
+  /*
+  //territory uses a different marking logic than MA (marked) 'X' markers
+  //if its TB, want black even though space is empty
+  //can handle this based on marker type
+  //same goes for TW, white
+  self.territory = [];
+  */
   
   //will not be provided by SGF,
   //but will help when returning to previous board states (undoing)
@@ -31,9 +44,16 @@ function Node(space, type) {
   //rather than track captures and try to recreate
   //hold the snapshot text output from a Diagram
   self.snapshot = '';
+
+  //the next player to play
+  //previously a property of the board
+  self.player = '';
   
   //as they stand, cumulatively, after the current move
   self.total_captures = { 'B': 0, 'W': 0 };
+  //in chinese scoring, it may be more useful to keep track of all stones
+  self.score = { 'B': 0, 'W': 0 };
+  
   
   //should this be position represented as a string?
   //is it necessary?
@@ -86,12 +106,13 @@ function Node(space, type) {
     return self.children.indexOf(node);
   };
   
-  self.add_move = function(space, color) {
+  //self.add_move = function(space, color) {
+  self.add_move = function(row, col, color) {
     //this is more useful when playing a game and recording the action
     //for SGF loading, see set move instead
     
     //if there is already an existing move at this space with same color
-    //return the index of that space
+    //return the index of that node
     //if the color is different
     //return an error
 
@@ -99,12 +120,15 @@ function Node(space, type) {
     var index;
     
     lodash.each(self.children, function(option, i) {
-      if ( (option.move.space === space) && (option.move.type === color) ) {
+      //if ( (option.move.space === space) && (option.move.type === color) ) {
+      var row_col = option.move.indexes();
+      if ( (row_col[0] === row) && (row_col[1] === col) && (option.move.type === color) ) {
         //console.log("MATCHED EXISTING");
         matched = true;
         index = i;
       }
-      else if ( (option.move.space === space) && (option.move.type !== color) ) {
+      //else if ( (option.move.space === space) && (option.move.type !== color) ) {
+      else if ( (row_col[0] === row) && (row_col[1] === col) && (option.move.type !== color) ) {
         var err = new ReferenceError('Invalid move. Space: ' + option.move.space + ' already contains: ' + option.move.type);
         throw err;
       }
@@ -113,7 +137,8 @@ function Node(space, type) {
     if (! matched) {
       index = self.make_node();
       var child = self.children[index];
-      child.move.space = space;
+      //child.move.space = space;
+      child.move.apply_indexes(row, col);
       child.move.type = color;
       return index;      
     }
@@ -163,6 +188,22 @@ function Node(space, type) {
     }
   };
 
+  /*
+  self.add_territory = function(space, type) {
+    var result = self.check_for_conflict(self.territory, space, type, 'territory');
+
+    if (! result.matched) {
+      //console.log("Adding: ->", type, "<- to: ", space);
+      var marker = new Marker(space, type);
+      self.territory.push(marker);
+      return self.territory.indexOf(marker);
+    }
+    else {
+      return result.index;
+    }
+  };
+  */
+  
   self.add_stone = function(space, type) {
     //not the same as a move... these are setup configurations
     //similar to add_marker, but not a marker...

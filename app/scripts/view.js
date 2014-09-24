@@ -250,7 +250,7 @@ function BoardViewModel(size, pixels) {
     if (self.board.show_labels()) {
       //cur_pos = self.label_pixels();
       cur_pos = self.board.space_pixels();
-      lodash.each(self.board.labels_h(), function(label) {
+      lodash.each(self.labels_h(), function(label) {
 	l = {
 	  'label': label,
 	  'left': cur_pos,
@@ -284,7 +284,7 @@ function BoardViewModel(size, pixels) {
       
       //cur_pos = self.label_pixels();
       cur_pos = self.board.space_pixels();
-      lodash.each(self.board.labels_h(), function(label) {
+      lodash.each(self.labels_h(), function(label) {
 	l = {
 	  'label': label,
 	  'left': cur_pos,

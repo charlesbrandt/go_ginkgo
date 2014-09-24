@@ -95,7 +95,7 @@ function Space(board, contains, pixels, row, column) {
   //look in self.board.next_move instead of self.contains()
   self.hover = ko.computed(function() {
     if (self.hovering()) {
-      if (self.board.next_move === 'B') {
+      if (self.board.sgf().cur_node().next_move === 'B') {
 	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
 	//return 'url("images/black.png") no-repeat center center' ;
       }
@@ -135,6 +135,62 @@ function Space(board, contains, pixels, row, column) {
       else {
 	return 'transparent url("images/circle-red.png") no-repeat center center' ;
       }      
+    }
+
+    else if (self.mtype() === 'triangle') {
+      if (self.contains() === 'B') {
+	return 'transparent url("images/triangle-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/triangle-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/triangle-red.png") no-repeat center center' ;
+      }      
+    }
+
+    else if (self.mtype() === 'square') {
+      if (self.contains() === 'B') {
+	return 'transparent url("images/square-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/square-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/square-red.png") no-repeat center center' ;
+      }      
+    }
+    
+    else if (self.mtype() === 'selected') {
+      if (self.contains() === 'B') {
+	return 'transparent url("images/selected-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/selected-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/selected-red.png") no-repeat center center' ;
+      }      
+    }
+
+    else if (self.mtype() === 'mark') {
+      if (self.contains() === 'B') {
+	return 'transparent url("images/mark-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/mark-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/mark-red.png") no-repeat center center' ;
+      }      
+    }
+
+    else if (self.mtype() === 'territory_white') {
+      return 'transparent url("images/mark-white.png") no-repeat center center' ;
+    }
+    
+    else if (self.mtype() === 'territory_black') {
+      return 'transparent url("images/mark-black.png") no-repeat center center' ;
     }
     
     else {

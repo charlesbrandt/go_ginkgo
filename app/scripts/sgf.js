@@ -47,6 +47,9 @@ function SGF() {
   self.white_rank = ko.observable('');//WR
   self.white_team = ko.observable('');//WT 
 
+  self.handicap = ko.observable(''); //HA
+  self.komi = ko.observable(''); //KM
+  
 
   
   //whether or not to show some console messages
@@ -110,6 +113,10 @@ function SGF() {
     self.white_player('');//PW
     self.white_rank('');//WR
     self.white_team('');//WT 
+
+    self.handicap(''); //HA
+    self.komi(''); //KM
+    
   };
 
   self.reset(19);
@@ -226,7 +233,8 @@ function SGF() {
     return point_list;
   };
 
-  self.add_move = function(position, color) {
+  //self.add_move = function(position, color) {
+  self.add_move = function(row, col, color) {
     //use the current position to add the move
     //if there is already an existing move at this position
     //add a new branch
@@ -234,8 +242,11 @@ function SGF() {
     //will need to use position to find current branch
     //and should also update position accordingly
 
-    var index = self.cur_node().add_move(position, color);
+    //var index = self.cur_node().add_move(position, color);
+    var index = self.cur_node().add_move(row, col, color);
     self.position.push(index);
+
+    //update our cur_node:
     //self.cur_node = self.cur_node.children[index];
     self.cur_node(self.cur_node().children[index]);
     return self.cur_node();
@@ -261,6 +272,15 @@ function SGF() {
       node.add_marker(point, id);
     });
   };
+
+  /*
+  self.add_territory = function(node, id, value) {
+    var point_list = self.make_point_list(value);
+    lodash.each(point_list, function(point) {
+      node.add_territory(point, id);
+    });
+  };
+  */
 
   self.add_labels = function(node, id, value) {
     //we know id == "LB" in this case... don't need to use that in Marker object
@@ -455,6 +475,13 @@ function SGF() {
             //local_cur_node = self.add_move(token_value, 'W');
             local_cur_node.set_move(token_value, 'W');
 
+          //passes are handled with empty property values of B[] or W[]
+          //PL does not require a move to apply
+          //PL   Player to play  setup            color
+          } else if (last_property_id === 'PL') {
+            //local_cur_node.player = token_value;
+            local_cur_node.next_move = token_value;
+            
           } else if (last_property_id === 'C') {
             //have a comment
             //self.cur_node.comment = token_value;
@@ -500,6 +527,14 @@ function SGF() {
                       (last_property_id === 'L')
                     ){
             self.add_labels(local_cur_node, last_property_id, token_value);
+            
+          //TB   Territory Black -                elist of point
+          //TW   Territory White -                elist of point
+          } else if ( (last_property_id === 'TB') ||
+                      (last_property_id === 'TW')
+                    ){
+            //self.add_territory(local_cur_node, last_property_id, token_value);
+            self.add_markers(local_cur_node, last_property_id, token_value);
 
           //root
           } else if (last_property_id === 'FF') {
@@ -575,16 +610,14 @@ function SGF() {
             //self.place = token_value; //PC 
             self.place(token_value); //PC
             //console.log(self.place());
+          } else if (last_property_id === 'HA') {
+            self.handicap(token_value); //HA
+          } else if (last_property_id === 'KM') {
+            self.komi(token_value); //KM
 
 /*
 TODO:
 PL   Player to play  setup            color
-
-TB   Territory Black -                elist of point
-TW   Territory White -                elist of point
-
-HA   Handicap        game-info        number
-KM   Komi            game-info        real
 
 
 *AR  Arrow           -                list of composed point ':' point
