@@ -32,7 +32,7 @@ function Space(board, contains, pixels, row, column) {
   self.left = ko.computed(function() {
     return self.column * self.pixels();
   });
-  
+
   //this is useful for debugging:
   //should just use row and column now...
   //self.name = name;
@@ -53,6 +53,62 @@ function Space(board, contains, pixels, row, column) {
   
   // this can be initialized later, after board has been set up properly
   self.neighbors = [ ];
+
+  self.render = ko.computed(function() {
+    //render everything for the space here
+    //that way less extra stuff if it's not needed
+    var result = '';
+    
+    if (self.contains()) {
+      //result += '<div class="space" style="left: ' + self.left() + 'px; top: ' + self.top() + 'px;">\n';
+      result += '<div class="space" style="left: 0px; top: 0px;">\n';
+      result += '<div class="stone">' + self.stone() + '</div>\n';
+      result += '</div>';
+    }
+
+    if (self.hovering()) {
+      result += '<div class="space" style="left: 0px; top: 0px;">\n';
+      //result += '<div class="space" style="left: ' + self.left() + 'px; top: ' + self.top() + 'px;">\n';
+      result += '<div class="hover">' + self.hover() + '</div>\n';
+      result += '</div>';
+    }
+
+    if (self.mtype()) {
+      //old approach of using background to show marker
+      //this was more of a concern when trying to limit the number of empty divs
+      //result += '<div class="marker" style="left: ' + self.left() + 'px; top: ' + self.top() + 'px; background: ' + self.marker() + '; background-size: contain">\n';
+      
+      //result += '<div class="marker" style="left: 0px; top: 0px; background: ' + self.marker() + '; background-size: contain">\n';
+      //result += '</div>';
+
+      result += '<div class="space" style="left: 0px; top: 0px;">\n';
+      result += '<div class="marker">' + self.marker() + '</div>\n';
+      result += '</div>';
+
+    }
+
+    if (self.label()) {
+      result += '<div class="marker" style="left: 0px; top: 0px; line-height: ' + self.image_px() + 'px">\n';
+      //result += '<div class="marker">' + self.label() + '</div>\n';
+      if (self.contains() === 'B') {
+          result += '<font color="white">' + self.label() +'</font>\n';
+      }
+      else if (self.contains() === 'W') {
+        result += self.label() +'\n';
+      }
+      else {
+          result += '<div style="background-color:rgba(144, 144, 144, 0.7);"><font color="red">' + self.label() +'</font></div>\n';
+      }
+      result += '</div>';
+
+    }
+    
+    
+    return result;
+
+  }, this);
+  
+
 
   self.clear_markers = function() {
     // clear both marker and label
@@ -127,13 +183,110 @@ function Space(board, contains, pixels, row, column) {
   self.marker = ko.computed(function() {
     if (self.mtype() === 'circle') {
       if (self.contains() === 'B') {
-	return 'transparent url("images/circle-white.png") no-repeat center center' ;
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/circle-white.png">';
       }
       else if (self.contains() === 'W') {
-	return 'transparent url("images/circle-black.png") no-repeat center center' ;
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/circle-black.png">';
       }
       else {
-	return 'transparent url("images/circle-red.png") no-repeat center center' ;
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/circle-red.png">';
+      }      
+    }
+
+    else if (self.mtype() === 'triangle') {
+      if (self.contains() === 'B') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/triangle-white.png">';
+      }
+      else if (self.contains() === 'W') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/triangle-black.png">';
+      }
+      else {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/triangle-red.png">';
+      }      
+
+    }
+
+    else if (self.mtype() === 'square') {
+      if (self.contains() === 'B') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/square-white.png">';
+      }
+      else if (self.contains() === 'W') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/square-black.png">';
+      }
+      else {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/square-red.png">';
+      }      
+
+      if (self.contains() === 'B') {
+	return 'transparent url("images/square-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/square-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/square-red.png") no-repeat center center' ;
+      }      
+    }
+    
+    else if (self.mtype() === 'selected') {
+      if (self.contains() === 'B') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/selected-white.png">';
+      }
+      else if (self.contains() === 'W') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/selected-black.png">';
+      }
+      else {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/selected-red.png">';
+      }      
+
+    }
+
+    else if (self.mtype() === 'mark') {
+      if (self.contains() === 'B') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/mark-white.png">';
+      }
+      else if (self.contains() === 'W') {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/mark-black.png">';
+      }
+      else {
+        return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/mark-red.png">';
+      }      
+
+      if (self.contains() === 'B') {
+	return 'transparent url("images/mark-white.png") no-repeat center center' ;
+      }
+      else if (self.contains() === 'W') {
+	return 'transparent url("images/mark-black.png") no-repeat center center' ;
+      }
+      else {
+	return 'transparent url("images/mark-red.png") no-repeat center center' ;
+      }      
+    }
+
+    else if (self.mtype() === 'territory_white') {
+      return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/mark-white.png">';
+    }
+    
+    else if (self.mtype() === 'territory_black') {
+      return '<img class="stone" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/mark-black.png">';
+    }
+    
+    else {
+      return '';
+    }
+  }, this);
+
+  /*
+  self.marker_background = ko.computed(function() {
+    if (self.mtype() === 'circle') {
+      if (self.contains() === 'B') {
+	return "transparent url('images/circle-white.png') no-repeat center center" ;
+      }
+      else if (self.contains() === 'W') {
+	return "transparent url('images/circle-black.png') no-repeat center center" ;
+      }
+      else {
+	return "transparent url('images/circle-red.png') no-repeat center center" ;
       }      
     }
 
@@ -197,6 +350,7 @@ function Space(board, contains, pixels, row, column) {
       return '';
     }
   }, this);
+  */
   
   self.has_stone = ko.computed(function() {
     if (self.contains() === 'B' || self.contains() === 'W') {

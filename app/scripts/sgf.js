@@ -205,6 +205,8 @@ function SGF() {
   };
   
   self.make_point_list = function(value) {
+    //split up a pointlist from an sgf file into individual points
+    //as needed for each marker
     var point_list = [];
     var parts = value.split(':');
     if (parts.length === 2) {

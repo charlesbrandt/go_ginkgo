@@ -431,16 +431,19 @@ function Board(size, pixels) {
         //console.log(self.rows);
         cur_space = self.rows[indexes[0]][indexes[1]];
 
+        /*
         if (node.move.type !== self.sgf().cur_node().next_move) {
           //this seems likely to happen after jumping
           //to a different position or node in the SGF
           console.log('Next move in SGF: ', node.move.type, ' != expected next move: ', self.sgf().cur_node().next_move);
         }
+        */
       
         // reset these before handle move, so they get updated appropriately
         node.total_captures.B = node.parent.total_captures.B;
         node.total_captures.W = node.parent.total_captures.W;
-        node.captures = self.handle_move(cur_space, node);        
+        node.captures = self.handle_move(cur_space, node);
+
       }
     }
 
@@ -449,13 +452,25 @@ function Board(size, pixels) {
   self.make_move = function(space) {
     //update the SGF *and* handle_move
     if (space.contains() === '') {
+      self.clear_markers();
+      
       var node;
       //save this for later:
       //self.cur_move = self.sgf().cur_node().next_move;
       //node = self.sgf().add_move(space.name, self.sgf().cur_node().next_move);
       node = self.sgf().add_move(space.row, space.column, self.sgf().cur_node().next_move);
-      console.log(node);
+      //console.log(node);
       self.sgf().captures = self.handle_move(space, node);
+
+      //var result = self.check_for_conflict(self.markers, space, type, 'marker');
+
+      //add it for visiting later 
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      node.add_marker(marker.space, 'CR');
+      //marker.type = 'CR';
+        
+
     }
   };
 

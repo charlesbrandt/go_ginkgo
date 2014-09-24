@@ -1,19 +1,10 @@
-*2014.09.14 10:53:57
-way to change svg stroke color via css
-would eliminate the need for many pngs, along with the different black/white/red combinations
+*2014.09.10 09:31:18
+integrate other SGF fields with DOM interface
+*2014.09.10 09:34:13
+other SGF properties (e.g. pass)
 
-*2014.09.14 02:29:28
-add labels to board / space
-
-*2014.09.14 02:22:53
-captured svgs (for marking stones that were caputred)
-(configure if they're shown or not)
-
-*2014.09.14 01:14:32
-is it possible to limit the number of initial divs for spaces
-to just the hover ones...
-then as spaces have content, add the remaining divs dynamically
-rather than having them all in place initially
+*2014.09.10 09:31:31
+integrate position with DOM interface
 
 *2014.09.14 01:03:13
 add next player's turn to controls
@@ -21,24 +12,11 @@ add next player's turn to controls
 *2014.09.14 01:02:56
 add current captures to controls
 
-*2014.09.10 09:31:18
-integrate other SGF fields with DOM interface
+*2014.09.24 17:47:10
+way to add markers to board via controls
 
-*2014.09.10 09:31:31
-integrate position with DOM interface
-
-*2014.09.10 09:34:13
-other SGF properties (e.g. pass)
-
-*2014.08.07 05:18:50
-consider getting size from a container element rather than the whole document during a resize...
-that would allow it to be embedded on other sites more easily.
-
-*2014.08.12 10:38:53
-use CSS transitions instead of jQuery Fades
-
-*2014.08.12 09:30:00
-add in touch events via hammer.js (touchstart == hover, touchend == click)
+*2014.09.23 22:46:56
+save sgf!
 
 *2014.08.11 10:58:59
 create 13x13 grid
@@ -48,12 +26,21 @@ way to generate arbitrary sgf grids? (especially ones w/o borders for subsection
 *2014.08.11 11:06:29
 alert on board size change that the current game data will be lost, are you sure?
 
-*2014.08.01 07:10:36
-svg (+png) versions of other common markers:
-square
-territory
-triangle
-X
+*2014.09.24 17:39:28
+clear board after loading sgf
+
+*2014.08.07 05:18:50
+consider getting size from a container element rather than the whole document during a resize...
+that would allow it to be embedded on other sites more easily.
+
+*2014.09.24 17:35:52
+show visual representation of game tree
+
+*2014.08.12 10:38:53
+use CSS transitions instead of jQuery Fades
+
+*2014.08.12 09:30:00
+add in touch events via hammer.js (touchstart == hover, touchend == click)
 
 *2013.02.05 09:55:15 
 handicap integration
@@ -61,8 +48,25 @@ handicap integration
 *2013.02.06 18:14:51 
 check for kos
 
+*2014.09.14 02:22:53
+captured (dotted circle image) svgs (for marking stones that were caputred)
+(configure if they're shown or not)
+
 *2014.09.10 09:55:38
-handle diagrams with previous moves included
+handle text diagrams with previous moves included
+(up to 10 numbers for previous moves)
+
+*2014.09.24 14:47:55
+consider a better way to scale text based on size of board
+
+could use:
+https://www.google.com/search?q=html+scale+text+to+fit+in+div&oq=html+scale+text+to+fit+in+div&aqs=chrome..69i57.8036j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://stackoverflow.com/questions/4165836/javascript-scale-text-to-fit-in-fixed-div
+https://github.com/DanielHoffmann/jquery-bigtext
+
+*2014.09.14 10:53:57
+way to change svg stroke color via css
+would eliminate the need for many pngs, along with the different black/white/red combinations
 
 *2013.02.05 09:52:45 
 socket.io integration

@@ -133,15 +133,12 @@
       
       <script id="spaceTemplate" type="text/html">
         
-        <div class="space" style="left: {{left}}px; top: {{top}}px;">
-          <div class="stone" data-bind="html: stone()"></div>
+        <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="html: render()">
+        </div>
+        <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }">
         </div>
         
-        <div class="space" style="left: {{left}}px; top: {{top}}px;">
-          <div class="hover" data-bind="html: hover()"></div>
-        </div>
-        
-        <div class="marker" style="left: {{left}}px; top: {{top}}px;" data-bind="style: { background: marker(), backgroundSize: 'contain' }, click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }"></div>
+
       </script>
       
     </div><!-- END .page -->    
