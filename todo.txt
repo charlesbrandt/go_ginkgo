@@ -1,7 +1,5 @@
-*2014.09.10 09:31:18
-integrate other SGF fields with DOM interface
-*2014.09.10 09:34:13
-other SGF properties (e.g. pass)
+*2014.08.11 10:58:59
+create 13x13 grid
 
 *2014.09.10 09:31:31
 integrate position with DOM interface
@@ -18,16 +16,14 @@ way to add markers to board via controls
 *2014.09.23 22:46:56
 save sgf!
 
-*2014.08.11 10:58:59
-create 13x13 grid
-also [2014.09.10 09:32:46]
-way to generate arbitrary sgf grids? (especially ones w/o borders for subsections of board)
+*2014.09.24 19:44:08
+revisit controls layout and functionality
+should show navigation options by default on load
 
-*2014.08.11 11:06:29
-alert on board size change that the current game data will be lost, are you sure?
-
-*2014.09.24 17:39:28
-clear board after loading sgf
+*2014.09.10 09:31:18
+integrate other SGF fields with DOM interface
+*2014.09.10 09:34:13
+other SGF properties (e.g. pass)
 
 *2014.08.07 05:18:50
 consider getting size from a container element rather than the whole document during a resize...
@@ -73,6 +69,15 @@ socket.io integration
 
 *2013.02.06 08:27:41 
     //TODO: click sound
+
+*2014.09.10 09:32:46
+way to generate arbitrary sgf grids? (especially ones w/o borders for subsections of board)
+
+consider using d3's svg library for this:
+https://www.google.com/search?q=create+svg+from+javascript&oq=create+svg+from+javascript&aqs=chrome..69i57.6411j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://stackoverflow.com/questions/1034712/creating-svg-graphics-using-javascript
+https://www.google.com/search?q=d3+svg&oq=d3+svg&aqs=chrome..69i57.1486j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+https://github.com/mbostock/d3/wiki/SVG-Shapes
 
 *2014.08.12 09:36:27
 send game via email (this will need a server side component)

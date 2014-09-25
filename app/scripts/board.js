@@ -20,27 +20,6 @@ var Space = require('./space').Space;
 function Board(size, pixels) {
   var self = this;
 
-  self.init = function () {
-
-    //moving this to be an attribute of SGF.node
-    //self.next_move = 'B';
-
-    //use this to determine if the click should cause a move or a marker
-    self.cur_action = 'move';
-
-    self.last_move = false;
-  
-    //tracking this here so we know which direction a change happens for self.go
-    self.move = 0;
-  };
-
-  self.init();
-  
-  //this is used mostly in the view level,
-  //but it is also useful when generating a diagram, so keeping it here.
-  //self.show_labels = ko.observable(true);
-  self.show_labels = ko.observable(false);
-  
   if (ko.isObservable(size)) {
     self.size = size;
   }
@@ -54,10 +33,12 @@ function Board(size, pixels) {
   else {
     self.pixels = ko.observable(pixels);
   }
-    
-  //self.space_pixels = pixels / size; 
-  ///just resetting forward slash for syntax highlighting to work in 902 editor
 
+  //this is used mostly in the view level,
+  //but it is also useful when generating a diagram, so keeping it here.
+  //self.show_labels = ko.observable(true);
+  self.show_labels = ko.observable(false);
+  
   self.space_pixels = ko.computed(function() {
     return self.pixels() / self.size();
   });  
@@ -66,9 +47,11 @@ function Board(size, pixels) {
   //self.sgf = new SGF();
   
   self.spaces = ko.observableArray();
-
-  
+    
   self.make_spaces = ko.computed(function() {
+    //because this is computed, if size() changes
+    //this will automatically be called
+    
     //console.log("Regenerating board spaces");
     
     self.rows = [ ];
@@ -93,6 +76,50 @@ function Board(size, pixels) {
     }
   });
 
+  self.clear_markers = function() {
+    //go through each space on the board
+    //and make sure no markers or labels are set
+    lodash.each(self.rows, function(row) {
+      lodash.each(row, function(space) {
+        space.clear_markers();
+      });
+    });
+  };
+
+  
+  self.clear_spaces = function() {
+    //go through each space on the board
+    //and make sure no markers or labels are set
+    lodash.each(self.rows, function(row) {
+      lodash.each(row, function(space) {
+        space.clear_markers();
+        space.contains('');
+      });
+    });
+  };
+
+  self.init = function () {
+
+    //moving this to be an attribute of SGF.node
+    //self.next_move = 'B';
+
+    //use this to determine if the click should cause a move or a marker
+    self.cur_action = 'move';
+
+    self.last_move = false;
+  
+    //tracking this here so we know which direction a change happens for self.go
+    self.move = 0;
+
+    self.sgf(new SGF());
+
+    //this might get called twice when first loading,
+    //but we want to call it on subsequent calls
+    self.clear_spaces();
+  };
+
+  self.init();
+  
   //console.log(self.spaces());
   
   // done with setup.
@@ -304,10 +331,15 @@ function Board(size, pixels) {
     //use SGF object to determine branches and track positions
 
     var node = self.sgf().next(branch);
-    //console.log(node);
-    //console.log(self.sgf().cur_node().comment());
-    //self._current_comment(self.sgf().cur_node().comment());
-    self.apply_node(node);
+    if (node) {
+      //console.log(node);
+      //console.log(self.sgf().cur_node().comment());
+      //self._current_comment(self.sgf().cur_node().comment());
+      self.apply_node(node);
+    }
+    else {
+      console.log('No more moves!');
+    }
   };
 
   self.previous = function() {
@@ -318,15 +350,6 @@ function Board(size, pixels) {
     //self.undo_node(node);
   };
 
-  self.clear_markers = function() {
-    //go through each space on the board
-    //and make sure no markers or labels are set
-    lodash.each(self.rows, function(row) {
-      lodash.each(row, function(space) {
-        space.clear_markers();
-      });
-    });
-  };
   
   self.apply_marker = function(marker) {
     //if (marker.space) {

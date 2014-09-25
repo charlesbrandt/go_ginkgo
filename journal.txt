@@ -1,3 +1,17 @@
+*2014.09.25 18:29:21
+          <div class="grid" style="background: {{board_grid}}; background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          </div>
+
+
+*2014.09.25 08:42:42 complete
+requested [2014.08.11 11:06:29]
+alert on board size change that the current game data will be lost, are you sure?
+
+*2014.09.25 08:41:22 complete
+finished this last night
+requested [2014.09.24 17:39:28]
+clear board after loading sgf
+
 *2014.09.24 19:20:53 complete
 requested [2014.09.24 17:41:55]
 set circle marker of current move as a marker for the current sgf node

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 1700 1700">
+<line x1="66" y1="70" x2="1634" y2="70" stroke="black" stroke-width="8"></line>
+<line x1="70" y1="200" x2="1630" y2="200" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="330" x2="1630" y2="330" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="460" x2="1630" y2="460" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="590" x2="1630" y2="590" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="720" x2="1630" y2="720" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="850" x2="1630" y2="850" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="980" x2="1630" y2="980" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="1110" x2="1630" y2="1110" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="1240" x2="1630" y2="1240" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="1370" x2="1630" y2="1370" stroke="black" stroke-width="4"></line>
+<line x1="70" y1="1500" x2="1630" y2="1500" stroke="black" stroke-width="4"></line>
+<line x1="66" y1="1630" x2="1634" y2="1630" stroke="black" stroke-width="8"></line>
+<line x1="70" y1="66" x2="70" y2="1634" stroke="black" stroke-width="8"></line>
+<line x1="200" y1="70" x2="200" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="330" y1="70" x2="330" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="460" y1="70" x2="460" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="590" y1="70" x2="590" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="720" y1="70" x2="720" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="850" y1="70" x2="850" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="980" y1="70" x2="980" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="1110" y1="70" x2="1110" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="1240" y1="70" x2="1240" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="1370" y1="70" x2="1370" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="1500" y1="70" x2="1500" y2="1630" stroke="black" stroke-width="4"></line>
+<line x1="1630" y1="70" x2="1630" y2="1630" stroke="black" stroke-width="8"></line>
+<circle cx="460" cy="460" r="12" fill="black" /><circle cx="850" cy="850" r="12" fill="black" /><circle cx="1240" cy="1240" r="12" fill="black" /><circle cx="460" cy="1240" r="12" fill="black" /><circle cx="1240" cy="460" r="12" fill="black" /></svg>

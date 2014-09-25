@@ -69,12 +69,12 @@
             <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
             <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
             <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>
-            <li class="action">Black: <input></li>
-            <li class="action">White: <input></li>
-            <li class="action">Komi: <input></li>
-            <li class="action">Date: <input></li>
+            <li class="action">Black: <input data-bind="value: board.sgf().black_player"></li>
+            <li class="action">White: <input data-bind="value: board.sgf().white_player"></li>
+            <li class="action">Komi: <input data-bind="value: board.sgf().komi"></li>
+            <li class="action">Date: <input data-bind="value: board.sgf().date"></li>
             <li class="action">Location: <input data-bind="value: board.sgf().place()"></li>
-            <li class="action">Clear</li>            
+            <li class="action">About...</li>
             
           </ul>
 
@@ -90,7 +90,7 @@
 
             <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
             <li class="action"><a data-bind="attr: { href: mailto() }">Email SGF...</a></li>
-            <li class="action">About...</li>
+            <li class="action" data-bind="click: function(data, event) { clear() }">Clear</li>            
           </ul>
         </div>
         
@@ -118,7 +118,9 @@
           
           <div class="board" style="background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;">
           </div>
-          <div class="grid" style="background: {{board_grid}}; background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          <div class="grid" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="html: board_grid()">
+          </div>
+          <div class="spaces" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
           </div>
         </div>
       </script>

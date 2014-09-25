@@ -9,6 +9,7 @@ var Marker = require("../../app/scripts/marker.js").Marker;
 var Node = require("../../app/scripts/node.js").Node;
 var SGF = require("../../app/scripts/sgf.js").SGF;
 var Space = require("../../app/scripts/space.js").Space;
+var Grid = require("../../app/scripts/grid.js").Grid;
 
 var ko = require('knockout');
 var lodash = require('lodash-node/underscore');
@@ -408,6 +409,25 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
       });
     });
 
+    describe('grid', function () {
+      var grid;
+      beforeEach( function() {
+        grid = new Grid(13, 1700, [1, 1, 1, 1], [ [3, 3], [6, 6], [9, 9], [3, 9], [9, 3] ]);
+      });
+      
+      it('should create an instance', function () {
+        expect(typeof grid).to.equal( 'object' );
+      });
+
+      it('should generate valid svg data', function () {
+        fs.writeFile(__dirname + '/grid.svg', grid.result, function (err) {
+          if (err) throw err;
+          //console.log('It\'s saved!');
+        });
+      });
+      
+    });
+    
 
   });
 })();

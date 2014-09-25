@@ -8,6 +8,7 @@ var lodash = require('lodash-node/underscore');
 var ko = require('knockout');
 
 var Board = require('./board').Board;
+var Grid = require('./grid').Grid;
 //var label_options = require('./board').label_options;
 var label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
 
@@ -31,12 +32,15 @@ function BoardViewModel(size, pixels) {
     //automatically triggering update of CSS elements via jQuery
     //breaks unit tests with no DOM access via jQuery
     //so keeping those calls separate, here
-    self.size(size);
+    var result = self.clear();
+    if (result) {
+      self.size(size);
 
-    //update grid via CSS
-    $('.grid').css({'background-size':self.board_pixels()+'px','width':self.board_pixels()+'px','height':self.board_pixels()+'px','left':self.board_left()+'px','top':self.board_top()+'px'}); 
+      //update grid via CSS
+      $('.grid').css({'background-size':self.board_pixels()+'px','width':self.board_pixels()+'px','height':self.board_pixels()+'px','left':self.board_left()+'px','top':self.board_top()+'px'}); 
     
-    self.update_all();
+      self.update_all();
+    }
   };
   
   self.show_configs = ko.observable(false);
@@ -186,20 +190,22 @@ function BoardViewModel(size, pixels) {
   });
 
   self.board_grid = ko.computed(function() {
+    var grid;
     if (self.size() === 19) {
-      //$('.grid').css({'background':'transparent url("/images/grid-19x19.png") no-repeat left top'});
-      return 'transparent url("/images/grid-19x19.png") no-repeat left top';
+      grid = new Grid(self.size(), 1700, [1, 1, 1, 1], [ [3, 3], [9, 9], [15, 15], [3, 9], [3, 15], [9, 3], [9, 15], [15, 3], [15, 9] ]);
+      return grid.result;      
     }
     else if (self.size() === 13) {
-      //$('.grid').css({'background':'transparent url("/images/grid-13x13.png") no-repeat left top'});
-      return 'transparent url("/images/grid-13x13.png") no-repeat left top';
+      grid = new Grid(self.size(), 1700, [1, 1, 1, 1], [ [3, 3], [6, 6], [9, 9], [3, 9], [9, 3] ]);
+      return grid.result;      
     }
     else if (self.size() === 9) {
-      //$('.grid').css({'background':'transparent url("/images/grid-9x9.png") no-repeat left top'});
-      return 'transparent url("/images/grid-9x9.png") no-repeat left top';
-      //console.log("updating GRID to 9");
+      grid = new Grid(self.size(), 1700, [1, 1, 1, 1], [ [2, 2], [4, 4], [6, 6], [2, 6], [6, 2] ]);
+      return grid.result;      
     }
+    
   });
+
   
   self.board_width = ko.computed(function() {
     //this is different than board.pixels...
@@ -430,6 +436,19 @@ function BoardViewModel(size, pixels) {
   };
 
 
+  self.load_sgf = function(data) {
+    //this is used by both load remote
+    //and load_local sgf files
+    
+    //if it works, could parse the data accordingly here
+    //remoteFile = data;
+    self.board.sgf().load(data);
+    var size = parseInt(self.board.sgf().size);
+    console.log(size);
+    self.board.size(size);
+    self.update_all();
+  };
+
   //having difficulty getting this to work.
   //http://www.red-bean.com/sgf/examples/ff4_ex.sgf
   //XMLHttpRequest cannot load http://www.red-bean.com/sgf/examples/ff4_ex.sgf.
@@ -449,15 +468,7 @@ function BoardViewModel(size, pixels) {
         dataType: 'text',  
         done: function(data) {
           console.log(data);
-          //if it works, could parse the data accordingly here
-          //remoteFile = data;
-          self.board.sgf().load(data);
-          //reset board properties
-          self.board.init();
-          var size = parseInt(self.board.sgf().size);
-          console.log(size);
-          self.board.size(size);
-          self.update_all();
+          self.load_sgf(data);
         },
         fail: function() {
           window.alert('Could not load: ' + self._remote_file());
@@ -476,77 +487,72 @@ function BoardViewModel(size, pixels) {
     return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram());
   };
 
-  /*
-  self.current_comment = ko.computed({
-    read: function () {
-      var comment = self.board.sgf().cur_node().comment();
-      console.log("Read comment called: ", comment); 
-      return comment;
-    },
-    write: function (value) {
-      self.board.sgf().cur_node().comment(value);
-    },
-    owner: self
-  });
-
-  self.current_comment = ko.computed(function() {
-    return self.board.sgf().cur_node().comment();    
-  });
-  */
-                                     
+  self.clear = function() {
+    var r = confirm('Any existing data will be cleared. Do you want to continue?');
+    if (r === true) {
+      //x = 'You pressed OK!';
+      //self.board.clear();
+      //reset board properties
+      self.board.init();
+    } else {
+      //don't do anything... leave things the way they were.
+      //x = 'You pressed Cancel!';
+    }
+    
+    //allow caller to know the result:
+    return r;
+  };
+  
   self.filename = ko.observable('');
   self.local_file = ko.observable('');
+  //see init.js for adding event listener to DOM element with id=source
+  //this triggers the call to load_local
   //http://www.html5rocks.com/en/tutorials/file/dndfiles/
   self.load_local = function (evt) {
-    var files = evt.target.files; // FileList object    
-    //javascript regular expressions:
-    //https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Regular_Expressions
+    var result = self.clear();
+    if (result) {
+      var files = evt.target.files; // FileList object    
+      //javascript regular expressions:
+      //https://developer.mozilla.org/en-US/docs/JavaScript/Guide/Regular_Expressions
 
-    //var check_dash = /-/g;
-    
-    // files is a FileList of File objects. 
-    for (var i = 0; i < files.length; i++) {
-      var f = files[i];
-      var reader = new FileReader();
+      //var check_dash = /-/g;
       
-      console.log(f);
+      // files is a FileList of File objects. 
+      for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        var reader = new FileReader();
       
-      //update self.filename with loaded name:
-      /*
-      var parts = f.name.split('.');
-      var prefix = parts[0];
-      if (check_dash.test(prefix)) {
-	console.log('Prefix has dash: ', prefix);
-	parts = prefix.split('-');
-	self.local_file(parts[2]);
+        console.log(f);
+        
+        //update self.filename with loaded name:
+        /*
+          var parts = f.name.split('.');
+          var prefix = parts[0];
+          if (check_dash.test(prefix)) {
+	  console.log('Prefix has dash: ', prefix);
+	  parts = prefix.split('-');
+	  self.local_file(parts[2]);
+          }
+          else {
+	  self.local_file(prefix);
+          }
+        */
+      
+        // Closure to capture the file information.
+        reader.onload = (function(theFile) {
+          //console.log('reader.onload() called');
+	  return function(e) {
+            self.load_sgf(e.target.result);
+	  };
+        })(f);
+        
+        // Read in the file...
+        // this triggers the reader.onload() call... not optional!
+        reader.readAsText(f);
       }
-      else {
-	self.local_file(prefix);
-      }
-      */
-      
-      // Closure to capture the file information.
-      reader.onload = (function(theFile) {
-        //console.log("reader.onload() called");
-	return function(e) {
-          //console.log("function called");
-          //console.log(e.target.result);
-          
-          // call a function to process data:
-	  //self.original.from_json(e.target.result);
-          self.board.sgf().load(e.target.result);
-          //reset board properties
-          self.board.init();
-          var size = parseInt(self.board.sgf().size);
-          console.log(size);
-          self.board.size(size);
-          self.update_all();
-	};
-      })(f);
-      
-      // Read in the file...
-      // this triggers the reader.onload() call... not optional!
-      reader.readAsText(f);
+    }
+    else {
+      //don't want to load a file if not confirmed
     }
   };
   
