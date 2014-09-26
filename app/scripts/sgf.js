@@ -72,6 +72,8 @@ function SGF() {
     }
       
     self.game = '1'; //GM
+
+    //really only needed when calling self.serialize():
     self.application = 'Go Ginkgo 0.1'; //AP
 
     ///////////////
@@ -395,16 +397,7 @@ function SGF() {
 
         self.handle_substring(data, start, index, cur_sequences);
 
-        /*
-        cur_string = data.substring(start, index);
-        //strip whitespace:
-        cur_string = cur_string.trim();
-        if (cur_string) {
-          cur_sequences.push(data.substring(start, index));
-        }
-        */
-        
-        //move past current open parenthesis:
+        //move past current open bracket:
         index += 1;
 
         remainder = data.substring(index);
@@ -420,16 +413,6 @@ function SGF() {
       else if (next_char === ')') {
         self.handle_substring(data, start, index, cur_sequences);
 
-        /*
-        //console.log(start, index);
-        cur_string = data.substring(start, index);
-        //strip whitespace:
-        cur_string = cur_string.trim();
-        if (cur_string) {
-          cur_sequences.push(data.substring(start, index));
-        }
-        */
-        
         //cur_sequences.push(data.substring(start, index));
         result = { 'index': index+1,
                    'sequences': cur_sequences };
@@ -545,8 +528,11 @@ function SGF() {
             self.size = token_value; //SZ
           } else if (last_property_id === 'GM') {
             self.game = token_value; //GM          
-          } else if (last_property_id === 'AP') {
-            self.application = token_value; //AP
+
+          //not sure that we want to keep this here...
+          //after data has been read in, it will be formatted differently
+          //} else if (last_property_id === 'AP') {
+          //  self.application = token_value; //AP
             
           } else if (last_property_id === 'AN') {
             //self.annotation = token_value; //AN
@@ -618,10 +604,7 @@ function SGF() {
             self.komi(token_value); //KM
 
 /*
-TODO:
-PL   Player to play  setup            color
-
-
+TODO / not processed:
 *AR  Arrow           -                list of composed point ':' point
 
 *DD  Dim points      - (inherit)      elist of point
@@ -701,12 +684,105 @@ V    Value           -                real
   
   self.serialize = function() {
     //return a string representation of the SGF
-        
-  };
-  
-  self.save = function() {
-    //return a downloadable sgf text file of current state
+    var result = '(;FF[4]AP[' + self.application + ']';
+
+    if (self.annotation()) {
+      result += 'AN[' + self.annotation() + ']';
+    }
     
+    if (self.black_rank()) {
+      result += 'BR[' + self.black_rank() + ']';
+    }
+    
+    if (self.black_team()) {
+      result += 'BT[' + self.black_team() + ']';
+    }
+    
+    if (self.black_player()) {
+      result += 'PB[' + self.black_player() + ']';
+    }    
+    
+    if (self.copyright()) {
+      result += 'CP[' + self.copyright() + ']';
+    }
+    
+    if (self.date()) {
+      result += 'DT[' + self.date() + ']';
+    }
+    
+    if (self.event()) {
+      result += 'EV[' + self.event() + ']';
+    }
+    
+    if (self.comment()) {
+      result += 'GC[' + self.comment() + ']';
+    }
+    
+    if (self.name()) {
+      result += 'GN[' + self.name() + ']';
+    }
+    
+    if (self.opening()) {
+      result += 'ON[' + self.opening() + ']';
+    }
+    
+    if (self.overtime()) {
+      result += 'OT[' + self.overtime() + ']';
+    }
+        
+    if (self.place()) {
+      result += 'PC[' + self.place() + ']';
+    }    
+    
+    if (self.result()) {
+      result += 'RE[' + self.result() + ']';
+    }
+    
+    if (self.round()) {
+      result += 'RO[' + self.round() + ']';
+    }
+    
+    if (self.rules()) {
+      result += 'RU[' + self.rules() + ']';
+    }
+    
+    if (self.source()) {
+      result += 'SO[' + self.source() + ']';
+    }
+    
+    if (self.timelimit()) {
+      result += 'TM[' + self.timelimit() + ']';
+    }
+    
+    if (self.user()) {
+      result += 'US[' + self.user() + ']';
+    }
+        
+    if (self.white_player()) {
+      result += 'PW[' + self.white_player() + ']';
+    }
+    
+    if (self.white_rank()) {
+      result += 'WR[' + self.white_rank() + ']';
+    }
+    
+    if (self.white_team()) {
+      result += 'WT [' + self.white_team() + ']';
+    }
+        
+    if (self.handicap()) {
+      result += 'HA[' + self.handicap() + ']';
+    }
+    
+    if (self.komi()) {
+      result += 'KM[' + self.komi() + ']';
+    }
+    
+
+    
+    result += self.root.render();
+    result += ')';
+    return result;
   };
   
 }

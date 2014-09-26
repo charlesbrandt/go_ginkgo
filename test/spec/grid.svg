@@ -25,4 +25,4 @@
 <line x1="1370" y1="70" x2="1370" y2="1630" stroke="black" stroke-width="4"></line>
 <line x1="1500" y1="70" x2="1500" y2="1630" stroke="black" stroke-width="4"></line>
 <line x1="1630" y1="70" x2="1630" y2="1630" stroke="black" stroke-width="8"></line>
-<circle cx="460" cy="460" r="12" fill="black" /><circle cx="850" cy="850" r="12" fill="black" /><circle cx="1240" cy="1240" r="12" fill="black" /><circle cx="460" cy="1240" r="12" fill="black" /><circle cx="1240" cy="460" r="12" fill="black" /></svg>
+<circle cx="460" cy="460" r="11" fill="black" /><circle cx="850" cy="850" r="11" fill="black" /><circle cx="1240" cy="1240" r="11" fill="black" /><circle cx="460" cy="1240" r="11" fill="black" /><circle cx="1240" cy="460" r="11" fill="black" /></svg>

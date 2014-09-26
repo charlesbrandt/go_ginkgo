@@ -6,9 +6,15 @@ var lodash = require('lodash-node/underscore');
 //I had trouble getting this version to work with broserify + node + mocha:
 //var lodash = require('lodash');
 var ko = require('knockout');
+var moment = require('moment');
 
 var Board = require('./board').Board;
 var Grid = require('./grid').Grid;
+
+//difficulty getting this to work... just going to include globally for now
+//var filesaver = require('./lib/Filesaver.min');
+
+
 //var label_options = require('./board').label_options;
 var label_options = [ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T' ];
 
@@ -45,7 +51,7 @@ function BoardViewModel(size, pixels) {
   
   self.show_configs = ko.observable(false);
   self.show_menu = ko.observable(false);
-  self.show_controls = ko.observable(false);
+  self.show_controls = ko.observable(true);
   
   //depending on what is visible,
   //may want to change the widths available to controls
@@ -555,7 +561,25 @@ function BoardViewModel(size, pixels) {
       //don't want to load a file if not confirmed
     }
   };
-  
+
+  self.save = function () {
+    //Use filesaver
+    //http://eligrey.com/blog/post/saving-generated-files-on-the-client-side
+    //https://github.com/eligrey/FileSaver.js
+    var d1 = moment();
+    var destination = d1.format('YYYYMMDD-HHmmss-') + self.filename() + '.sgf';
+    console.log(destination);
+    saveAs(
+      new Blob(
+	[self.board.sgf().serialize()],
+        
+        //according to: http://gobase.org/software/sgfformat/SGFandWWW.html
+	{type: "application/x-go-sgf"}
+      )
+      , destination
+    );
+  };
+
 }
 
 module.exports.BoardViewModel = BoardViewModel;

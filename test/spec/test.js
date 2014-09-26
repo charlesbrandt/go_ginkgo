@@ -262,6 +262,14 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
         expect(lodash.isEqual([second, first, root], nodes)).to.equal( true );
 
       });
+
+      it('should saved game data', function () {
+        //sample is loaded globally at the top of this test file
+        expect(sgf.load(sample)).to.equal( true );
+        console.log(sgf.serialize());
+      });
+
+
       
     });
 

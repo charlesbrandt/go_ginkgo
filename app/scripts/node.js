@@ -18,6 +18,10 @@ function Node(space, type) {
   //this way we can respond to the 'Player to Play' property from an SGF
   self.next_move = 'B';
 
+  //the next player to play
+  //previously a property of the board
+  self.player = '';
+  
   //these only apply for add stones
   self.stones = [];
 
@@ -45,10 +49,6 @@ function Node(space, type) {
   //hold the snapshot text output from a Diagram
   self.snapshot = '';
 
-  //the next player to play
-  //previously a property of the board
-  self.player = '';
-  
   //as they stand, cumulatively, after the current move
   self.total_captures = { 'B': 0, 'W': 0 };
   //in chinese scoring, it may be more useful to keep track of all stones
@@ -71,7 +71,7 @@ function Node(space, type) {
   
   //this should be set after initialization by caller
   self.parent = null;
-
+  
   self.set_move = function(space, color) {
     //rather than creating a new node and adding it to children
     //this simply sets the properties on the current node (self)
@@ -237,7 +237,52 @@ function Node(space, type) {
     else {
       return result.index;
     }
-  };  
+  };
+
+  self.render = function() {
+    /* return an sgf string representation of this node
+       recursively call this function for all children
+    */
+    var result = '';
+    //console.log(self.move);
+    if (self.move.space) {
+      result += self.move.render();
+    }
+    if (self.name) {
+      result += 'N['+ self.name + ']';
+    }
+    if (self.comment()) {
+      result += 'C['+ self.comment() + ']';
+    }
+
+    lodash.each(self.stones, function(stone) {
+      result += stone.render();
+    });
+
+    lodash.each(self.markers, function(marker) {
+      result += marker.render();
+    });
+
+    lodash.each(self.labels, function(label) {
+      result += label.render_label();
+    });
+
+    //finally, handle children
+    if (self.children.length > 1) {
+      lodash.each(self.children, function(child) {
+        result += '(;';
+        result += child.render();
+        result += ')';
+      });
+      
+    }
+    else if (self.children.length === 1) {
+      result += ';';
+      result += self.children[0].render();
+    }
+    
+    return result;
+  };
 }
 
 module.exports.Node = Node;

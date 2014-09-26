@@ -99,7 +99,7 @@ function Grid(size, pixels, borders, hoshi) {
   }
 
   // now take care of the hoshi star points:
-  var radius = 12;
+  var radius = 11;
   var cur_hoshi;
   var x;
   var y;

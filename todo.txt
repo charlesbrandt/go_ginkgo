@@ -1,5 +1,9 @@
-*2014.08.11 10:58:59
-create 13x13 grid
+*2014.09.26 09:46:22
+about overlay
+
+*2014.09.26 09:36:00
+only prompt for confirm before clear if changes have been made manually
+(even if it's a loaded SGF... can always reload)
 
 *2014.09.10 09:31:31
 integrate position with DOM interface
@@ -13,12 +17,36 @@ add current captures to controls
 *2014.09.24 17:47:10
 way to add markers to board via controls
 
-*2014.09.23 22:46:56
-save sgf!
-
 *2014.09.24 19:44:08
 revisit controls layout and functionality
 should show navigation options by default on load
+
+*2014.09.25 19:39:31
+way to choose a branch for the current node
+
+
+*2014.09.25 19:51:16
+deploy to app engine for hosting
+
+*2014.09.25 19:51:27
+be sure to enable page to work offline in the browser:
+
+https://www.google.com/search?q=enable+web+apps+to+work+offline&oq=enable+web+apps+to+work+offline&aqs=chrome..69i57.4989j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://diveintohtml5.info/offline.html
+
+*2014.09.25 19:51:50
+deploy using NodeWebkit for desktops
+
+*2014.09.25 19:51:59
+deploy using Phonegap / Appgyver for mobile
+
+
+*2014.09.26 06:30:40
+doesn't look like W[] is handled properly
+
+*2014.09.25 20:15:32
+some disconnect between player to play property (PL) and next_move in a node...
+when saving, don't want to log PL for every node... only if it has been set
 
 *2014.09.10 09:31:18
 integrate other SGF fields with DOM interface
@@ -64,23 +92,27 @@ https://github.com/DanielHoffmann/jquery-bigtext
 way to change svg stroke color via css
 would eliminate the need for many pngs, along with the different black/white/red combinations
 
-*2013.02.05 09:52:45 
-socket.io integration
 
-*2013.02.06 08:27:41 
-    //TODO: click sound
+*2014.09.26 09:06:09
+way to show move sequence as labels on stones:
+            <li class="action">Show move numbers</li>
 
-*2014.09.10 09:32:46
-way to generate arbitrary sgf grids? (especially ones w/o borders for subsections of board)
-
-consider using d3's svg library for this:
-https://www.google.com/search?q=create+svg+from+javascript&oq=create+svg+from+javascript&aqs=chrome..69i57.6411j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
-http://stackoverflow.com/questions/1034712/creating-svg-graphics-using-javascript
-https://www.google.com/search?q=d3+svg&oq=d3+svg&aqs=chrome..69i57.1486j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
-https://github.com/mbostock/d3/wiki/SVG-Shapes
+*2014.09.26 09:04:39 remote_file
+consider if there is a way to do remote file loading...
+may require a server component
+leaving out for now.
+            <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
 
 *2014.08.12 09:36:27
 send game via email (this will need a server side component)
+
+*2013.02.05 09:52:45 
+socket.io integration
+
+
+
+*2013.02.06 08:27:41 
+    //TODO: click sound
 
 *2013.02.06 13:50:07 
 consider using underscore or lo-dash instead of mustache for templates...
@@ -89,3 +121,12 @@ need underscore like functionality elsewhere
 *2014.08.11 11:09:57
 rotate board?
 would require translating SGF data
+
+*2014.09.26 09:03:15
+<img src="img/arrow-down.svg" class="icon">
+
+*2014.09.26 09:06:30
+enable / disable hover functionality...
+seems like most cases it's a good thing!
+            <li class="action">Show Hover</li>
+

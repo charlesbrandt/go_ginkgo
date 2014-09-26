@@ -47,7 +47,18 @@ function Marker(space, type) {
     //this is what should be stored in space
     //column first, then row
     return self.space;
-  };   
+  };
+
+  self.render = function() {
+    // return a string representation suitable for sgf:
+    return self.type + '[' + self.sgf_coordinates() + ']';
+  };
+  
+  self.render_label = function() {
+    // return a string representation suitable for sgf
+    // labels are a bit different
+    return 'LB[' + self.sgf_coordinates() + ':' + self.type + ']';
+  };
   
   
 }

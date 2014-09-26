@@ -64,32 +64,25 @@
 
           <ul class="menu-options" data-bind="visible: show_configs">
             <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
-            <li class="action">Show move numbers</li>
-            <li class="action">Show Hover</li>
             <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
             <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
             <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>
-            <li class="action">Black: <input data-bind="value: board.sgf().black_player"></li>
-            <li class="action">White: <input data-bind="value: board.sgf().white_player"></li>
-            <li class="action">Komi: <input data-bind="value: board.sgf().komi"></li>
-            <li class="action">Date: <input data-bind="value: board.sgf().date"></li>
-            <li class="action">Location: <input data-bind="value: board.sgf().place()"></li>
             <li class="action">About...</li>
             
           </ul>
 
         <div id="menu" class="menu-block" data-bind="visible: show_menu">
           <ul class="menu-options">
-            <li class="action">Save SGF</li>
+            <li class="action"><a href='#' data-bind='click: save'>Save SGF</a>
+</li>
+            <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
             <li class="action" data-bind="click: function(data, event) { copy_diagram() }">Copy Diagram</li>
             <li class="action" data-bind="click: edit_diagram_input">Paste Diagram
               <textarea data-bind="visible: editing_diagram_input(), value: diagram_input, hasFocus: editing_diagram_input" rows="22" cols="40"></textarea>
             </li>
 
-            <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
 
-            <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
-            <li class="action"><a data-bind="attr: { href: mailto() }">Email SGF...</a></li>
+            <li class="action"><a data-bind="attr: { href: mailto() }">Email Diagram...</a></li>
             <li class="action" data-bind="click: function(data, event) { clear() }">Clear</li>            
           </ul>
         </div>
@@ -98,6 +91,18 @@
           <ul class="menu-options">
             <li class="action">Add Marker...</li>
             <li class="action">Delete Branch...</li>
+            <li class="action">Game Details...
+              
+              <ul class="menu-options">
+                <li class="submenu">Black: <input data-bind="value: board.sgf().black_player"></li>
+                <li class="submenu">White: <input data-bind="value: board.sgf().white_player"></li>
+                <li class="submenu">Komi: <input data-bind="value: board.sgf().komi"></li>
+                <li class="submenu">Date: <input data-bind="value: board.sgf().date"></li>
+                <li class="submenu">Location: <input data-bind="value: board.sgf().place()"></li>
+              </ul>
+              
+              
+            </li>
             <li class="action"><textarea data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
             <li class="action" data-bind="click: function(data, event) { board.previous() }">Backward</li>
             <li class="action">Current Position: <input> / (out of)</li>
@@ -155,6 +160,8 @@
       ga('create','UA-XXXXX-X');ga('send','pageview');
     </script>
     
+
+    <script src="scripts/lib/FileSaver.min.js"></script>
 
       <!-- build:js scripts/vendor.js -->
       <!-- endbuild -->
