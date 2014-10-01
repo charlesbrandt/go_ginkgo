@@ -1,3 +1,52 @@
+*2014.09.26 23:37:09 links sgf
+think sgf functionality is good enough for now...
+might be certain things missing
+but resources for those can be found independently
+closing down these links:
+
+http://www.red-bean.com/sgf/ff5/m_vs_ax.htm
+http://senseis.xmp.net/?SmartGameFormat
+http://www.red-bean.com/sgf/
+http://www.red-bean.com/sgf/sgf4.html
+http://www.red-bean.com/sgf/go.html
+http://www.red-bean.com/sgf/user_guide/index.html
+http://www.red-bean.com/sgf/examples/
+http://www.red-bean.com/sgf/proplist_t.html
+http://senseis.xmp.net/?SmartGameFormat
+http://en.wikibooks.org/wiki/Computer_Go/Writing_an_SGF_Parser
+https://www.google.com/search?q=sgf+what+are+semi-colons+for%3F&oq=sgf+what+are+semi-colons+for%3F&aqs=chrome..69i57.6806j0j1&sourceid=chrome&es_sm=91&ie=UTF-8#q=sgf+content+type
+http://gobase.org/software/sgfformat/SGFandWWW.html
+https://www.google.com/search?q=life+in+19x19+go+board+markup&oq=life+in+19x19+go+board+markup&aqs=chrome..69i57.8654j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://www.lifein19x19.com/forum/viewtopic.php?f=18&t=7236&sid=1771766182385033adc5f821f80e967b
+http://www.lifein19x19.com/forum/index.php
+http://www.lifein19x19.com/forum/viewforum.php?f=5
+http://www.lifein19x19.com/forum/viewtopic.php?f=5&t=840
+http://lifein19x19.com/forum/viewtopic.php?f=5&t=833
+http://senseis.xmp.net/?HowDiagramsWork
+http://senseis.xmp.net/?SmartGo
+https://www.google.com/search?q=weiqui&oq=weiqui&aqs=chrome..69i57.1646j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+
+
+*2014.09.26 19:20:34 complete
+requested [2014.09.26 09:46:22]
+about overlay
+
+*2014.09.26 18:45:46
+          <div class="grid" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="html: board_grid()">
+          </div>
+          <div class="spaces" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
+          </div>
+
+
+*2014.09.26 18:37:22
+    <script id="boardTemplate" type="text/html">
+      <div></div>
+    </script>
+
+      <!-- rendered board ends up here: -->
+      <div class="main col left" data-bind="template: 'boardTemplate'"></div>
+
+
 *2014.09.26 09:00:48 complete
 seems to be working
 requested [2014.09.23 22:46:56]

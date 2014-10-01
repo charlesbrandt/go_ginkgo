@@ -250,3 +250,49 @@ img.hover {
     z-index: 5;
 }
 */
+
+/* via:
+https://kopepasah.com/tutorial/awesome-overlays-with-simple-css-javascript-html/
+*/
+.overlay {
+    overflow: scroll;
+    position: fixed;
+    top: 0;
+    bottom: 110%;
+    left: 0;
+    right: 0;
+    width: 100%;
+    z-index: 10000;
+    opacity: 0;
+    background: #4D4D4D;
+    transition: opacity 200ms linear, bottom 0s linear 200ms;
+ 
+    &-open {
+        bottom: 0;
+        opacity: 1;
+        transition: opacity 200ms linear, bottom 0s linear;
+    }
+ 
+    &-view {
+        overflow: hidden;
+    }
+ 
+    //&-form {
+    .overlay-inner {
+        background: #FFF;
+        margin: 5rem auto;
+        padding: 4rem;
+        max-width: 700px;
+        text-align: center;
+    }
+    //}
+ 
+    // WordPress specific styles for the overlay.
+    .admin-bar & {
+        top: 32px;
+ 
+        @media screen and ( max-width: 782px ) {
+            top: 46px;
+        }
+    }
+}

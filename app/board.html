@@ -45,9 +45,27 @@
 
     <div class="page section group">
 
-      <!-- rendered board ends up here: -->
-      <div class="main col left" data-bind="template: 'boardTemplate'"></div>
 
+      <div class="main col left">
+        <div class="view">
+          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_top}"></div>
+          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_left}"></div>
+          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
+          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
+          
+          <div class="board" data-bind="style: {'background-size': board_pixels() + 'px', width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}">
+          </div>
+          <div class="grid" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, html: board_grid()">
+          </div>
+          <div class="spaces" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, template: {name: 'spaceTemplate', foreach: board.spaces}">
+          </div>
+        </div>        
+
+      </div>
+
+
+        
+      
       <div class="all-controls col right" data-bind="">
         <div class="icon" style="float: left" data-bind="click: toggle_settings, event: { mouseenter: gear_active, mouseleave: gear_inactive }, mouseoverBubble: false">
           <img id="gear_image" class="icon_image" width="100%" src="/images/icon-settings.png">
@@ -62,12 +80,16 @@
         </div>
 
 
-          <ul class="menu-options" data-bind="visible: show_configs">
+
+
+
+        
+        <ul class="menu-options" data-bind="visible: show_configs">
             <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
             <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
             <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
             <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>
-            <li class="action">About...</li>
+            <li class="action overlay-trigger" data-overlay="overlay-hello">About...</li>
             
           </ul>
 
@@ -110,43 +132,35 @@
             
           </ul>
         </div>
+      </div>
 
 
-      </div>      
-      
-      <script id="boardTemplate" type="text/html">
-        <div class="view">
-          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_top}"></div>
-          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_left}"></div>
-          <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
-          <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
-          
-          <div class="board" style="background-size: {{board_pixels}}px; width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;">
-          </div>
-          <div class="grid" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="html: board_grid()">
-          </div>
-          <div class="spaces" style="width: {{board_pixels}}px; height: {{board_pixels}}px; left: {{board_left}}px; top: {{board_top}}px;" data-bind="template: {name: 'spaceTemplate', foreach: board.spaces}">
-          </div>
-        </div>
-      </script>
-      
-      <script id="labelHTemplate" type="text/html">
-        <div class="label_h" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
-      </script>
-      
-      <script id="labelVTemplate" type="text/html">
-        <div class="label_v" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
-      </script>
-      
-      <script id="spaceTemplate" type="text/html">
-        
-        <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="html: render()">
-        </div>
-        <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }">
-        </div>
-        
+    </div>      
 
-      </script>
+    <div id="overlay-hello" class="overlay">
+      <div class="overlay-inner centered">
+        <h3>Go Ginkgo</h3>
+        <h4>Version 0.1</h4>
+        <p>Go Ginkgo is a Go / Baduk / Weiqui / Goban / Igo client written in Javascript. It works in web browsers without any plugins, and is also available as a cross platform stand alone application for many mobile and desktop systems. <p>
+      </div>
+    </div>
+      
+    <script id="labelHTemplate" type="text/html">
+      <div class="label_h" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
+    </script>
+    
+    <script id="labelVTemplate" type="text/html">
+      <div class="label_v" style="left: {{left}}px; top: {{top}}px;">{{label}}</div>
+    </script>
+    
+    <script id="spaceTemplate" type="text/html">
+      
+      <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="html: render()">
+      </div>
+      <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }">
+      </div>
+      
+    </script>
       
     </div><!-- END .page -->    
     
