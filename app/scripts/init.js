@@ -99,7 +99,7 @@ $( '.overlay-trigger' ).on( 'click', function( event ) {
    */
   $( id ).on( 'click', function( event ) {
     // Verify that only the outer wrapper was clicked.
-    if ( event.target.id == overlay ) {
+    if ( event.target.id === overlay ) {
       $( id ).removeClass( 'overlay-open' );
       $( 'body' ).removeClass( 'overlay-view' );
     }
@@ -112,7 +112,7 @@ $( '.overlay-trigger' ).on( 'click', function( event ) {
    */
   $( document ).keyup( function( event ) {
     // Verify that the esc key was pressed.
-    if ( event.keyCode == 27 ) {
+    if ( event.keyCode === 27 ) {
       $( id ).removeClass( 'overlay-open' );
       $( 'body' ).removeClass( 'overlay-view' );
     }

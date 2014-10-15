@@ -116,6 +116,11 @@ function Board(size, pixels) {
     //this might get called twice when first loading,
     //but we want to call it on subsequent calls
     self.clear_spaces();
+
+    //place to track if changes have been made locally
+    //this way we can prompt to save if so (and not prompt, if no changes)
+    self.dirty = false;  
+
   };
 
   self.init();
@@ -124,54 +129,65 @@ function Board(size, pixels) {
   
   // done with setup.
 
-  self.make_diagram = function() {
-    // generate a text based representation of the board state (snapshot)
-    // http://senseis.xmp.net/?HowDiagramsWork
-
-    // TODO:
-    // (eventually)
-    // get (up to) the last 10 *moves* from the SGF
+  self.make_diagram = function(node) {
+    var text;
     var i;
-    
-    var text = '$$' + self.sgf().cur_node().next_move;
-    if (self.show_labels) {
-      //c is for show coordinates
-      text += 'c';
-    }
-    text += self.size();
-    text += 'm' + self.sgf().position.length + ' ';
-    text += self.sgf().cur_node().name;
-    text += '\n';
 
-    // ok... now we can start with the actual board representation:
-
-    // add top edge
-    text += '$$ +-';
-    for (i = 0; i < self.size(); i++) {
-      text += '--';
-    }
-    text += '+\n';
-
-    lodash.each(self.rows, function(row) {
-      text += '$$ | ';
-      lodash.each(row, function(space) {
-        //TODO: handle markers here
-        if (! space.contains()) {
-          text += '. ';
-        }
-        else {
-          text += space.contains() + ' ';
-        }
+    if (node) {
+      // generate a text based representation of the board state (snapshot)
+      // http://senseis.xmp.net/?HowDiagramsWork
+      
+      // TODO:
+      // (eventually)
+      // get (up to) the last 10 *moves* from the SGF
+      
+      //var text = '$$' + self.sgf().cur_node().next_move;
+      text = '$$' + node.next_move;
+      if (self.show_labels()) {
+        //c is for show coordinates
+        text += 'c';
+      }
+      text += self.size();
+      //text += 'm' + self.sgf().position.length + ' ';
+      //just in case self.sgf() hasn't updated its position yet
+      //text += 'm' + self.sgf().cur_node().position() + ' ';
+      text += 'm' + node.position() + ' ';
+      //text += self.sgf().cur_node().name;
+      text += node.name;
+      text += '\n';
+      
+      // ok... now we can start with the actual board representation:
+      
+      // add top edge
+      text += '$$ +-';
+      for (i = 0; i < self.size(); i++) {
+        text += '--';
+      }
+      text += '+\n';
+      
+      lodash.each(self.rows, function(row) {
+        text += '$$ | ';
+        lodash.each(row, function(space) {
+          //TODO: handle markers here
+          if (! space.contains()) {
+            text += '. ';
+          }
+          else {
+            text += space.contains() + ' ';
+          }
+        });
+        text += '|\n';
       });
-      text += '|\n';
-    });
-
-    text += '$$ +-';
-    for (i = 0; i < self.size(); i++) {
-      text += '--';
+      
+      text += '$$ +-';
+      for (i = 0; i < self.size(); i++) {
+        text += '--';
+      }
+      text += '+\n';
     }
-    text += '+\n';
-
+    //else {
+    //  console.log("No node:", node);
+    //}
     return text;
   };
   
@@ -197,6 +213,7 @@ function Board(size, pixels) {
     //don't want to automatically trigger a new node
 
     //http://stackoverflow.com/questions/5034781/js-regex-to-split-by-line
+    //console.log(text);
     var lines = text.match(/[^\r\n]+/g);
     //console.log(lines);
     //var header = lines[0];
@@ -208,7 +225,9 @@ function Board(size, pixels) {
     //var header_parts = re.exec(header);
     var header_parts = lines[0].split(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
     var sub_parts = header_parts.slice(1, header_parts.length-2);
+
     var comment = header_parts[header_parts.length-2];
+
     //console.log(comment);
     //console.log(sub_parts);
     //console.log(header_parts);
@@ -290,6 +309,7 @@ function Board(size, pixels) {
     return result;
   };
 
+  
   
   //self.go = function(position) {
   self.go = function(move) {
@@ -466,9 +486,23 @@ function Board(size, pixels) {
         node.total_captures.B = node.parent.total_captures.B;
         node.total_captures.W = node.parent.total_captures.W;
         node.captures = self.handle_move(cur_space, node);
+        //console.log(node.snapshot);
 
       }
     }
+
+    //want this to happen if it was a move, or just markers...
+    //separating call from handle_move
+    //make a snapshot for future reference (easier moving between states)
+    if (! node.snapshot) {
+      node.snapshot = self.make_diagram(node);
+      //console.log('made snapshot:', node.snapshot);      
+    }
+    //else {
+    //  console.log('already had snapshot:', node.snapshot);
+    //}
+    
+
 
   };
 
@@ -487,12 +521,23 @@ function Board(size, pixels) {
 
       //var result = self.check_for_conflict(self.markers, space, type, 'marker');
 
+      //make a snapshot for future reference (easier moving between states)
+      if (! node.snapshot) {
+        node.snapshot = self.make_diagram(node);
+        //console.log('made snapshot:', node.snapshot);      
+      }
+      //else {
+      //  console.log('already had snapshot:', node.snapshot);
+      //}
+    
+      
       //add it for visiting later 
       var marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       node.add_marker(marker.space, 'CR');
       //marker.type = 'CR';
-        
+
+      self.dirty = true;
 
     }
   };
@@ -520,9 +565,11 @@ function Board(size, pixels) {
       //if (self.sgf().cur_node().next_move === 'B') {
       if (node.move.type === 'B') {
 	self.sgf().cur_node().next_move = 'W';
+	node.next_move = 'W';
       }
       else {
 	self.sgf().cur_node().next_move = 'B';
+	node.next_move = 'B';
       }
       self.move += 1;
       
@@ -534,11 +581,6 @@ function Board(size, pixels) {
       space.mtype('circle');
     }
 
-    //make a snapshot for future reference (easier moving between states)
-    if (! node.snapshot) {
-      node.snapshot = self.make_diagram();
-    }
-    
     //console.log(self.sgf());
     return captures;
   };
@@ -692,6 +734,34 @@ function Board(size, pixels) {
     }
 
     return captures;    
+  };
+
+  self.hover_on = function(marker) {
+    //helper for board view when showing given variations at a specific node
+    //node only has markers...
+    //access to board spaces would be tricky
+    //hoping this can tie the two together
+
+    if (marker) {
+      //look up the corresponding space:
+      var indexes = marker.indexes();
+      //console.log(indexes);
+      var cur_space = self.rows[indexes[0]][indexes[1]];
+      //cur_space.hover_on();
+      cur_space.hovering(true);
+      //console.log(cur_space);
+      //console.log("hover_on");
+    }
+  };
+  
+  self.hover_off = function(marker) {
+    if (marker) {
+      var indexes = marker.indexes();
+      var cur_space = self.rows[indexes[0]][indexes[1]];
+      //cur_space.hover_off();
+      cur_space.hovering(false);
+      //console.log("hover_off");
+    }
   };
 
   //by making this computed(), unit tests will try to run it

@@ -149,6 +149,18 @@ function BoardViewModel(size, pixels) {
     },
     owner: self
   });
+
+
+  self.position = ko.computed({
+    read: function () {
+      //console.log(self.board.sgf().position());
+      return self.board.sgf().position().length;
+    },
+    write: function (value) {
+      self.board.go(value);
+    },
+    owner: self
+  });
   
 
 
@@ -493,10 +505,26 @@ function BoardViewModel(size, pixels) {
     return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram());
   };
 
-  self.clear = function() {
-    var r = confirm('Any existing data will be cleared. Do you want to continue?');
+  self.clear = function(keep_source) {
+    var r;
+    if (! self.board.dirty) {
+      //console.log('board not dirty');
+      r = true;
+    }
+    else {
+      r = confirm('Any existing data will be cleared. Do you want to continue?');
+    }
+    
     if (r === true) {
       //x = 'You pressed OK!';
+
+      if (! keep_source) {
+        //http://stackoverflow.com/questions/1043957/clearing-input-type-file-using-jquery
+        var e = $('#source');
+        e.wrap('<form>').closest('form').get(0).reset();
+        e.unwrap();      
+      }
+      
       //self.board.clear();
       //reset board properties
       self.board.init();
@@ -515,7 +543,8 @@ function BoardViewModel(size, pixels) {
   //this triggers the call to load_local
   //http://www.html5rocks.com/en/tutorials/file/dndfiles/
   self.load_local = function (evt) {
-    var result = self.clear();
+    //this should be the only time we want to set keep_source to true for clear
+    var result = self.clear(true);
     if (result) {
       var files = evt.target.files; // FileList object    
       //javascript regular expressions:
@@ -574,9 +603,8 @@ function BoardViewModel(size, pixels) {
 	[self.board.sgf().serialize()],
         
         //according to: http://gobase.org/software/sgfformat/SGFandWWW.html
-	{type: "application/x-go-sgf"}
-      )
-      , destination
+	{type: 'application/x-go-sgf'}
+      ), destination
     );
   };
 

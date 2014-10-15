@@ -1,15 +1,19 @@
-*2014.09.26 09:36:00
-only prompt for confirm before clear if changes have been made manually
-(even if it's a loaded SGF... can always reload)
-
-*2014.09.10 09:31:31
-integrate position with DOM interface
+*2014.10.14 08:46:43
+show peers (other stones / moves with the same parent)
+toggle this... don't always want to see this (spoilers)
 
 *2014.09.14 01:03:13
 add next player's turn to controls
+(highlight player)
+
+*2014.10.15 05:12:51
+button to pass
 
 *2014.09.14 01:02:56
-add current captures to controls
+show current captures under controls
+
+*2014.10.15 04:34:45
+way to edit captures
 
 *2014.09.24 17:47:10
 way to add markers to board via controls
@@ -18,12 +22,22 @@ way to add markers to board via controls
 revisit controls layout and functionality
 should show navigation options by default on load
 
-*2014.09.25 19:39:31
-way to choose a branch for the current node
+*2014.10.15 04:35:27
+review game mode...
+allows you to make move options
+then toggle to see the actual move
+and move forward from actual move
+
+*2014.10.15 06:24:23
+check for suicides
+(see node 51 in sample game)
+
 
 
 *2014.09.25 19:51:16
 deploy to app engine for hosting
+also [2014.10.15 04:34:04]
+unless can host directly on github
 
 *2014.09.25 19:51:27
 be sure to enable page to work offline in the browser:

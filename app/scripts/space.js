@@ -174,10 +174,12 @@ function Space(board, contains, pixels, row, column) {
     else {
       self.hovering(true);
     }
+    //console.log('hover_on called', self.hovering());
   };
   
   self.hover_off = function() {
     self.hovering(false);
+    //console.log('hover_off called', self.hovering());
   };
   
   self.marker = ko.computed(function() {

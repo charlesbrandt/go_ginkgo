@@ -71,6 +71,25 @@ function Node(space, type) {
   
   //this should be set after initialization by caller
   self.parent = null;
+
+  self.position = function() {
+    // go through all parents to calculate position
+    var cur_pos = 0;
+    var cur_parent = self.parent;
+    while (cur_parent) {
+      cur_pos += 1;
+      cur_parent = cur_parent.parent;
+    }
+    return cur_pos;
+  };
+
+  self.children_indexes = function() {
+    // return a list of indexes for use in referencing
+    // different child nodes
+    var range = lodash.range(self.children.length);
+    //console.log(range);
+    return range
+  };
   
   self.set_move = function(space, color) {
     //rather than creating a new node and adding it to children

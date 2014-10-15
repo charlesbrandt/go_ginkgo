@@ -126,9 +126,19 @@
               
             </li>
             <li class="action"><textarea data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
-            <li class="action" data-bind="click: function(data, event) { board.previous() }">Backward</li>
-            <li class="action">Current Position: <input> / (out of)</li>
-            <li class="action" data-bind="click: function(data, event) { board.next(0) }">Forward</li>
+            <li class="action position">
+              <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
+              <span class="position"><input class="position-input" data-bind="value: position"> / <span data-bind="text: board.sgf().last()"></span></span>
+              <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
+            </li>
+
+            <li class="action" data-bind="visible: board.sgf().cur_node().children.length > 1">
+              Variations:
+              <ul data-bind="foreach: board.sgf().cur_node().children">
+                <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
+              </ul>
+            </li>
+            
             
           </ul>
         </div>

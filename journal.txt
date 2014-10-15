@@ -1,3 +1,56 @@
+*2014.10.15 07:55:10 complete
+not bad... great functionality
+could still use some formatting improvements
+but a few things like that on controls
+requested [2014.09.25 19:39:31]
+way to choose a branch for the current node
+
+*2014.10.15 06:21:43 complete
+this was a bug...
+snapshots weren't being generated for nodes that only applied markers
+fixed that, and then labels are drawn when there is a valid snapshot
+requested [2014.10.15 04:38:48]
+apply labels when moving to a previous node
+
+*2014.10.14 09:40:19 complete
+this is working pretty well...
+also updated controls to use images and inputs...
+makes navigation smoother
+requested [2014.09.10 09:31:31]
+integrate position with DOM interface
+also [2014.10.13 22:34:08]
+have position...
+still need maximum on current branch
+
+*2014.10.14 09:34:57
+            <li class="action" data-bind="click: function(data, event) { board.next(0) }">Forward</li>
+            <li class="action" data-bind="click: function(data, event) { board.previous() }">Backward</li>
+
+
+*2014.10.13 19:15:01 complete
+requested [2014.09.26 09:36:00]
+only prompt for confirm before clear if changes have been made manually
+(even if it's a loaded SGF... can always reload)
+
+*2014.10.06 10:17:39 offline html5 webapp
+https://www.google.com/search?q=enable+web+apps+to+work+offline&oq=enable+web+apps+to+work+offline&aqs=chrome..69i57.4989j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://diveintohtml5.info/offline.html
+
+
+*2014.10.06 10:17:29 appgyver
+https://www.google.com/search?q=appgyver&oq=appgyver&aqs=chrome..69i57.1286j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://www.appgyver.com/steroids/comparison
+http://www.appgyver.com/steroids/pricing
+
+
+*2014.10.06 10:17:16
+links
+http://eidogo.com/source
+http://eidogo.com/#3xwP8RpI6
+http://localhost:9000/board.html
+http://localhost:9000/board.html
+
+
 *2014.09.26 23:37:09 links sgf
 think sgf functionality is good enough for now...
 might be certain things missing

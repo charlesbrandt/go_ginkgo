@@ -16,6 +16,12 @@ function SGF() {
   self.root = new SGFNode();
   self.root.name = 'root';
 
+  //position needs to be an array of indexes 
+  //multiple points required to get to correct branch
+  //self.position = [ ];
+  //making this observable so that it can trigger updates in the DOM
+  self.position = ko.observableArray();
+  
   self.cur_node = ko.observable(self.root);
   //self.cur_node = self.root;
   self.empty = true;    
@@ -56,10 +62,9 @@ function SGF() {
   self.debug = false;
   
   self.reset = function(size) {
-    //position needs to be an array of indexes 
-    //multiple points required to get to correct branch
-    self.position = [ ];
     
+    self.position.removeAll();
+
     // root level properties
     // not currently making the distinction of different games in one SGF
     self.format = '4'; //FF
@@ -122,6 +127,25 @@ function SGF() {
   };
 
   self.reset(19);
+
+  self.last = ko.computed(function() {
+    //start with the cur_pos length
+    var total = self.position().length;
+    //then go through all children, defaulting to first, and tally those up
+    var temp_node = self.cur_node();
+    while (temp_node) {
+      if (temp_node.children.length) {
+        total += 1;
+        temp_node = temp_node.children[0];
+      }
+      else {
+        temp_node = false;
+      }
+    }
+    return total;
+    
+  });
+
   
   self.go = function(index) {
     //go to the given index file.
@@ -130,10 +154,11 @@ function SGF() {
     var cur_node;
     var at_end = false;
     var at_beginning = false;
-    //console.log(self.position);    
+    //console.log(self.position());    
+    //console.log(self.position().length);    
 
     //handle if we're moving forward
-    while ((index > self.position.length) && (! at_end)) {
+    while ((index > self.position().length) && (! at_end)) {
       cur_node = self.next();
       if (cur_node) {
         nodes.push(cur_node);
@@ -145,9 +170,9 @@ function SGF() {
     
     //handle if we're moving backward
     //if going backwards, we want to include the current node in the list
-    if (index < self.position.length) {
+    if (index < self.position().length) {
       nodes.push(self.cur_node());
-      while ((index < self.position.length) && (! at_beginning)) {
+      while ((index < self.position().length) && (! at_beginning)) {
         cur_node = self.previous();
         if (cur_node) {
           nodes.push(cur_node);
@@ -169,7 +194,7 @@ function SGF() {
       if (branch) {
         if (branch < self.cur_node().children.length) {
           //self.cur_node = self.cur_node.children[branch];
-          self.cur_node(self.cur_node.children[branch]);
+          self.cur_node(self.cur_node().children[branch]);
           self.position.push(branch);
         }
         else {
@@ -777,8 +802,6 @@ V    Value           -                real
     if (self.komi()) {
       result += 'KM[' + self.komi() + ']';
     }
-    
-
     
     result += self.root.render();
     result += ')';

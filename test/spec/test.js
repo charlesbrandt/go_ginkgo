@@ -266,7 +266,9 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
       it('should saved game data', function () {
         //sample is loaded globally at the top of this test file
         expect(sgf.load(sample)).to.equal( true );
-        console.log(sgf.serialize());
+        //not sure how best to test this...
+        sgf.serialize();
+        //console.log(sgf.serialize());
       });
 
 
