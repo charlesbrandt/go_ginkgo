@@ -1,3 +1,7 @@
+*2014.10.15 08:35:40 complete
+requested [2014.10.15 08:05:33]
+delete branch
+
 *2014.10.15 07:55:10 complete
 not bad... great functionality
 could still use some formatting improvements

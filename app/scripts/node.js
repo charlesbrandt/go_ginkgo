@@ -83,6 +83,18 @@ function Node(space, type) {
     return cur_pos;
   };
 
+  self.remove = function() {
+    //verification that this is the desired action should happen at the UI level
+
+    //
+    if (self.parent) {
+      // can really only do this if we have a parent:
+      var this_index = self.parent.children.indexOf(self);
+      self.parent.children.splice(this_index, 1);
+    }
+    
+  }
+  
   self.children_indexes = function() {
     // return a list of indexes for use in referencing
     // different child nodes

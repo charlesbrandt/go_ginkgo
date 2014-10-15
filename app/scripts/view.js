@@ -505,6 +505,16 @@ function BoardViewModel(size, pixels) {
     return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram());
   };
 
+  self.remove_branch = function() {
+    var r;
+    r = confirm('This node and all branches below it will be removed. Do you want to continue?');
+    if (r === true) {
+      self.board.sgf().cur_node().remove();
+      self.board.previous();
+    }
+    
+  };
+  
   self.clear = function(keep_source) {
     var r;
     if (! self.board.dirty) {
