@@ -135,6 +135,24 @@ function BoardViewModel(size, pixels) {
     }      
   };
 
+
+  self.show_more_details = ko.observable(false);
+  self.toggle_details = function() {
+    if (self.show_more_details()) {
+      self.show_more_details(false);
+    }
+    else {
+      self.show_more_details(true);
+    }      
+  };
+
+
+  self.editing_player_black = ko.observable(false);
+  self.edit_player_black = function() { self.editing_player_black(true); };	
+
+  self.editing_player_white = ko.observable(false);
+  self.edit_player_white = function() { self.editing_player_white(true); };	
+
   
   self._diagram_input = ko.observable('');
   self.editing_diagram_input = ko.observable(false);

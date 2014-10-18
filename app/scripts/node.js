@@ -16,11 +16,13 @@ function Node(space, type) {
   //track this on a node by node basis,
   //rather than at board level (as before)
   //this way we can respond to the 'Player to Play' property from an SGF
-  self.next_move = 'B';
-
+  //self.next_move = 'B';
+  self.next_move = ko.observable('B');
+  
   //the next player to play
   //previously a property of the board
-  self.player = '';
+  //use next_move instead????
+  //self.player = '';
   
   //these only apply for add stones
   self.stones = [];
@@ -50,7 +52,12 @@ function Node(space, type) {
   self.snapshot = '';
 
   //as they stand, cumulatively, after the current move
-  self.total_captures = { 'B': 0, 'W': 0 };
+  //self.total_captures = { 'B': 0, 'W': 0 };
+
+  //make these observable
+  self.total_captures_b = ko.observable(0);
+  self.total_captures_w = ko.observable(0);
+  
   //in chinese scoring, it may be more useful to keep track of all stones
   self.score = { 'B': 0, 'W': 0 };
   
@@ -131,8 +138,10 @@ function Node(space, type) {
     var node = new Node();
     //node.number = self.number + 1;
     node.parent = self;
-    node.total_captures.B = self.total_captures.B;
-    node.total_captures.W = self.total_captures.W;
+    //node.total_captures.B = self.total_captures.B;
+    //node.total_captures.W = self.total_captures.W;
+    node.total_captures_b(self.total_captures_b());
+    node.total_captures_w(self.total_captures_w());
     self.children.push(node);
     return self.children.indexOf(node);
   };

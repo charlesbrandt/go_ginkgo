@@ -1,37 +1,17 @@
-*2014.09.14 01:03:13
-add next player's turn to controls
-(highlight player)
+*2014.10.18 12:12:43
+pass is not working correctly...
+something at a lower level than interface
 
-*2014.10.15 05:12:51
-button to pass
-
-*2014.09.14 01:02:56
-show current captures under controls
-
-*2014.10.15 04:34:45
-way to edit captures
-
-*2014.10.15 06:24:23
-check for suicides
-(see node 51 in sample game)
+*2014.09.26 06:30:40
+doesn't look like W[] is handled properly
 
 *2014.09.24 17:47:10
 way to add markers to board via controls
 
-*2014.09.24 19:44:08
-revisit controls layout and functionality
-should show navigation options by default on load
-
-*2014.10.15 04:35:27
-review game mode...
-allows you to make move options
-then toggle to see the actual move
-and move forward from actual move
-
-*2014.10.14 08:46:43
-show peers (other stones / moves with the same parent)
-toggle this... don't always want to see this (spoilers)
-
+*2014.08.12 09:30:00
+add in touch events via hammer.js (touchstart == hover, touchend == click)
+also [2014.10.18 12:17:41]
+test touch on tablet before packaging
 
 
 *2014.09.25 19:51:16
@@ -41,6 +21,7 @@ unless can host directly on github
 
 *2014.09.25 19:51:27
 be sure to enable page to work offline in the browser:
+(test that it works that way)
 
 https://www.google.com/search?q=enable+web+apps+to+work+offline&oq=enable+web+apps+to+work+offline&aqs=chrome..69i57.4989j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
 http://diveintohtml5.info/offline.html
@@ -55,8 +36,29 @@ deploy using Phonegap / Appgyver for mobile
 *2014.09.26 19:20:21
 links to site from about overlay, when they're available
 
-*2014.09.26 06:30:40
-doesn't look like W[] is handled properly
+
+
+
+*2014.10.15 04:35:27
+review game mode...
+allows you to make move options
+then toggle to see the actual move
+and move forward from actual move
+
+*2014.10.14 08:46:43
+show peers (other stones / moves with the same parent)
+toggle this... don't always want to see this (spoilers)
+
+*2014.10.18 08:01:33
+change all clickable items to inputs/buttons of some form
+makes it easier to see an action via mouse icons
+
+*2014.10.15 04:34:45
+way to edit captures
+
+*2014.09.14 02:22:53
+captured (dotted circle image) svgs (for marking stones that were caputred)
+(configure if they're shown or not)
 
 *2014.09.25 20:15:32
 some disconnect between player to play property (PL) and next_move in a node...
@@ -65,7 +67,7 @@ when saving, don't want to log PL for every node... only if it has been set
 *2014.09.10 09:31:18
 integrate other SGF fields with DOM interface
 *2014.09.10 09:34:13
-other SGF properties (e.g. pass)
+other SGF properties
 
 *2014.08.07 05:18:50
 consider getting size from a container element rather than the whole document during a resize...
@@ -75,20 +77,13 @@ that would allow it to be embedded on other sites more easily.
 show visual representation of game tree
 
 *2014.08.12 10:38:53
-use CSS transitions instead of jQuery Fades
-
-*2014.08.12 09:30:00
-add in touch events via hammer.js (touchstart == hover, touchend == click)
+use CSS transitions instead of jQuery Fades for button animations
 
 *2013.02.05 09:55:15 
 handicap integration
 
 *2013.02.06 18:14:51 
 check for kos
-
-*2014.09.14 02:22:53
-captured (dotted circle image) svgs (for marking stones that were caputred)
-(configure if they're shown or not)
 
 *2014.09.10 09:55:38
 handle text diagrams with previous moves included

@@ -141,8 +141,8 @@ function Board(size, pixels) {
       // (eventually)
       // get (up to) the last 10 *moves* from the SGF
       
-      //var text = '$$' + self.sgf().cur_node().next_move;
-      text = '$$' + node.next_move;
+      //var text = '$$' + self.sgf().cur_node().next_move();
+      text = '$$' + node.next_move();
       if (self.show_labels()) {
         //c is for show coordinates
         text += 'c';
@@ -219,91 +219,99 @@ function Board(size, pixels) {
     //var header = lines[0];
     //console.log(header);
 
-    //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-negated-character-set
-    //var header_parts = header.match(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
-    //var re = /^(?:\$+)([WB])(c)(\d+)(m\d+) (.*)/;
-    //var header_parts = re.exec(header);
-    var header_parts = lines[0].split(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
-    var sub_parts = header_parts.slice(1, header_parts.length-2);
-
-    var comment = header_parts[header_parts.length-2];
-
-    //console.log(comment);
-    //console.log(sub_parts);
-    //console.log(header_parts);
-    lodash.each(sub_parts, function(part) {
-      if (part === 'W') {
-	self.sgf().cur_node().next_move = 'W';        
-      }
-      else if (part === 'B') {
-	self.sgf().cur_node().next_move = 'B';        
-      }
-      else if (part === 'c') {
-        //show labels (coordinates)
-        //might not want to enable just yet
-      }
-      else if ( (part.length) && (part[0] === 'm') ) {
-        //move number
-        //console.log(self.move);
-        self.move = parseInt(part.slice(1));
-        //console.log(self.move);        
-      }
-      else {
-        //must be the board size... everything else has been accounted for
-        var size = parseInt(part);
-        if (size !== self.size()) {
-          console.log('Found size:', size, '!= Board size:', self.size());
+    if (lines) {
+      //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions#special-negated-character-set
+      //var header_parts = header.match(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
+      //var re = /^(?:\$+)([WB])(c)(\d+)(m\d+) (.*)/;
+      //var header_parts = re.exec(header);
+      var header_parts = lines[0].split(/^\$\$([WB])(c)(\d+)(m\d+) (.*)/);
+      var sub_parts = header_parts.slice(1, header_parts.length-2);
+      
+      var comment = header_parts[header_parts.length-2];
+      
+      //console.log(comment);
+      //console.log(sub_parts);
+      //console.log(header_parts);
+      lodash.each(sub_parts, function(part) {
+        if (part === 'W') {
+	  //self.sgf().cur_node().next_move = 'W';        
+	  self.sgf().cur_node().next_move('W');
         }
-      }                
-    });   
-    //var top_border = lines[1];
-    var next_line;
-    var next_part;
-    var cur_space;
-    var parts;
-    var row, column;
-    var marker;    
-    //collect and return these, just in case they should be applied to SGF
-    var markers = [];
-    var stones = [];
-    
-    for (var i = 2; i < lines.length; i++) {
-      next_line = lines[i];
-      parts = next_line.split(' ');
-      //console.log(parts);
-      if (parts.length > 2) {
-        for (var j = 2; j < parts.length; j++) {
-          next_part = parts[j];
-          row = i-2;
-          column = j-2;
-          cur_space = self.rows[row][column];
-          if (next_part === '.' && cur_space.contains() !== '') {
-            marker = new Marker();
-            marker.apply_indexes(row, column);
-            marker.type = 'AE';
-            cur_space.contains('');
-            stones.push(marker);
-          }
-          else if (next_part === 'B' && cur_space.contains() !== 'B') {
-            marker = new Marker();
-            marker.apply_indexes(row, column);
-            marker.type = 'AB';
-            cur_space.contains('B');
-            stones.push(marker);
-          }
-          else if (next_part === 'W' && cur_space.contains() !== 'W') {
-            marker = new Marker();
-            marker.apply_indexes(row, column);
-            marker.type = 'AW';
-            cur_space.contains('W');
-            stones.push(marker);
-          }
-
-          //TODO: handle markers in a diagram
-                    
+        else if (part === 'B') {
+	  //self.sgf().cur_node().next_move = 'B';        
+	  self.sgf().cur_node().next_move('B');
         }
-      }        
+        else if (part === 'c') {
+          //show labels (coordinates)
+          //might not want to enable just yet
+        }
+        else if ( (part.length) && (part[0] === 'm') ) {
+          //move number
+          //console.log(self.move);
+          self.move = parseInt(part.slice(1));
+          //console.log(self.move);        
+        }
+        else {
+          //must be the board size... everything else has been accounted for
+          var size = parseInt(part);
+          if (size !== self.size()) {
+            console.log('Found size:', size, '!= Board size:', self.size());
+          }
+        }                
+      });   
+      //var top_border = lines[1];
+      var next_line;
+      var next_part;
+      var cur_space;
+      var parts;
+      var row, column;
+      var marker;    
+      //collect and return these, just in case they should be applied to SGF
+      var markers = [];
+      var stones = [];
+      
+      for (var i = 2; i < lines.length; i++) {
+        next_line = lines[i];
+        parts = next_line.split(' ');
+        //console.log(parts);
+        if (parts.length > 2) {
+          for (var j = 2; j < parts.length; j++) {
+            next_part = parts[j];
+            row = i-2;
+            column = j-2;
+            cur_space = self.rows[row][column];
+            if (next_part === '.' && cur_space.contains() !== '') {
+              marker = new Marker();
+              marker.apply_indexes(row, column);
+              marker.type = 'AE';
+              cur_space.contains('');
+              stones.push(marker);
+            }
+            else if (next_part === 'B' && cur_space.contains() !== 'B') {
+              marker = new Marker();
+              marker.apply_indexes(row, column);
+              marker.type = 'AB';
+              cur_space.contains('B');
+              stones.push(marker);
+            }
+            else if (next_part === 'W' && cur_space.contains() !== 'W') {
+              marker = new Marker();
+              marker.apply_indexes(row, column);
+              marker.type = 'AW';
+              cur_space.contains('W');
+              stones.push(marker);
+            }
+            
+            //TODO: handle markers in a diagram
+            
+          }
+        }
+      }      
     }
+    else {
+      self.clear_spaces();
+    }
+      
     var result = { 'stones': stones, 'markers': markers };
     //console.log(result);
     return result;
@@ -365,9 +373,10 @@ function Board(size, pixels) {
   self.previous = function() {
     var node = self.sgf().previous();
     self.clear_markers();
-    self.apply_diagram(node.snapshot);
-    self.set_markers(node);
-    //self.undo_node(node);
+    if (node) {
+      self.apply_diagram(node.snapshot);
+      self.set_markers(node);
+    }
   };
 
   
@@ -478,13 +487,15 @@ function Board(size, pixels) {
         if (node.move.type !== self.sgf().cur_node().next_move) {
           //this seems likely to happen after jumping
           //to a different position or node in the SGF
-          console.log('Next move in SGF: ', node.move.type, ' != expected next move: ', self.sgf().cur_node().next_move);
+          console.log('Next move in SGF: ', node.move.type, ' != expected next move: ', self.sgf().cur_node().next_move());
         }
         */
       
         // reset these before handle move, so they get updated appropriately
-        node.total_captures.B = node.parent.total_captures.B;
-        node.total_captures.W = node.parent.total_captures.W;
+        //node.total_captures.B = node.parent.total_captures.B;
+        //node.total_captures.W = node.parent.total_captures.W;
+        node.total_captures_b(node.parent.total_captures_b());
+        node.total_captures_w(node.parent.total_captures_w());
         node.captures = self.handle_move(cur_space, node);
         //console.log(node.snapshot);
 
@@ -513,9 +524,9 @@ function Board(size, pixels) {
       
       var node;
       //save this for later:
-      //self.cur_move = self.sgf().cur_node().next_move;
-      //node = self.sgf().add_move(space.name, self.sgf().cur_node().next_move);
-      node = self.sgf().add_move(space.row, space.column, self.sgf().cur_node().next_move);
+      //self.cur_move = self.sgf().cur_node().next_move();
+      //node = self.sgf().add_move(space.name, self.sgf().cur_node().next_move());
+      node = self.sgf().add_move(space.row, space.column, self.sgf().cur_node().next_move());
       //console.log(node);
       self.sgf().captures = self.handle_move(space, node);
 
@@ -552,7 +563,7 @@ function Board(size, pixels) {
       //update the value of space.contains()
       //this will automatically trigger updates of DOM
       //(thanks knockout!)
-      //space.contains(self.sgf().cur_node().next_move);
+      //space.contains(self.sgf().cur_node().next_move());
 
       //this:
       //space.contains(self.sgf().cur_node().move.type);
@@ -562,14 +573,18 @@ function Board(size, pixels) {
       
       captures = self.check_captures(space, node);
       
-      //if (self.sgf().cur_node().next_move === 'B') {
+      //if (self.sgf().cur_node().next_move() === 'B') {
       if (node.move.type === 'B') {
-	self.sgf().cur_node().next_move = 'W';
-	node.next_move = 'W';
+	//self.sgf().cur_node().next_move = 'W';
+	self.sgf().cur_node().next_move('W');
+	//node.next_move = 'W';
+	node.next_move('W');
       }
       else {
-	self.sgf().cur_node().next_move = 'B';
-	node.next_move = 'B';
+	//self.sgf().cur_node().next_move = 'B';
+	self.sgf().cur_node().next_move('B');
+	//node.next_move = 'B';
+	node.next_move('B');
       }
       self.move += 1;
       
@@ -585,20 +600,42 @@ function Board(size, pixels) {
     return captures;
   };
       
-  self.handle_pass = function() {
-      if (self.sgf().cur_node().next_move === 'B') {
-	self.sgf().cur_node().next_move = 'W';
-      }
-      else {
-	self.sgf().cur_node().next_move = 'B';
-      }
-      self.move += 1;
+  self.make_pass = function() {
+    //take care of a pass request from the view
+    //update the SGF
+    console.log("make pass called");
+
+    self.clear_markers();
       
-      //update last move marker
-      if (self.last_move) {
-	self.last_move.mtype('');
-      }
-      self.last_move = '';
+    var node;
+    node = self.sgf().add_node();
+    self.handle_pass();
+
+    //make a snapshot for future reference (easier moving between states)
+    if (! node.snapshot) {
+      node.snapshot = self.make_diagram(node);
+    }
+    
+    self.dirty = true;
+
+  };
+  
+  self.handle_pass = function() {
+    if (self.sgf().cur_node().next_move() === 'B') {
+      //self.sgf().cur_node().next_move = 'W';
+      self.sgf().cur_node().next_move('W');
+    }
+    else {
+      //self.sgf().cur_node().next_move = 'B';
+      self.sgf().cur_node().next_move('B');
+    }
+    self.move += 1;
+    
+    //update last move marker
+    if (self.last_move) {
+      self.last_move.mtype('');
+    }
+    self.last_move = '';
   };
   
   self.get_neighbors = function(space) {
@@ -686,13 +723,18 @@ function Board(size, pixels) {
     //console.log(message);
     
     if (group[0].contains() === 'B') {
+      //if captureing a group of black stones,
+      //want to update the counter for white
+      
       //self.captures['B'] += group.length;
       //self.sgf().cur_node().total_captures.B += group.length;
-      node.total_captures.B += group.length;
+      //node.total_captures.B += group.length;
+      node.total_captures_w(node.total_captures_w() + group.length);
     }
     else if (group[0].contains() === 'W') {
       //self.sgf().cur_node().total_captures.W += group.length;
-      node.total_captures.W += group.length;
+      //node.total_captures.W += group.length;
+      node.total_captures_b(node.total_captures_b() + group.length);
     }
     
     lodash.each(group, function(space) {
@@ -729,7 +771,7 @@ function Board(size, pixels) {
     group = self.get_group(space, group);
     libs = self.has_liberties(group);
     if (!(libs)) {
-      self.capture_group(group);
+      self.capture_group(group, node);
       captures.push(group);
     }
 

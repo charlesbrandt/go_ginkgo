@@ -151,7 +151,7 @@ function Space(board, contains, pixels, row, column) {
   //look in self.board.next_move instead of self.contains()
   self.hover = ko.computed(function() {
     if (self.hovering()) {
-      if (self.board.sgf().cur_node().next_move === 'B') {
+      if (self.board.sgf().cur_node().next_move() === 'B') {
 	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
 	//return 'url("images/black.png") no-repeat center center' ;
       }

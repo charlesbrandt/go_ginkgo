@@ -111,24 +111,60 @@
         
         <div id="controls" class="menu-block" data-bind="visible: show_controls">
           <ul class="menu-options">
+            <li class="action details">
+
+                <span class="player black" data-bind="css: { active: board.sgf().cur_node().next_move() === 'B', inactive: board.sgf().cur_node().next_move() === 'W' }">
+
+                  <div data-bind="click: edit_player_black">
+                    <span data-bind="visible: !editing_player_black(), text: board.sgf().black_player"></span>
+                    <input data-bind="visible: editing_player_black(), value: board.sgf().black_player, hasFocus: editing_player_black"></input>
+                    <input class="icon-tiny" type="image" src="/images/icon-edit.png" alt="Edit Black" name="edit_black">
+                  </div>
+
+                  <div>&nbsp;</div>
+                  <input value="Pass" type="button" data-bind="visible: board.sgf().cur_node().next_move() === 'B', click: function(data, event) { board.make_pass() }"></input>
+                  <div class="empty-button" data-bind="visible: board.sgf().cur_node().next_move() !== 'B'"></div>
+                  <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_w()"></div>
+                </span>
+
+                
+                <span class="player white" data-bind="css: { active: board.sgf().cur_node().next_move() === 'W', inactive: board.sgf().cur_node().next_move() === 'B' }">
+
+                  <div data-bind="click: edit_player_white">
+                    <span data-bind="visible: !editing_player_white(), text: board.sgf().white_player"></span>
+                    <input data-bind="visible: editing_player_white(), value: board.sgf().white_player, hasFocus: editing_player_white"></input>
+                    <input class="icon-tiny" type="image" src="/images/icon-edit.png" alt="Edit White" name="edit_white">
+                  </div>
+
+                  <div>&nbsp;</div>
+                  <input value="Pass" type="button" data-bind="visible: board.sgf().cur_node().next_move() === 'W', click: function(data, event) { board.make_pass() }"></input>
+                  <div class="empty-button" data-bind="visible: board.sgf().cur_node().next_move() !== 'W'"></div>
+                  <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_w()"></div>
+                </span>
+
+                <input class="icon-small" type="image" src="/images/icon-more.png" alt="Show more details" name="more-details" data-bind="click: function(data, event) { toggle_details() }">
+                <div class="section"></div>
+                <ul class="menu-options" data-bind="visible: show_more_details()">
+                  <li class="submenu">Date: <input data-bind="value: board.sgf().date()"></li>
+                  <li class="submenu">Komi: <input data-bind="value: board.sgf().komi"></li>
+                  <li class="submenu">Location: <input data-bind="value: board.sgf().place()"></li>
+                </ul>
+                            
+            </li>
+
             <li class="action">Add Marker...</li>
             <li class="action" data-bind="click: remove_branch">Delete Branch</li>
-            <li class="action">Game Details...
-              
-              <ul class="menu-options">
-                <li class="submenu">Black: <input data-bind="value: board.sgf().black_player"></li>
-                <li class="submenu">White: <input data-bind="value: board.sgf().white_player"></li>
-                <li class="submenu">Komi: <input data-bind="value: board.sgf().komi"></li>
-                <li class="submenu">Date: <input data-bind="value: board.sgf().date"></li>
-                <li class="submenu">Location: <input data-bind="value: board.sgf().place()"></li>
-              </ul>
-              
-              
-            </li>
+
+
+            
             <li class="action"><textarea data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
             <li class="action position">
               <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
-              <span class="position"><input class="position-input" data-bind="value: position"> / <span data-bind="text: board.sgf().last()"></span></span>
+              <span class="position">
+                <input class="position-input" data-bind="value: position">
+                <span class="position-text"> / </span>
+                <span class="position-text" data-bind="text: board.sgf().last()"></span>
+              </span>
               <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
             </li>
 
@@ -138,6 +174,7 @@
                 <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
               </ul>
             </li>
+
             
             
           </ul>

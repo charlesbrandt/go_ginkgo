@@ -2,6 +2,7 @@
 
 var lodash = require('lodash-node/underscore');
 var ko = require('knockout');
+var moment = require('moment');
 
 var SGFNode = require('./node').Node;
 
@@ -34,6 +35,7 @@ function SGF() {
   
   self.copyright = ko.observable('');//CP
   self.date = ko.observable('');//DT
+  
   self.event = ko.observable('');//EV
   self.comment = ko.observable('');//GC
   self.name = ko.observable('');//GN
@@ -96,10 +98,11 @@ function SGF() {
     self.annotation(''); //AN
     self.black_rank(''); //BR
     self.black_team(''); //BT
-    self.black_player('');//PB
+    self.black_player('Black');//PB
     
     self.copyright('');//CP
-    self.date('');//DT
+    //console.log(self.date());
+    self.date(moment().format('YYYY/MM/DD'));//DT
     self.event('');//EV
     self.comment('');//GC
     self.name('');//GN
@@ -117,7 +120,7 @@ function SGF() {
     self.timelimit('');//TM 
     self.user('');//US
 
-    self.white_player('');//PW
+    self.white_player('White');//PW
     self.white_rank('');//WR
     self.white_team('');//WT 
 

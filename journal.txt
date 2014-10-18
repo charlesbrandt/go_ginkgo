@@ -1,3 +1,48 @@
+*2014.10.18 13:31:21 complete
+requested [2014.10.18 12:18:29]
+hide extra game details until click
+
+*2014.10.18 13:31:24 complete
+I think the layout of the controls is looking pretty good at this point
+can request specific change requests as they come up
+requested [2014.09.24 19:44:08]
+revisit controls layout and functionality
+should show navigation options by default on load
+
+*2014.10.18 12:12:30 complete
+requested [2014.09.14 01:03:13]
+add next player's turn to controls
+(highlight player)
+
+*2014.10.18 12:12:36 complete
+requested [2014.10.15 05:12:51]
+button to pass
+
+*2014.10.18 12:13:02 complete
+requested [2014.09.14 01:02:56]
+show current captures under controls
+
+*2014.10.18 12:13:16 complete
+there was a bug in this check, fixed now
+requested [2014.10.15 06:24:23]
+check for suicides
+(see node 51 in sample game)
+
+*2014.10.18 12:09:32
+                <span class="player black" data-bind="css: { active: board.sgf().cur_node().next_move() === 'B' }, click: edit_player_black">
+                  <div data-bind="visible: !editing_player_black(), text: board.sgf().black_player"></div>
+                  <input data-bind="visible: editing_player_black(), value: board.sgf().black_player, hasFocus: editing_player_black"></input>
+                  
+                  <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_b()"></div>
+                </span>
+
+
+
+*2014.10.18 08:06:51
+                <li class="submenu">Black: <input data-bind="value: board.sgf().black_player"></li>
+                <li class="submenu">White: <input data-bind="value: board.sgf().white_player"></li>
+
+
 *2014.10.15 08:35:40 complete
 requested [2014.10.15 08:05:33]
 delete branch
