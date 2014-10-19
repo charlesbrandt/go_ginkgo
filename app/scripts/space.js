@@ -147,20 +147,89 @@ function Space(board, contains, pixels, row, column) {
       return '';
     }
   }, this);
+
+  self.hover_marker = function(type) {
+    if (self.contains() === 'B') {
+      return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/' + type + '-white.png">';
+    }
+    else if (self.contains() === 'W') {
+      return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/' + type + '-black.png">';
+      
+    }
+    else {
+      return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/' + type + '-red.png">';
+    }
+  };
   
   //look in self.board.next_move instead of self.contains()
   self.hover = ko.computed(function() {
     if (self.hovering()) {
-      if (self.board.sgf().cur_node().next_move() === 'B') {
-	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
-	//return 'url("images/black.png") no-repeat center center' ;
+      if (self.board.cur_action === 'move' && self.contains() !== 'B' && self.contains() !== 'W') {
+        if (self.board.sgf().cur_node().next_move() === 'B') {
+	  return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
+	  //return 'url("images/black.png") no-repeat center center' ;
+        }
+        else {
+	  return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-white.png">';
+	  //return 'url("images/white.png") no-repeat center center' ;
+        }
       }
-      else {
+
+      else if (self.board.cur_action === 'add_black') {
+	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-black.png">';
+      }
+
+      else if (self.board.cur_action === 'add_white') {
 	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-white.png">';
-	//return 'url("images/white.png") no-repeat center center' ;
+      }
+
+      else if (self.board.cur_action === 'add_empty') {
+	return '<img class="hover" width="' + self.image_px() + 'px" height="' + self.image_px() + 'px" src="images/stone-empty.png">';
+      }
+      
+      else if (self.board.cur_action === 'add_label') {
+        var result = '';
+        result += '<div class="marker" style="left: 0px; top: 0px; line-height: ' + self.image_px() + 'px">\n';
+        if (self.contains() === 'B') {
+          result += '<font color="white">' + self.board.label_marker() +'</font>\n';
+        }
+        else if (self.contains() === 'W') {
+          result += self.board.label_marker() +'\n';
+        }
+        else {
+          result += '<div style="background-color:rgba(144, 144, 144, 0.7);"><font color="red">' + self.board.label_marker() +'</font></div>\n';
+        }
+        result += '</div>';
+        return result;
+      }
+      
+      
+      else if (self.board.cur_action === 'mark') {
+        return self.hover_marker('mark');
+      }
+
+      else if (self.board.cur_action === 'circle') {
+        return self.hover_marker('circle');
+      }
+
+      else if (self.board.cur_action === 'square') {
+        return self.hover_marker('square');
+      }
+
+      else if (self.board.cur_action === 'triangle') {
+        return self.hover_marker('triangle');
+      }
+
+      else if (self.board.cur_action === 'selected') {
+        return self.hover_marker('selected');
+      }
+      
+      else {
+        return '';
       }
       
     }
+
     else {
       //return self.name + ": " + self.contains();
       return '';
@@ -168,12 +237,17 @@ function Space(board, contains, pixels, row, column) {
   }, this);
   
   self.hover_on = function() {
+
+    /*
+    // need to move this check into self.hover() instead
     if (self.contains() === 'B' || self.contains() === 'W') {
       self.hovering(false);
     }
     else {
       self.hovering(true);
     }
+    */
+    self.hovering(true);
     //console.log('hover_on called', self.hovering());
   };
   
@@ -278,81 +352,6 @@ function Space(board, contains, pixels, row, column) {
     }
   }, this);
 
-  /*
-  self.marker_background = ko.computed(function() {
-    if (self.mtype() === 'circle') {
-      if (self.contains() === 'B') {
-	return "transparent url('images/circle-white.png') no-repeat center center" ;
-      }
-      else if (self.contains() === 'W') {
-	return "transparent url('images/circle-black.png') no-repeat center center" ;
-      }
-      else {
-	return "transparent url('images/circle-red.png') no-repeat center center" ;
-      }      
-    }
-
-    else if (self.mtype() === 'triangle') {
-      if (self.contains() === 'B') {
-	return 'transparent url("images/triangle-white.png") no-repeat center center' ;
-      }
-      else if (self.contains() === 'W') {
-	return 'transparent url("images/triangle-black.png") no-repeat center center' ;
-      }
-      else {
-	return 'transparent url("images/triangle-red.png") no-repeat center center' ;
-      }      
-    }
-
-    else if (self.mtype() === 'square') {
-      if (self.contains() === 'B') {
-	return 'transparent url("images/square-white.png") no-repeat center center' ;
-      }
-      else if (self.contains() === 'W') {
-	return 'transparent url("images/square-black.png") no-repeat center center' ;
-      }
-      else {
-	return 'transparent url("images/square-red.png") no-repeat center center' ;
-      }      
-    }
-    
-    else if (self.mtype() === 'selected') {
-      if (self.contains() === 'B') {
-	return 'transparent url("images/selected-white.png") no-repeat center center' ;
-      }
-      else if (self.contains() === 'W') {
-	return 'transparent url("images/selected-black.png") no-repeat center center' ;
-      }
-      else {
-	return 'transparent url("images/selected-red.png") no-repeat center center' ;
-      }      
-    }
-
-    else if (self.mtype() === 'mark') {
-      if (self.contains() === 'B') {
-	return 'transparent url("images/mark-white.png") no-repeat center center' ;
-      }
-      else if (self.contains() === 'W') {
-	return 'transparent url("images/mark-black.png") no-repeat center center' ;
-      }
-      else {
-	return 'transparent url("images/mark-red.png") no-repeat center center' ;
-      }      
-    }
-
-    else if (self.mtype() === 'territory_white') {
-      return 'transparent url("images/mark-white.png") no-repeat center center' ;
-    }
-    
-    else if (self.mtype() === 'territory_black') {
-      return 'transparent url("images/mark-black.png") no-repeat center center' ;
-    }
-    
-    else {
-      return '';
-    }
-  }, this);
-  */
   
   self.has_stone = ko.computed(function() {
     if (self.contains() === 'B' || self.contains() === 'W') {

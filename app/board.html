@@ -67,24 +67,31 @@
         
       
       <div class="all-controls col right" data-bind="">
-        <div class="icon" style="float: left" data-bind="click: toggle_settings, event: { mouseenter: gear_active, mouseleave: gear_inactive }, mouseoverBubble: false">
-          <img id="gear_image" class="icon_image" width="100%" src="/images/icon-settings.png">
-        </div>
-
-        <div class="icon" style="float: left" data-bind="click: toggle_menu, event: { mouseenter: menu_active, mouseleave: menu_inactive }, mouseoverBubble: false">
-          <img id="menu_image" class="icon_image" width="100%" src="/images/icon-menu.png">
-        </div>
-
-        <div class="icon" style="float: left" data-bind="click: toggle_controls, event: { mouseenter: controls_active, mouseleave: controls_inactive }, mouseoverBubble: false">
-          <img id="controls_image" class="icon_image" width="100%" src="/images/icon-controls.png">
-        </div>
 
 
+        <ul class="menu-toggles">
+          <li class="toggle-item">
+            <div class="icon" data-bind="click: toggle_settings, event: { mouseenter: gear_active, mouseleave: gear_inactive }, mouseoverBubble: false">
+              <img id="gear_image" class="icon_image" width="100%" src="/images/icon-settings.png">
+            </div>
+          </li>
 
+          <li class="toggle-item">
+            <div class="icon" data-bind="click: toggle_menu, event: { mouseenter: menu_active, mouseleave: menu_inactive }, mouseoverBubble: false">
+              <img id="menu_image" class="icon_image" width="100%" src="/images/icon-menu.png">
+            </div>
+          </li>
 
+          <li class="toggle-item">
+            <div class="icon" style="float: left" data-bind="click: toggle_controls, event: { mouseenter: controls_active, mouseleave: controls_inactive }, mouseoverBubble: false">
+              <img id="controls_image" class="icon_image" width="100%" src="/images/icon-controls.png">
+            </div>
+          </li>
+        </ul>
 
+        <div id="menu-blocks" class="menu-blocks">
         
-        <ul class="menu-options" data-bind="visible: show_configs">
+          <ul class="menu-options" data-bind="visible: show_configs">
             <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
             <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
             <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
@@ -93,95 +100,110 @@
             
           </ul>
 
-        <div id="menu" class="menu-block" data-bind="visible: show_menu">
-          <ul class="menu-options">
-            <li class="action"><a href='#' data-bind='click: save'>Save SGF</a>
-</li>
-            <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
-            <li class="action" data-bind="click: function(data, event) { copy_diagram() }">Copy Diagram</li>
-            <li class="action" data-bind="click: edit_diagram_input">Paste Diagram
-              <textarea data-bind="visible: editing_diagram_input(), value: diagram_input, hasFocus: editing_diagram_input" rows="22" cols="40"></textarea>
-            </li>
-
-
-            <li class="action"><a data-bind="attr: { href: mailto() }">Email Diagram...</a></li>
-            <li class="action" data-bind="click: function(data, event) { clear() }">Clear</li>            
-          </ul>
-        </div>
-        
-        <div id="controls" class="menu-block" data-bind="visible: show_controls">
-          <ul class="menu-options">
-            <li class="action details">
-
+          <div id="menu" class="menu-block" data-bind="visible: show_menu">
+            <ul class="menu-options">
+              <li class="action"><a href='#' data-bind='click: save'>Save SGF</a>
+              </li>
+              <li class="action">Open Local SGF: <input data-bind="value: filename" type="file" id="source" name="files[]" /></li>
+              <li class="action" data-bind="click: function(data, event) { copy_diagram() }">Copy Diagram</li>
+              <li class="action" data-bind="click: edit_diagram_input">Paste Diagram
+                <textarea data-bind="visible: editing_diagram_input(), value: diagram_input, hasFocus: editing_diagram_input" rows="22" cols="40"></textarea>
+              </li>
+              
+              
+              <li class="action"><a data-bind="attr: { href: mailto() }">Email Diagram...</a></li>
+              <li class="action" data-bind="click: function(data, event) { clear() }">Clear</li>            
+            </ul>
+          </div>
+          
+          <div id="controls" class="menu-block" data-bind="visible: show_controls">
+            <ul class="menu-options">
+              <li class="action details">
+                
                 <span class="player black" data-bind="css: { active: board.sgf().cur_node().next_move() === 'B', inactive: board.sgf().cur_node().next_move() === 'W' }">
-
+                  
                   <div data-bind="click: edit_player_black">
                     <span data-bind="visible: !editing_player_black(), text: board.sgf().black_player"></span>
                     <input data-bind="visible: editing_player_black(), value: board.sgf().black_player, hasFocus: editing_player_black"></input>
                     <input class="icon-tiny" type="image" src="/images/icon-edit.png" alt="Edit Black" name="edit_black">
                   </div>
-
+                  
                   <div>&nbsp;</div>
                   <input value="Pass" type="button" data-bind="visible: board.sgf().cur_node().next_move() === 'B', click: function(data, event) { board.make_pass() }"></input>
                   <div class="empty-button" data-bind="visible: board.sgf().cur_node().next_move() !== 'B'"></div>
-                  <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_w()"></div>
+                  <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_b()"></div>
                 </span>
-
+                
                 
                 <span class="player white" data-bind="css: { active: board.sgf().cur_node().next_move() === 'W', inactive: board.sgf().cur_node().next_move() === 'B' }">
-
+                  
                   <div data-bind="click: edit_player_white">
                     <span data-bind="visible: !editing_player_white(), text: board.sgf().white_player"></span>
                     <input data-bind="visible: editing_player_white(), value: board.sgf().white_player, hasFocus: editing_player_white"></input>
                     <input class="icon-tiny" type="image" src="/images/icon-edit.png" alt="Edit White" name="edit_white">
                   </div>
-
+                  
                   <div>&nbsp;</div>
                   <input value="Pass" type="button" data-bind="visible: board.sgf().cur_node().next_move() === 'W', click: function(data, event) { board.make_pass() }"></input>
                   <div class="empty-button" data-bind="visible: board.sgf().cur_node().next_move() !== 'W'"></div>
                   <div data-bind="text: 'Captures: ' + board.sgf().cur_node().total_captures_w()"></div>
                 </span>
-
-                <input class="icon-small" type="image" src="/images/icon-more.png" alt="Show more details" name="more-details" data-bind="click: function(data, event) { toggle_details() }">
+                
+                <input class="icon-tiny" type="image" src="/images/icon-more.png" alt="Show more details" name="more-details" data-bind="click: function(data, event) { toggle_details() }">
                 <div class="section"></div>
                 <ul class="menu-options" data-bind="visible: show_more_details()">
                   <li class="submenu">Date: <input data-bind="value: board.sgf().date()"></li>
                   <li class="submenu">Komi: <input data-bind="value: board.sgf().komi"></li>
                   <li class="submenu">Location: <input data-bind="value: board.sgf().place()"></li>
                 </ul>
-                            
-            </li>
+                
+              </li>
 
-            <li class="action">Add Marker...</li>
-            <li class="action" data-bind="click: remove_branch">Delete Branch</li>
+              <li class="action position">
+                <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
+                <span class="position">
+                  <input class="position-input" data-bind="value: position">
+                  <span class="position-text"> / </span>
+                  <span class="position-text" data-bind="text: board.sgf().last()"></span>
+                </span>
+                <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
+              </li>
+              
+              <li class="action" data-bind="visible: board.sgf().cur_node().children.length > 1">
+                Variations:
+                <ul data-bind="foreach: board.sgf().cur_node().children">
+                  <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
+                </ul>
+              </li>
 
+              
+              
+              
+              <li class="action"><textarea class="comment" data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
 
-            
-            <li class="action"><textarea data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
-            <li class="action position">
-              <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
-              <span class="position">
-                <input class="position-input" data-bind="value: position">
-                <span class="position-text"> / </span>
-                <span class="position-text" data-bind="text: board.sgf().last()"></span>
-              </span>
-              <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
-            </li>
-
-            <li class="action" data-bind="visible: board.sgf().cur_node().children.length > 1">
-              Variations:
-              <ul data-bind="foreach: board.sgf().cur_node().children">
-                <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
-              </ul>
-            </li>
-
-            
-            
-          </ul>
+              <li class="action"><div data-bind="click: function(data, event) { toggle_markers() }">Markers...</div>
+                <ul class="menu-options" data-bind="visible: show_markers()">
+                  
+                  <li class="menu-item"><input class="icon" type="image" src="/images/mark-black.png" alt="Mark" name="mark" data-bind="click: function(data, event) { board.cur_action = 'mark' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/circle-black.png" alt="Circle" name="circle" data-bind="click: function(data, event) { board.cur_action = 'circle' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/square-black.png" alt="Square" name="square" data-bind="click: function(data, event) { board.cur_action = 'square' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/triangle-black.png" alt="Triangle" name="triangle" data-bind="click: function(data, event) { board.cur_action = 'triangle' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/selected-black.png" alt="Selected" name="selected" data-bind="click: function(data, event) { board.cur_action = 'selected' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/stone-black.png" alt="Add Black" name="add_black" data-bind="click: function(data, event) { board.cur_action = 'add_black' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/stone-white.png" alt="Add White" name="add_white" data-bind="click: function(data, event) { board.cur_action = 'add_white' }"></li>
+                  <li class="menu-item"><input class="marker-icon" type="image" src="/images/stone-empty.png" alt="Add Empty" name="add_empty" data-bind="click: function(data, event) { board.cur_action = 'add_empty' }"></li>
+                  <li class="menu-item"><input class="position-input" alt="Label" name="label" data-bind="click: function(data, event) { board.cur_action = 'add_label' }, value: board.label_marker"></li>
+                  
+                </ul>
+              </li>
+              <li class="action" data-bind="click: remove_branch">Delete Branch</li>
+              
+              
+              
+            </ul>
+          </div>
         </div>
-      </div>
-
-
+      </div>      
     </div>      
 
     <div id="overlay-hello" class="overlay">

@@ -146,6 +146,17 @@ function BoardViewModel(size, pixels) {
     }      
   };
 
+  self.show_markers = ko.observable(false);
+  self.toggle_markers = function() {
+    if (self.show_markers()) {
+      self.show_markers(false);
+      self.board.cur_action = 'move';
+    }
+    else {
+      self.show_markers(true);
+    }      
+  };
+
 
   self.editing_player_black = ko.observable(false);
   self.edit_player_black = function() { self.editing_player_black(true); };	
@@ -446,6 +457,8 @@ function BoardViewModel(size, pixels) {
       //taller, vertical
       $('.left').css({'width':'100%'});
       $('.right').css({'width':'100%'});
+      $('.toggle-item').css({'display':'block'});
+      $('.menu-blocks').css({'width':'85%'});
     }
     else {
       //wider, horizontal
@@ -453,6 +466,8 @@ function BoardViewModel(size, pixels) {
       //need to calculate margins... setting to 50 for now
       var diff = $(window).width() - self.board_width() - 50;
       $('.right').css({'width':diff+'px'});
+      $('.toggle-item').css({'display':'inline-block'});
+      $('.menu-blocks').css({'width':'100%'});
     }
 
   };
@@ -480,7 +495,7 @@ function BoardViewModel(size, pixels) {
     //remoteFile = data;
     self.board.sgf().load(data);
     var size = parseInt(self.board.sgf().size);
-    console.log(size);
+    //console.log(size);
     self.board.size(size);
     self.update_all();
   };
@@ -515,12 +530,12 @@ function BoardViewModel(size, pixels) {
   });
 
   self.copy_diagram = function() {
-    var text = self.board.make_diagram();
+    var text = self.board.make_diagram(self.board.sgf().cur_node());
     window.prompt ('Copy to clipboard: Ctrl+C, Enter', text);
   };
 
   self.mailto = function() {
-    return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram());
+    return 'mailto:?to=&subject=Go%20Ginko%20Game&body=' + encodeURIComponent(self.board.make_diagram(self.board.sgf().cur_node()));
   };
 
   self.remove_branch = function() {
@@ -585,7 +600,7 @@ function BoardViewModel(size, pixels) {
         var f = files[i];
         var reader = new FileReader();
       
-        console.log(f);
+        //console.log(f);
         
         //update self.filename with loaded name:
         /*

@@ -197,10 +197,18 @@ function Node(space, type) {
         result.matched = true;
         result.index = i;
       }
+
+      //*2014.10.19 11:11:07
+      //I think it makes more sense to loosen this restriction for markers..
+      //even for add_black and add_white
+      //if there is something there already,
+      //then the latest change will take precedence
+      /*
       else if ( (option.space === space) && (option.type !== type) ) {
-        var err = new ReferenceError('Invalid ' + attribute + ' Space: ' + option.space + ' already contains: ' + option.type + ' cannot add: ' + type);
+        var err = new ReferenceError('Invalid ' + attribute + ' Space: "' + option.space + '" already contains: ' + option.type + ' cannot add: ' + type);
         throw err;
       }
+      */
     });
 
     return result;

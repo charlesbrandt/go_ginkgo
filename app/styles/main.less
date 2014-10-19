@@ -62,6 +62,7 @@ body {
 
 .marker {
     position: absolute;
+    display: block;
     //vertical-align: text-bottom;
     text-align: center;
     vertical-align: middle;
@@ -164,6 +165,16 @@ img.hover {
     list-style: none;    
 }
 
+.comment {
+    width: 100%;
+    max-width: 350px;
+    min-width: 120px;
+    height: 120px;
+    //http://stackoverflow.com/questions/15855951/how-to-fit-textarea-exactly-inside-a-div-css
+    box-sizing: border-box;
+    margin-top: 3px;
+}
+
 .empty-button {
     display: block;
     height: 24px;
@@ -172,12 +183,49 @@ img.hover {
     float: left;
 }
 
+.menu-blocks {
+    float: left;    
+}
+
 .menu-options {
     display: block;
     float: left;
-    margin: 0% 0 1% 1.6%;
+    margin: 0% 0 1% 0%;
     padding: 0;
 }
+
+.menu-toggles {
+    //display: block;
+    float: left;
+    margin: 0% 0 1% 0%;
+    padding: 0;
+}
+
+.toggle-item {
+    list-style: none;
+    //this will get set based on screen orientation (wider vs taller)
+    display: inline-block;
+    vertical-align: top;                    
+}
+
+
+.menu-item {
+    list-style: none;    
+    display: inline-block;
+    //margin: 1px;
+    //padding: 1px 7px 1px 7px;
+    vertical-align: top;                    
+}
+
+.marker-icon {
+    width: 50px;
+    height: 50px;
+}    
+
+.marker-label {
+    width: 50px;
+    height: 30px;
+}    
 
 .main {
     position: relative;
@@ -192,8 +240,7 @@ img.hover {
     padding: 1px 7px 1px 7px;
     .roundedbox();
     background: rgba(239,172,91, .75);
-    vertical-align: top;
-                    
+    vertical-align: top;                    
 }    
 
 .details {
@@ -225,7 +272,8 @@ img.hover {
 
 .position {
     vertical-align: top;
-    height: 50px;
+    //height: 50px;
+    height: 100%;
     display: inline-block;
 }
 

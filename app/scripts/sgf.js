@@ -281,6 +281,8 @@ function SGF() {
     //update our cur_node:
     //self.cur_node = self.cur_node.children[index];
     self.cur_node(self.cur_node().children[index]);
+    self.empty = false;
+    
     return self.cur_node();
   };
 
@@ -291,6 +293,7 @@ function SGF() {
     }
     else {
       var index = self.cur_node().make_node();
+      //console.log("New index: ", index);
       self.position.push(index);
       //self.cur_node = self.cur_node.children[index];
       self.cur_node(self.cur_node().children[index]);
@@ -493,7 +496,8 @@ function SGF() {
           //PL   Player to play  setup            color
           } else if (last_property_id === 'PL') {
             //local_cur_node.player = token_value;
-            local_cur_node.next_move = token_value;
+            //local_cur_node.next_move = token_value;
+            local_cur_node.next_move(token_value);
             
           } else if (last_property_id === 'C') {
             //have a comment

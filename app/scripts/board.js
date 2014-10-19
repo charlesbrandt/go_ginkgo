@@ -38,6 +38,10 @@ function Board(size, pixels) {
   //but it is also useful when generating a diagram, so keeping it here.
   //self.show_labels = ko.observable(true);
   self.show_labels = ko.observable(false);
+
+  //not to be confused with the board labels...
+  //this is the label used when adding a marker that has text
+  self.label_marker = ko.observable('a');
   
   self.space_pixels = ko.computed(function() {
     return self.pixels() / self.size();
@@ -436,7 +440,7 @@ function Board(size, pixels) {
     indexes = marker.indexes();
     cur_space = self.rows[indexes[0]][indexes[1]];
     //console.log(cur_space);
-    console.log(marker.type);
+    //console.log(marker.type);
     cur_space.label(marker.type);
   };
   
@@ -475,7 +479,7 @@ function Board(size, pixels) {
     //then apply the move
     if (node.move.type) {
       if ( (! node.move.space) || (node.move.space === 'tt') ) {
-        self.handle_pass();
+        self.handle_pass(node);
       }
 
       else {
@@ -517,12 +521,17 @@ function Board(size, pixels) {
 
   };
 
+  //*2014.10.19 10:45:19 
+  //aka take action...
+  //now that cur_action could be more than 'move', need to expand the checks
   self.make_move = function(space) {
+    //this may get updated if it's a new move, but get it now for markers
+    var node = self.sgf().cur_node();
+
     //update the SGF *and* handle_move
-    if (space.contains() === '') {
+    if (self.cur_action === 'move' && space.contains() === '') {
       self.clear_markers();
       
-      var node;
       //save this for later:
       //self.cur_move = self.sgf().cur_node().next_move();
       //node = self.sgf().add_move(space.name, self.sgf().cur_node().next_move());
@@ -551,6 +560,91 @@ function Board(size, pixels) {
       self.dirty = true;
 
     }
+    
+    /*
+      CR   Circle          -                list of point
+      MA   Mark            -                list of point
+      SL   Selected        -                list of point
+      *SQ  Square          -                list of point
+      TR   Triangle        -                list of point
+    */
+    else if (self.cur_action === 'mark') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'MA';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'MA');
+      self.dirty = true;
+    }
+    else if (self.cur_action === 'circle') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'CR';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'CR');
+      self.dirty = true;
+    }
+    else if (self.cur_action === 'selected') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'SL';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'SL');
+      self.dirty = true;
+    }
+    else if (self.cur_action === 'square') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'SQ';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'SQ');
+      self.dirty = true;
+    }
+    else if (self.cur_action === 'triangle') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'TR';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'TR');
+      self.dirty = true;
+    }
+
+    else if (self.cur_action === 'add_black') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'AB';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'AB');
+      self.dirty = true;
+    }
+
+    else if (self.cur_action === 'add_white') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'AW';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'AW');
+      self.dirty = true;
+    }
+
+    else if (self.cur_action === 'add_empty') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = 'AE';
+      self.apply_marker(marker);
+      node.add_marker(marker.space, 'AE');
+      self.dirty = true;
+    }
+
+    else if (self.cur_action === 'add_label') {
+      var marker = new Marker();
+      marker.apply_indexes(space.row, space.column);
+      marker.type = self.label_marker().slice(0, 8);
+      self.apply_label(marker);
+      node.add_label(marker.space, self.label_marker().slice(0, 8));
+      self.dirty = true;
+    }
+    
   };
 
   self.handle_move = function(space, node) {
@@ -604,33 +698,68 @@ function Board(size, pixels) {
     //take care of a pass request from the view
     //update the SGF
     console.log("make pass called");
-
+    console.log(self.sgf().position());
+    
     self.clear_markers();
-      
-    var node;
-    node = self.sgf().add_node();
-    self.handle_pass();
+
+    var next_move = self.sgf().cur_node().next_move();
+
+
+    var matched = false;
+    var index;
+    lodash.each(self.sgf().cur_node().children, function(option, i) {
+      if ( (option.move.space === '') && (option.move.type === next_move) ) {
+        matched = true;
+        index = i;
+      }
+    });
+
+    var node;    
+    if (! matched) {
+      console.log('creating new node');
+      node = self.sgf().add_node();
+      node.move.space = '';
+      node.move.type = next_move;
+    }
+    else {
+      console.log('matched existing node');
+      node = self.sgf().cur_node().children[index];
+    }
+
+    //console.log(self.sgf().cur_node());
+    
+    self.handle_pass(node);
+
 
     //make a snapshot for future reference (easier moving between states)
     if (! node.snapshot) {
       node.snapshot = self.make_diagram(node);
     }
+
+    console.log(node);
+    console.log(self.sgf().cur_node());
+    console.log(self.sgf().position());
+    console.log();
     
     self.dirty = true;
 
   };
   
-  self.handle_pass = function() {
-    if (self.sgf().cur_node().next_move() === 'B') {
+  self.handle_pass = function(node) {
+    if (node.move.type === 'B') {
       //self.sgf().cur_node().next_move = 'W';
       self.sgf().cur_node().next_move('W');
+      //node.next_move = 'W';
+      node.next_move('W');
     }
     else {
       //self.sgf().cur_node().next_move = 'B';
       self.sgf().cur_node().next_move('B');
+      //node.next_move = 'B';
+      node.next_move('B');
     }
     self.move += 1;
-    
+
     //update last move marker
     if (self.last_move) {
       self.last_move.mtype('');
@@ -784,7 +913,7 @@ function Board(size, pixels) {
     //access to board spaces would be tricky
     //hoping this can tie the two together
 
-    if (marker) {
+    if (marker && marker.space) {
       //look up the corresponding space:
       var indexes = marker.indexes();
       //console.log(indexes);
@@ -797,7 +926,7 @@ function Board(size, pixels) {
   };
   
   self.hover_off = function(marker) {
-    if (marker) {
+    if (marker && marker.space) {
       var indexes = marker.indexes();
       var cur_space = self.rows[indexes[0]][indexes[1]];
       //cur_space.hover_off();

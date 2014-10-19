@@ -364,6 +364,7 @@ fs.readFile( __dirname + '/diagram.txt', function (err, data) {
         space = board.spaces()[19];
         board.make_move(space);
         expect(board.spaces()[0].contains()).to.equal( '' );
+        expect(board.sgf().cur_node().total_captures_b()).to.equal( 1 );
       });
 
       it('should apply a node', function () {

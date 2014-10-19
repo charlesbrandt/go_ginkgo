@@ -1,3 +1,35 @@
+*2014.10.19 12:16:00 complete
+these seem to work well enough...
+can request any other changes
+requested [2014.10.19 10:26:06]
+stone markers
+
+#2014.10.19 10:26:09
+label markers
+
+*2014.10.19 11:36:40 complete
+main markers are being added to all the right places...
+still need stones and labels
+requested [2014.09.24 17:47:10]
+way to add markers to board via controls
+
+*2014.10.19 08:42:22 complete
+was just a bug in the html / ui layer... forgot to update the variable after a copy
+requested [2014.10.18 18:41:41]
+looks like capture counts stopped working 
+
+*2014.10.18 18:41:12 complete
+I think pass is working now...
+if you find bugs, report them...
+better yet... create a test case for them, then fix them
+requested [2014.10.18 12:12:43]
+pass is not working correctly...
+something at a lower level than interface
+
+#2014.10.18 18:41:40 complete
+requested [2014.09.26 06:30:40]
+doesn't look like W[] is handled properly
+
 *2014.10.18 13:31:21 complete
 requested [2014.10.18 12:18:29]
 hide extra game details until click
