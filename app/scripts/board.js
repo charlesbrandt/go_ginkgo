@@ -110,6 +110,9 @@ function Board(size, pixels) {
     //use this to determine if the click should cause a move or a marker
     self.cur_action = 'move';
 
+    //this is used in hover_helper function
+    self.cur_space = null;
+
     self.last_move = false;
   
     //tracking this here so we know which direction a change happens for self.go
@@ -216,6 +219,10 @@ function Board(size, pixels) {
     //if we're loading from a saved state in the SGF,
     //don't want to automatically trigger a new node
 
+    //collect and return these, just in case they should be applied to SGF
+    var markers = [];
+    var stones = [];
+      
     //http://stackoverflow.com/questions/5034781/js-regex-to-split-by-line
     //console.log(text);
     var lines = text.match(/[^\r\n]+/g);
@@ -270,10 +277,7 @@ function Board(size, pixels) {
       var parts;
       var row, column;
       var marker;    
-      //collect and return these, just in case they should be applied to SGF
-      var markers = [];
-      var stones = [];
-      
+
       for (var i = 2; i < lines.length; i++) {
         next_line = lines[i];
         parts = next_line.split(' ');
@@ -525,6 +529,7 @@ function Board(size, pixels) {
   //aka take action...
   //now that cur_action could be more than 'move', need to expand the checks
   self.make_move = function(space) {
+    var marker;
     //this may get updated if it's a new move, but get it now for markers
     var node = self.sgf().cur_node();
 
@@ -552,7 +557,7 @@ function Board(size, pixels) {
     
       
       //add it for visiting later 
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       node.add_marker(marker.space, 'CR');
       //marker.type = 'CR';
@@ -569,7 +574,7 @@ function Board(size, pixels) {
       TR   Triangle        -                list of point
     */
     else if (self.cur_action === 'mark') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'MA';
       self.apply_marker(marker);
@@ -577,7 +582,7 @@ function Board(size, pixels) {
       self.dirty = true;
     }
     else if (self.cur_action === 'circle') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'CR';
       self.apply_marker(marker);
@@ -585,7 +590,7 @@ function Board(size, pixels) {
       self.dirty = true;
     }
     else if (self.cur_action === 'selected') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'SL';
       self.apply_marker(marker);
@@ -593,7 +598,7 @@ function Board(size, pixels) {
       self.dirty = true;
     }
     else if (self.cur_action === 'square') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'SQ';
       self.apply_marker(marker);
@@ -601,7 +606,7 @@ function Board(size, pixels) {
       self.dirty = true;
     }
     else if (self.cur_action === 'triangle') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'TR';
       self.apply_marker(marker);
@@ -610,7 +615,7 @@ function Board(size, pixels) {
     }
 
     else if (self.cur_action === 'add_black') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'AB';
       self.apply_marker(marker);
@@ -619,7 +624,7 @@ function Board(size, pixels) {
     }
 
     else if (self.cur_action === 'add_white') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'AW';
       self.apply_marker(marker);
@@ -628,7 +633,7 @@ function Board(size, pixels) {
     }
 
     else if (self.cur_action === 'add_empty') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = 'AE';
       self.apply_marker(marker);
@@ -637,7 +642,7 @@ function Board(size, pixels) {
     }
 
     else if (self.cur_action === 'add_label') {
-      var marker = new Marker();
+      marker = new Marker();
       marker.apply_indexes(space.row, space.column);
       marker.type = self.label_marker().slice(0, 8);
       self.apply_label(marker);
@@ -697,8 +702,8 @@ function Board(size, pixels) {
   self.make_pass = function() {
     //take care of a pass request from the view
     //update the SGF
-    console.log("make pass called");
-    console.log(self.sgf().position());
+    //console.log('make pass called');
+    //console.log(self.sgf().position());
     
     self.clear_markers();
 
@@ -907,6 +912,102 @@ function Board(size, pixels) {
     return captures;    
   };
 
+  self.hover_helper = function(action, event) {
+    /*function to help with touch events...
+      they don't work the same way as a standard mouse hover
+      so we need to look up the current space and set the hover manually here
+    */
+    
+    //console.log(action);
+    //console.log(event);
+    //console.log();
+    var ct = event['changedTouches'][0];
+    //for (var key in event) {
+    //  console.log(key);
+    //  ct = event[key];
+    //  console.log(ct);
+    //}
+    
+    //console.log(ct);
+    //ct.pageX and ct.pageY are the values we want
+    //console.log(ct.pageX, ct.pageY, ct.screenX, ct.screenY );
+
+    var space_col;
+    var space_row;
+    
+    if (self.show_labels()) {
+      //adjust for label space,
+      //which is actually defined in view.label_pixels() (top)
+      //and self.space_pixels() (left)
+      //redefining label_pixels here for convenience:
+      var label_pixels = self.space_pixels() / 2;
+      space_col = Math.floor( (ct.pageX - self.space_pixels()) / self.space_pixels());
+      space_row = Math.floor( (ct.pageY - label_pixels) / self.space_pixels());
+    }
+    else {
+      space_col = Math.floor(ct.pageX / self.space_pixels());
+      space_row = Math.floor(ct.pageY / self.space_pixels());
+    }
+    
+    //console.log(space_col, space_row);
+
+    if ( (space_col >= self.size()) || (space_col < 0) ||
+         (space_row >= self.size()) || (space_row < 0) ) {
+      if (self.cur_space) {
+        self.cur_space.hover_off();
+        self.cur_space = null;
+      }
+    }
+    else {
+      //must be hovering within a reasonable range
+
+      //use this to prevent scrolling behavior while hovering
+      //TODO: not working
+      if ( (action == 'move') || (action === 'on') ) {
+        //window.blockMenuHeaderScroll = true;
+        //event.preventDefault();
+        //event.stopPropagation();
+        /*
+        $(document).bind("touchstart", function(e){
+          e.preventDefault();
+        });
+        
+        $(document).bind("touchmove", function(e){
+          e.preventDefault();
+        });
+        */
+        
+      }
+      
+      if (! self.cur_space) {
+        self.cur_space = self.rows[space_row][space_col];
+        self.cur_space.hover_on();
+      }
+      else if ( (self.cur_space.row !== space_row) || (self.cur_space.column !== space_col) ) {
+        self.cur_space.hover_off();
+        self.cur_space = self.rows[space_row][space_col];
+        self.cur_space.hover_on();
+      }
+
+      if (action == 'off') {
+        self.cur_space.hover_off();
+        self.make_move(self.cur_space);
+
+        /*
+        $(document).unbind("touchstart", function(e){
+          e.preventDefault();
+        });
+        
+        $(document).unbind("touchmove", function(e){
+          e.preventDefault();
+        });
+        */
+
+      }
+    }
+  };
+  
+  
   self.hover_on = function(marker) {
     //helper for board view when showing given variations at a specific node
     //node only has markers...
@@ -954,5 +1055,4 @@ function Board(size, pixels) {
 }
 
 module.exports.Board = Board;
-//module.exports.label_options = label_options;
 

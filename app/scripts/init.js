@@ -54,6 +54,18 @@ $(window).resize(function() {
 
 document.getElementById('source').addEventListener('change', bv.load_local, false);
 
+/*
+//checking to see if this helps with scrolling caused by address bar 
+//in firefox on android... it doesn't.
+$(document).bind("touchstart", function(e){
+  e.preventDefault();
+});
+
+$(document).bind("touchmove", function(e){
+  e.preventDefault();
+});
+*/
+
 
 //aka modal, lightbox
 //https://kopepasah.com/tutorial/awesome-overlays-with-simple-css-javascript-html/

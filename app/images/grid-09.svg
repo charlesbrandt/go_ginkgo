@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="100%" height="100%" viewBox="0 0 1700 1700">
+<line x1="94" y1="98" x2="1606" y2="98" stroke="black" stroke-width="8"></line>
+<line x1="98" y1="286" x2="1602" y2="286" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="474" x2="1602" y2="474" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="662" x2="1602" y2="662" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="850" x2="1602" y2="850" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="1038" x2="1602" y2="1038" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="1226" x2="1602" y2="1226" stroke="black" stroke-width="4"></line>
+<line x1="98" y1="1414" x2="1602" y2="1414" stroke="black" stroke-width="4"></line>
+<line x1="94" y1="1602" x2="1606" y2="1602" stroke="black" stroke-width="8"></line>
+<line x1="98" y1="94" x2="98" y2="1606" stroke="black" stroke-width="8"></line>
+<line x1="286" y1="98" x2="286" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="474" y1="98" x2="474" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="662" y1="98" x2="662" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="850" y1="98" x2="850" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="1038" y1="98" x2="1038" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="1226" y1="98" x2="1226" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="1414" y1="98" x2="1414" y2="1602" stroke="black" stroke-width="4"></line>
+<line x1="1602" y1="98" x2="1602" y2="1602" stroke="black" stroke-width="8"></line>
+<circle cx="474" cy="474" r="11" fill="black"></circle><circle cx="850" cy="850" r="11" fill="black"></circle><circle cx="1226" cy="1226" r="11" fill="black"></circle><circle cx="474" cy="1226" r="11" fill="black"></circle><circle cx="1226" cy="474" r="11" fill="black"></circle></svg>

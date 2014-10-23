@@ -1,20 +1,14 @@
-*2014.08.12 09:30:00
-add in touch events via hammer.js (touchstart == hover, touchend == click)
-also [2014.10.18 12:17:41]
-test touch on tablet before packaging
-
-
-*2014.09.25 19:51:16
-deploy to app engine for hosting
-also [2014.10.15 04:34:04]
-unless can host directly on github
-
 *2014.09.25 19:51:27
-be sure to enable page to work offline in the browser:
+enable page to work offline in the browser:
 (test that it works that way)
 
 https://www.google.com/search?q=enable+web+apps+to+work+offline&oq=enable+web+apps+to+work+offline&aqs=chrome..69i57.4989j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
 http://diveintohtml5.info/offline.html
+
+*2014.09.25 19:51:16
+deploy to app engine for hosting
+also [2014.10.15 04:34:04]
+unless can host directly on github... github.io
 
 *2014.09.25 19:51:50
 deploy using NodeWebkit for desktops
@@ -22,10 +16,8 @@ deploy using NodeWebkit for desktops
 *2014.09.25 19:51:59
 deploy using Phonegap / Appgyver for mobile
 
-
 *2014.09.26 19:20:21
 links to site from about overlay, when they're available
-
 
 
 
@@ -39,15 +31,39 @@ and move forward from actual move
 show peers (other stones / moves with the same parent)
 toggle this... don't always want to see this (spoilers)
 
+
+
+
+*2014.10.22 08:18:42
+disable page scrolling when touchstart on board happens
+having difficulty getting this to work though
+have tried applying it in in board.hover_helper() and at board.html binding...
+no dice
+
+https://www.google.com/search?q=knockout+js+if+visible&oq=knockout+js+if+visible&aqs=chrome..69i57.7017j0j1&sourceid=chrome&es_sm=91&ie=UTF-8#q=knockout%20touchstart%20preventdefault
+http://stackoverflow.com/questions/7018919/how-to-bind-touchstart-and-click-events-but-not-respond-to-both
+http://stackoverflow.com/questions/10914865/trigger-a-click-event-from-jquery-ui-to-knockout-js
+http://knockoutjs.com/documentation/binding-context.html
+https://www.google.com/search?q=javascript+round+down&oq=javascript+round+down&aqs=chrome..69i57.16534j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://www.w3schools.com/jsref/jsref_floor.asp
+https://www.google.com/search?q=javascript+prevent+scrolling+when+touch&oq=javascript+prevent+scrolling+when+touch+&aqs=chrome..69i57.9102j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
+http://gregsramblings.com/2012/05/23/preventing-vertical-scrolling-bounce-using-javascript-on-ios-devices/
+http://stackoverflow.com/questions/16348031/disable-scrolling-when-touch-moving-certain-element
+http://stackoverflow.com/questions/2890361/disable-scrolling-in-an-iphone-web-application
+
+
+*2014.10.22 07:12:20
+consider moving all hover functionality (especially mouse related...) to using board.hover_helper... seems much more responsive than individual space events
+
 *2014.10.18 08:01:33
 change all clickable items to inputs/buttons of some form
 makes it easier to see an action via mouse icons
 
 *2014.10.15 04:34:45
-way to edit captures
+way to edit current captures of a node (for getting started later)
 
 *2014.09.14 02:22:53
-captured (dotted circle image) svgs (for marking stones that were caputred)
+use captured (dotted circle image) svgs for marking stones that were caputred
 (configure if they're shown or not)
 
 *2014.10.19 12:12:08
@@ -92,11 +108,6 @@ https://www.google.com/search?q=html+scale+text+to+fit+in+div&oq=html+scale+text
 http://stackoverflow.com/questions/4165836/javascript-scale-text-to-fit-in-fixed-div
 https://github.com/DanielHoffmann/jquery-bigtext
 
-*2014.09.14 10:53:57
-way to change svg stroke color via css
-would eliminate the need for many pngs, along with the different black/white/red combinations
-
-
 *2014.09.26 09:06:09
 way to show move sequence as labels on stones:
             <li class="action">Show move numbers</li>
@@ -107,13 +118,11 @@ may require a server component
 leaving out for now.
             <li class="action">Open Remote SGF: <input data-bind="value: remote_file" /><button>Go</button></li>
 
-*2014.08.12 09:36:27
-send game via email (this will need a server side component)
-
 *2013.02.05 09:52:45 
 socket.io integration
 
-
+*2014.08.12 09:36:27
+send game via email (this will need a server side component)
 
 *2013.02.06 08:27:41 
     //TODO: click sound
@@ -133,4 +142,10 @@ would require translating SGF data
 enable / disable hover functionality...
 seems like most cases it's a good thing!
             <li class="action">Show Hover</li>
+
+*2014.09.14 10:53:57
+way to change svg stroke color via css
+would eliminate the need for many pngs, along with the different black/white/red combinations
+also [2014.10.22 07:15:14]
+but if svg grid won't show up on some devices, probably can't rely on svg for display purposes in general yet
 

@@ -236,6 +236,26 @@ function BoardViewModel(size, pixels) {
     return self.board.space_pixels() / 2;
   });
 
+  self.board_wood_png = ko.computed(function() {
+    return '<img width="' + self.board_pixels() + '" height= "' + self.board_pixels() + '" src="images/board.jpg">';      
+  });
+                                    
+  self.board_grid_png = ko.computed(function() {
+    var grid;
+    if (self.size() === 19) {
+      return '<img width="' + self.board_pixels() + '" height= "' + self.board_pixels() + '" src="images/grid-19.png">';      
+    }
+    else if (self.size() === 13) {
+      return '<img width="' + self.board_pixels() + '" height= "' + self.board_pixels() + '" src="images/grid-13.png">';      
+      //return '<img src="images/grid-13.png">';
+    }
+    else if (self.size() === 9) {
+      return '<img width="' + self.board_pixels() + '" height= "' + self.board_pixels() + '" src="images/grid-09.png">';      
+      //return '<img src="images/grid-09.png">';
+    }
+    
+  });
+  
   self.board_grid = ko.computed(function() {
     var grid;
     if (self.size() === 19) {
@@ -453,18 +473,20 @@ function BoardViewModel(size, pixels) {
     // minimum number of pixels needed on the right to show conrols
     
     //could use container instead of $(window) to get size if embedding
-    if (($(window).width()<= $(window).height()) ) {
+    //console.log( $(window).width(), $(window).height() );
+    if (($(window).width() <= $(window).height()) ) {
       //taller, vertical
       $('.left').css({'width':'100%'});
       $('.right').css({'width':'100%'});
       $('.toggle-item').css({'display':'block'});
-      $('.menu-blocks').css({'width':'85%'});
+      $('.menu-blocks').css({'width':'80%'});
+      //$('body').css({'overflow-y':'scroll'});
     }
     else {
       //wider, horizontal
       $('.left').css({'width':self.board_width()+'px'});
       //need to calculate margins... setting to 50 for now
-      var diff = $(window).width() - self.board_width() - 50;
+      var diff = $(window).width() - self.board_width() - 60;
       $('.right').css({'width':diff+'px'});
       $('.toggle-item').css({'display':'inline-block'});
       $('.menu-blocks').css({'width':'100%'});

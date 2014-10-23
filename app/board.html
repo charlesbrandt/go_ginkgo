@@ -53,9 +53,9 @@
           <div class="labels" data-bind="template: {name: 'labelVTemplate', foreach: labels_right}"></div>
           <div class="labels" data-bind="template: {name: 'labelHTemplate', foreach: labels_bottom}"></div>
           
-          <div class="board" data-bind="style: {'background-size': board_pixels() + 'px', width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}">
+          <div class="board" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, html: board_wood_png()">
           </div>
-          <div class="grid" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, html: board_grid()">
+          <div class="grid" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, html: board_grid_png()">
           </div>
           <div class="spaces" data-bind="style: {width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}, template: {name: 'spaceTemplate', foreach: board.spaces}">
           </div>
@@ -95,9 +95,7 @@
             <li class="action" data-bind="click: toggle_labels">Toggle Labels</li>
             <li class="action" data-bind="click: function(data, event) { change_size(19) }">19x19</li>
             <li class="action" data-bind="click: function(data, event) { change_size(13) }">13x13</li>
-            <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>
-            <li class="action overlay-trigger" data-overlay="overlay-hello">About...</li>
-            
+            <li class="action" data-bind="click: function(data, event) { change_size(9) }">9x9</li>            
           </ul>
 
           <div id="menu" class="menu-block" data-bind="visible: show_menu">
@@ -118,8 +116,32 @@
           
           <div id="controls" class="menu-block" data-bind="visible: show_controls">
             <ul class="menu-options">
-              <li class="action details">
-                
+              
+
+              <li class="action position">
+                <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
+                <span class="position">
+                  <input class="position-input" data-bind="value: position">
+                  <span class="position-text"> / </span>
+                  <span class="position-text" data-bind="text: board.sgf().last()"></span>
+                </span>
+                <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
+              </li>
+
+              
+              <li class="action" data-bind="visible: board.sgf().cur_node().children.length > 1">
+                Variations:
+                <ul data-bind="foreach: board.sgf().cur_node().children">
+                  <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
+                </ul>
+              </li>
+
+              
+              
+              
+              <li class="action"><textarea class="comment" data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
+
+              <li class="action details">                
                 <span class="player black" data-bind="css: { active: board.sgf().cur_node().next_move() === 'B', inactive: board.sgf().cur_node().next_move() === 'W' }">
                   
                   <div data-bind="click: edit_player_black">
@@ -158,29 +180,10 @@
                 </ul>
                 
               </li>
-
-              <li class="action position">
-                <input class="icon" type="image" src="/images/icon-back.png" alt="Previous Move" name="back" data-bind="click: function(data, event) { board.previous() }">
-                <span class="position">
-                  <input class="position-input" data-bind="value: position">
-                  <span class="position-text"> / </span>
-                  <span class="position-text" data-bind="text: board.sgf().last()"></span>
-                </span>
-                <input class="icon" type="image" src="/images/icon-forward.png" alt="Next Move" name="forward" data-bind="click: function(data, event) { board.next(0) }">
-              </li>
+            </ul>
+            
+            <ul class="menu-options">
               
-              <li class="action" data-bind="visible: board.sgf().cur_node().children.length > 1">
-                Variations:
-                <ul data-bind="foreach: board.sgf().cur_node().children">
-                  <li data-bind="text: $index()+1, click: function(data, event) { $parent.board.next($index()) }, event: { mouseover: function(data, event) {$parent.board.hover_on(move)}, mouseout: function(data, event) {$parent.board.hover_off(move)} }"></li>
-                </ul>
-              </li>
-
-              
-              
-              
-              <li class="action"><textarea class="comment" data-bind="value: board.sgf().cur_node().comment" rows="4" cols="50"></textarea></li>
-
               <li class="action"><div data-bind="click: function(data, event) { toggle_markers() }">Markers...</div>
                 <ul class="menu-options" data-bind="visible: show_markers()">
                   
@@ -197,6 +200,7 @@
                 </ul>
               </li>
               <li class="action" data-bind="click: remove_branch">Delete Branch</li>
+              <li class="action overlay-trigger" data-overlay="overlay-hello">About...</li>
               
               
               
@@ -226,7 +230,7 @@
       
       <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="html: render()">
       </div>
-      <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off }">
+      <div class="space" style="left: {{left}}px; top: {{top}}px;" data-bind="click: board.make_move, event: { mouseover: hover_on, mouseout: hover_off, touchstart: function(data, event) {event.preventDefault(), $root.board.hover_helper('on', event)}, touchmove: function(data, event) {event.preventDefault(), $root.board.hover_helper('move', event)}, touchend: function(data, event) {$root.board.hover_helper('off', event)}}">
       </div>
       
     </script>

@@ -1,3 +1,28 @@
+*2014.10.22 19:56:58
+          <div class="board" data-bind="style: {'background-size': board_pixels() + 'px', width: board_pixels() + 'px', height: board_pixels() + 'px', left: board_left() + 'px', top: board_top() +'px'}">
+
+
+*2014.10.22 08:21:07 complete
+with the exception of preventing page scrolling, this works
+requested [2014.08.12 09:30:00]
+add in touch events via hammer.js (touchstart == hover, touchend == click)
+also [2014.10.18 12:17:41]
+test touch on tablet before packaging
+also [2014.10.19 13:53:59]
+tablet works as is, but hammer might make it a bit more responsive
+also [2014.10.20 09:26:34]
+standard touch events should be sufficient...
+https://developer.mozilla.org/en-US/docs/Web/Guide/Events/Touch_events
+
+*2014.10.22 07:17:50 complete
+made the switch back
+keeping Grid code in... it's much easier to generate the svgs now, rather than create them manually. I think they look better too.
+requested [2014.10.20 09:19:57]
+change back to using png for board grids...
+nice to have automatically generated svgs... (and should definitely keep that!)
+but svgs don't render in android browsers...
+pngs are more backwards compatible
+
 *2014.10.19 12:16:00 complete
 these seem to work well enough...
 can request any other changes
