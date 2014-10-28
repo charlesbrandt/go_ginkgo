@@ -1,14 +1,16 @@
-*2014.09.25 19:51:27
-enable page to work offline in the browser:
-(test that it works that way)
+*2014.10.23 17:17:40
+details page
 
-https://www.google.com/search?q=enable+web+apps+to+work+offline&oq=enable+web+apps+to+work+offline&aqs=chrome..69i57.4989j0j1&sourceid=chrome&es_sm=91&ie=UTF-8
-http://diveintohtml5.info/offline.html
+*2014.09.26 19:20:21
+links to site from about overlay, when they're available
 
-*2014.09.25 19:51:16
-deploy to app engine for hosting
-also [2014.10.15 04:34:04]
-unless can host directly on github... github.io
+*2014.10.23 16:01:07
+add in LICENSE.txt
+
+*2014.10.23 15:41:26
+deploy code to github
+
+
 
 *2014.09.25 19:51:50
 deploy using NodeWebkit for desktops
@@ -16,9 +18,14 @@ deploy using NodeWebkit for desktops
 *2014.09.25 19:51:59
 deploy using Phonegap / Appgyver for mobile
 
-*2014.09.26 19:20:21
-links to site from about overlay, when they're available
-
+*2014.10.23 17:33:34
+deploy as a chrome app
+https://www.google.com/search?q=google+web+app&oq=google+web+app&aqs=chrome..69i57j69i64.2334j0j1&sourceid=chrome&es_sm=91&ie=UTF-8#q=google+chrome+web+store+publish+web+app
+https://developer.chrome.com/webstore/publish
+https://developers.google.com/chrome/apps/docs/developers_guide
+https://developer.chrome.com/apps/about_apps
+https://developer.chrome.com/apps/first_app
+https://developer.chrome.com/apps/app_architecture
 
 
 *2014.10.15 04:35:27

@@ -1,0 +1,70 @@
+//@import 'normalize.less';
+@import 'elements.less';
+
+@bordercolor: #4A4435;
+@darkgrey: #333333;
+@base2: #DBB077;
+
+@radius: 11px;
+
+.links () {
+    text-decoration: none;
+    color: @darkgrey;
+}
+
+.roundedbox () {
+    .rounded(@radius);
+    .bordered(@bordercolor, @bordercolor, @bordercolor, @bordercolor);
+}
+
+
+html {
+    height: 100%;
+}
+
+body {
+    background: white;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #333;
+    height: 100%;
+    margin: 8px;
+    position: relative;
+    overflow: hidden;
+    
+}
+
+.page {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+//http://blogs.msdn.com/b/kurlak/archive/2013/11/03/hiding-vertical-scrollbars-with-pure-css-in-chrome-ie-6-firefox-opera-and-safari.aspx
+.page::-webkit-scrollbar {
+    display: none;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  
+  display: block;
+  background: transparent url("/images/background.png") no-repeat right 20px center;
+  background-size: 40%;  
+
+  -webkit-filter: blur(1px);
+  -moz-filter: blur(1px);
+  -o-filter: blur(1px);
+  -ms-filter: blur(1px);
+  filter: blur(1px);
+
+}
+

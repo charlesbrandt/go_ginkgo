@@ -471,7 +471,7 @@ function BoardViewModel(size, pixels) {
     // has been updated by find_max_board_dimension
 
     // minimum number of pixels needed on the right to show conrols
-    
+     
     //could use container instead of $(window) to get size if embedding
     //console.log( $(window).width(), $(window).height() );
     if (($(window).width() <= $(window).height()) ) {

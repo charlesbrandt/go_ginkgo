@@ -1,3 +1,12 @@
+*2014.10.23 14:37:32 code
+/c/go_ginkgo/instances.txt
+/c/go_ginkgo/launch.sh
+/c/go_ginkgo/app/styles/globals.less
+/c/go_ginkgo/app/cache.manifest
+/c/go_ginkgo/gulpfile.js
+/c/go_ginkgo/app/styles/main.less
+/c/go_ginkgo/app/index.html
+
 *2014.09.04 07:21:12 settings
 /c/go_ginkgo/instances.txt
 /c/go_ginkgo/launch.sh

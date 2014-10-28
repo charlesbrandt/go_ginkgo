@@ -21,3 +21,4 @@ gnugo
 node_modules
 .tmp
 dist
+goginkgo.github.io
