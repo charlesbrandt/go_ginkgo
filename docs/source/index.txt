@@ -1,0 +1,65 @@
+.. Go Ginkgo documentation master file
+
+Go Ginkgo
+=====================================
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+
+Go Ginkgo is a web based (HTML + Javascript) Go board.
+
+http://goginkgo.github.io/
+
+Related projects
+=====================
+
+Similar, web based go clients:
+
+EidoGo
+----------
+EidoGo is one of the originals in this space. It is a robust and fully featured client. The layout is a fixed size though, so it won't adapt well to different display configurations:
+
+| http://eidogo.com/
+| http://senseis.xmp.net/?EidoGo
+
+License: AGPLv3
+
+JGoBoard
+------------
+JGoBoard is a nice looking client:
+
+| http://static.jgoboard.com/sgf.html
+| http://senseis.xmp.net/?JGoBoard
+| http://jgoboard.com/downloads/
+
+
+Others
+----------
+These are some newer ones (to me) that look promising:
+
+|  http://senseis.xmp.net/?WGoJsPlayer
+|  http://wgo.waltheri.net/player
+|  http://wgo.waltheri.net/demo/player/1
+
+http://uniwebgo.com/demo/
+
+| http://jeudego.org/maxiGos/?lang=en
+| http://jeudego.org/maxiGos/_maxigos/_sample/alone/alone.php?mxL=en
+
+
+similar project:
+
+https://github.com/kelleyvanevert/jsgo
+
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
+

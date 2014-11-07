@@ -12,7 +12,6 @@ syntax: glob
 .Trashes*
 .Spotlight-V100*
 .fseventsd*
-index*
 
 # switch to regexp syntax.
 syntax: regexp

@@ -7,6 +7,8 @@ echo "Other common options:
 
 python /c/mindstream/mindstream/launch.py -c $ROOT settings
 
+python /c/mindstream/mindstream/launch.py -c $ROOT docs
+
 python /c/mindstream/mindstream/launch.py -c /c/technical yeoman
 
 to start development:

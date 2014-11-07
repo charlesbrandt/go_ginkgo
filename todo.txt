@@ -1,16 +1,19 @@
 *2014.10.23 17:17:40
 details page
+also [2014.11.06 07:24:40]
+just use sphinx
 
 *2014.09.26 19:20:21
 links to site from about overlay, when they're available
-
-*2014.10.23 16:01:07
-add in LICENSE.txt
 
 *2014.10.23 15:41:26
 deploy code to github
 
 
+
+*2014.08.07 05:18:50
+consider getting size from a container element rather than the whole document during a resize...
+that would allow it to be embedded on other sites more easily.
 
 *2014.09.25 19:51:50
 deploy using NodeWebkit for desktops
@@ -27,6 +30,9 @@ https://developer.chrome.com/apps/about_apps
 https://developer.chrome.com/apps/first_app
 https://developer.chrome.com/apps/app_architecture
 
+*2014.11.07 11:54:11
+add message back to about once these are actually available:
+, and is also available as a cross platform stand alone application for many mobile and desktop systems.
 
 *2014.10.15 04:35:27
 review game mode...
@@ -86,10 +92,6 @@ when saving, don't want to log PL for every node... only if it has been set
 integrate other SGF fields with DOM interface
 *2014.09.10 09:34:13
 other SGF properties
-
-*2014.08.07 05:18:50
-consider getting size from a container element rather than the whole document during a resize...
-that would allow it to be embedded on other sites more easily.
 
 *2014.09.24 17:35:52
 show visual representation of game tree

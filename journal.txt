@@ -1,3 +1,16 @@
+*2014.11.07 11:50:51
+found these via:
+
+https://www.google.com/search?q=sgf+parser+mit&oq=sgf+parser+mit&aqs=chrome..69i57.3047j0j1&sourceid=chrome&es_sm=91&ie=UTF-8#q=sgf+parser+mit&start=10
+
+http://en.wikibooks.org/wiki/Computer_Go/Writing_an_SGF_Parser
+
+
+
+*2014.11.07 11:29:28 complete
+requested [2014.10.23 16:01:07]
+add in LICENSE.txt
+
 *2014.10.23 16:01:22 complete
 requested [2014.10.23 15:39:35]
 create google analytics id for project
